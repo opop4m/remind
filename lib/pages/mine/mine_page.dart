@@ -1,4 +1,5 @@
 import 'package:client/app.dart';
+import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,8 +21,7 @@ class _MinePageState extends State<MinePage> {
   void action(name) {
     switch (name) {
       case '设置':
-        // loginOut(context);
-        _model.logout();
+        logout();
         break;
       case '支付':
         routePush(new PayHomePage());

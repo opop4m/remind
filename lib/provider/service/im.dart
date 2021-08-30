@@ -1,10 +1,14 @@
 import 'dart:convert';
 
 import 'package:client/provider/model/user.dart';
+export 'package:client/provider/service/mqttLib.dart';
 import 'package:client/provider/service/mqttLib.dart';
+import 'package:client/tools/wechat_flutter.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 typedef OnMsgListener(String topic, Map<String, dynamic> res);
+
+final _log = Logger("im");
 
 class Im {
   static Im? _instance;
@@ -22,11 +26,15 @@ class Im {
 
   static final String topicIm = "im/p2p/";
 
-  late MqttLib mqtt;
   late String _selfId;
   late String topicMe;
-  // OnMsgCallBack? msgArrive;
+
+  OnStateListener? stateListener;
+  ConnectState currentState = ConnectState.disconnect;
+  ConnectivityResult currentNetwork = ConnectivityResult.none;
   Map<String, OnMsgListener?> msgArrive = {}; //tag,cb
+  bool reconnect = false;
+
   init(
     String selfId,
     String uuid, {
@@ -46,20 +54,61 @@ class Im {
     _selfId = selfId;
     topicMe = topicIm + _selfId;
 
-    mqtt = MqttLib.get()
+    MqttLib.get()
       ..setMsgListener(topicMe, (topic, msg) {
         Map<String, dynamic> res = json.decode(msg);
         msgArrive.forEach((String tag, OnMsgListener? cb) {
           cb?.call(topic, res);
         });
       });
+    MqttLib.get().mqLibState = onStateListenerForLib;
+
+    initListenNetwork();
+  }
+
+  void initListenNetwork() {
+    subscription.checkConnectivity().then((state) {
+      currentNetwork = state;
+    });
+    subscription.onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      currentNetwork = result;
+      // if (result == ConnectivityResult.mobile ||
+      //     result == ConnectivityResult.wifi) {
+      // }
+    });
+  }
+
+  void onStateChange(ConnectState state) {
+    _log.info("onStateChange: $state");
+    currentState = state;
+    stateListener?.call(state);
+  }
+
+  void onStateListenerForLib(ConnectState state) {
+    onStateChange(state);
+    if (state != ConnectState.notAuthorized && reconnect) {
+      int time = 5;
+      _log.info("reconnect afet $time s");
+      Future.delayed(Duration(seconds: time), () {
+        connect();
+      });
+    }
   }
 
   void connect() async {
     var connectStatus = await MqttLib.get().connect();
-    if (connectStatus?.state == MqttConnectionState.connected) {
-      //todo
-      mqtt.subscribe(topicMe);
+    // _log.info("after connect: ${connectStatus?.returnCode}");
+    if (connectStatus!.returnCode != null &&
+        connectStatus.returnCode == MqttConnectReturnCode.notAuthorized) {
+      onStateChange(ConnectState.notAuthorized);
+    } else if (connectStatus.state == MqttConnectionState.connected) {
+      reconnect = true;
+      MqttLib.get().subscribe(topicMe);
+    } else if (connectStatus.state == MqttConnectionState.connecting) {
+      onStateChange(ConnectState.connecting);
+    } else if (connectStatus.state == MqttConnectionState.faulted) {
+      onStateListenerForLib(ConnectState.networkErr);
     }
   }
 
@@ -74,5 +123,11 @@ class Im {
   void sendMsg(String peer, String msg) {
     String topic = topicIm + peer;
     MqttLib.get().publish(topic, msg);
+  }
+
+  void disConnect() {
+    print("disConnect");
+    reconnect = false;
+    MqttLib.get().disconnect();
   }
 }

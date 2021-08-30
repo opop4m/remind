@@ -1,8 +1,10 @@
 import 'package:client/config/api.dart';
 import 'package:client/http/req.dart';
+import 'package:client/pages/login/login_begin_page.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/user.dart';
+import 'package:client/provider/service/im.dart';
 import 'package:client/tools/shared_util.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'dart:convert';
@@ -79,5 +81,17 @@ class GlobalLogic {
       SharedUtil.instance.saveString(Keys.account, _model.user.account);
       SharedUtil.instance.saveBoolean(Keys.hasLogged, true);
     }
+  }
+}
+
+void logout() async {
+  GlobalCache.get().hasLogin = false;
+  try {
+    await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
+    Im.get().disConnect();
+    await routePushAndRemove(new LoginBeginPage());
+  } on PlatformException {
+    await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
+    await routePushAndRemove(new LoginBeginPage());
   }
 }

@@ -1,8 +1,3 @@
-import 'dart:convert';
-
-// import 'package:wechat_flutter/im/entity/i_person_info_entity.dart';
-import 'package:client/pages/login/login_begin_page.dart';
-import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:flutter/material.dart';
@@ -61,16 +56,5 @@ class GlobalModel extends ChangeNotifier {
 
   void saveInfo() {
     logic.saveInfo();
-  }
-
-  void logout() async {
-    GlobalCache.get().hasLogin = false;
-    try {
-      await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
-      await routePushAndRemove(new LoginBeginPage());
-    } on PlatformException {
-      await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
-      await routePushAndRemove(new LoginBeginPage());
-    }
   }
 }

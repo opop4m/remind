@@ -3,6 +3,7 @@ import 'package:logging/logging.dart';
 import 'package:client/tools/utils/mqtt_client.dart'
     if (dart.library.js) 'package:client/tools/utils/mqtt_client_web.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 // import '../utils/utils.dart';
 import 'package:typed_data/typed_data.dart';
 
@@ -17,6 +18,7 @@ class MqttConf {
 final _log = Logger("MqttLib");
 
 typedef OnMsgCallBack(String topic, String msg);
+// enum MqttState{}
 
 class MqttLib {
   static MqttLib? _instance;
@@ -42,6 +44,7 @@ class MqttLib {
     }
   }
 
+  OnStateListener? mqLibState;
   late MqttClient client;
   init(MqttConf conf) {
     client = MqttClientImpl.withPort(conf.host, conf.clientId, conf.port);
@@ -74,34 +77,38 @@ class MqttLib {
     return client.connectionStatus?.state == MqttConnectionState.connecting;
   }
 
-  MqttClientConnectionStatus status = MqttClientConnectionStatus();
   Future<MqttClientConnectionStatus?> connect() async {
-    var completer = Completer();
+    MqttClientConnectionStatus status = MqttClientConnectionStatus();
+    // var completer = Completer();
     if (isConnect() || isConnecting()) {
       if (isConnect()) {
         status.state = MqttConnectionState.connected;
       } else if (isConnecting()) {
         status.state = MqttConnectionState.connecting;
       }
-      return new Future<MqttClientConnectionStatus?>(() => status);
+      // return new Future<MqttClientConnectionStatus?>(() => status);
+      return status;
     }
-
+    // var completer = Completer();
     var res;
     try {
       _log.info("go connect...");
-      // res = client.connect();
-      client.connect().then((value) {
-        completer.complete(value);
-      }).catchError((obj) {
-        _log.info("tttttt:");
-      });
-      _log.info("1.0");
+      return await client.connect();
+      // client.connect().then((value) {
+      //   client.updates!.listen(onMessageArrive);
+      //   completer.complete(value);
+      // }).catchError((obj) {
+      //   completer.complete(obj);
+      // });
     } catch (e) {
       _log.warning('connect err: $e');
-      return new Future<MqttClientConnectionStatus?>(() => status);
+      if (e.toString().indexOf("MqttConnectReturnCode.notAuthorized") != -1) {
+        status.returnCode = MqttConnectReturnCode.notAuthorized;
+      } else {
+        status.state = MqttConnectionState.faulted;
+      }
+      return status;
     }
-    // client.updates!.listen(onMessageArrive);
-    return res;
   }
 
   void onMessageArrive(List<MqttReceivedMessage<MqttMessage?>>? c) {
@@ -142,11 +149,13 @@ class MqttLib {
   // connection succeeded
   void onConnected() {
     _log.info('Connected');
+    mqLibState?.call(ConnectState.connected);
   }
 
 // unconnected
   void onDisconnected() {
     _log.info('Disconnected');
+    mqLibState?.call(ConnectState.disconnect);
   }
 
 // subscribe to topic succeeded
@@ -168,4 +177,22 @@ class MqttLib {
   void pong() {
     // _log.info('Ping response client callback invoked');
   }
+
+  void disconnect() {
+    try {
+      client.disconnect();
+    } catch (e) {
+      _log.warning("disconnect err: $e");
+    }
+  }
 }
+
+enum ConnectState {
+  connected,
+  connecting,
+  disconnect,
+  notAuthorized,
+  networkErr,
+}
+
+typedef OnStateListener(ConnectState state);

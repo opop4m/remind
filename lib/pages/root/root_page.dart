@@ -1,7 +1,7 @@
 import 'package:client/http/api.dart';
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/service/im.dart';
-import 'package:client/tools/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/contacts/contacts_page.dart';
 import 'package:client/pages/discover/discover_page.dart';
@@ -21,7 +21,7 @@ class _RootPageState extends State<RootPage> {
   @override
   void initState() {
     super.initState();
-    ifBrokenNetwork();
+    // ifBrokenNetwork();
     initChat();
     updateApi(context);
   }
@@ -39,29 +39,21 @@ class _RootPageState extends State<RootPage> {
       passwd: user.accessToken,
       // passwd: "useraccessToken",
     );
+    Im.get().stateListener = (state) {
+      switch (state) {
+        case ConnectState.connected:
+          break;
+        case ConnectState.connecting:
+          break;
+        case ConnectState.disconnect:
+          break;
+        case ConnectState.notAuthorized:
+          logout();
+          break;
+      }
+    };
+
     Im.get().connect();
-  }
-
-  ifBrokenNetwork() async {
-    final ifNetWork = await SharedUtil.instance.getBoolean(Keys.brokenNetwork);
-    if (ifNetWork) {
-      /// 监测网络变化
-      subscription.onConnectivityChanged
-          .listen((ConnectivityResult result) async {
-        if (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi) {
-          // final currentUser = await im.getCurrentLoginUser();
-          // if (currentUser == '' || currentUser == null) {
-          //   final account = await SharedUtil.instance.getString(Keys.account);
-          //   im.imAutoLogin(account);
-          // }
-
-          await SharedUtil.instance.saveBoolean(Keys.brokenNetwork, false);
-        }
-      });
-    } else {
-      return;
-    }
   }
 
   @override
