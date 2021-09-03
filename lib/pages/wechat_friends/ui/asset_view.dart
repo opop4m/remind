@@ -31,8 +31,7 @@ class _AssetState extends State<AssetView> {
   @override
   Widget build(BuildContext context) {
     if (null != widget.asset) {
-      debugPrint(
-          '${widget.asset.name}===============${widget.asset.identifier}');
+      debugPrint('${widget.asset.name}===============${widget.asset.id}');
     }
 
     return GestureDetector(

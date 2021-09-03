@@ -1,6 +1,9 @@
 import 'package:client/pages/chat/chat_more_page.dart';
 import 'package:client/pages/group/group_details_page.dart';
+import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/chat_data.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
 import 'package:client/ui/chat/chat_details_body.dart';
 import 'package:client/ui/chat/chat_details_row.dart';
 import 'package:client/ui/item/chat_more_icon.dart';
@@ -18,9 +21,9 @@ enum ButtonType { voice, more }
 class ChatPage extends StatefulWidget {
   final String title;
   final int type;
-  final String? id;
+  final String id;
 
-  ChatPage({this.id, required this.title, this.type = 1});
+  ChatPage({required this.id, required this.title, this.type = 1});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -48,7 +51,7 @@ class _ChatPageState extends State<ChatPage> {
     _sC.addListener(() => FocusScope.of(context).requestFocus(new FocusNode()));
     initPlatformState();
     Notice.addListener(WeChatActions.msg(), (v) => getChatMsgData());
-    if (widget.type == 2) {
+    if (widget.type == typeGroup) {
       Notice.addListener(WeChatActions.groupName(), (v) {
         setState(() => newGroupName = v);
       });
@@ -59,8 +62,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future getChatMsgData() async {
-    final str =
-        await ChatDataRep().repData(widget.id ?? widget.title, widget.type);
+    final str = await ChatDataRep().repData(widget.id, widget.type);
     List<ChatData> listChat = str;
     chatData.clear();
     chatData..addAll(listChat.reversed);
@@ -115,6 +117,13 @@ class _ChatPageState extends State<ChatPage> {
     _textController.clear();
     chatData.insert(0, new ChatData(msg: {"text": text}));
     // await sendTextMsg('${widget?.id ?? widget.title}', widget.type, text);
+    //TODO
+    var msg = Msg();
+    msg.peerId = widget.id;
+    msg.content = text;
+    msg.msgId = Im.newMsgId(msg.peerId);
+    msg.createTime = 0;
+    Im.get().sendChatMsg(msg);
   }
 
   onTapHandle(ButtonType type) {
@@ -170,7 +179,7 @@ class _ChatPageState extends State<ChatPage> {
       keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     }
     var body = [
-      chatData != null
+      chatData.length > 0
           ? new ChatDetailsBody(sC: _sC, chatData: chatData)
           : new Spacer(),
       new ChatDetailsRow(
@@ -222,12 +231,12 @@ class _ChatPageState extends State<ChatPage> {
     var rWidget = [
       new InkWell(
         child: new Image.asset('assets/images/right_more.png'),
-        onTap: () => routePush(widget.type == 2
+        onTap: () => routePush(widget.type == typeGroup
             ? new GroupDetailsPage(
-                widget.id ?? widget.title,
+                widget.id,
                 callBack: (v) {},
               )
-            : new ChatInfoPage(widget.id ?? "")),
+            : new ChatInfoPage(widget.id)),
       )
     ];
 

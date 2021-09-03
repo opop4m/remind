@@ -35,7 +35,7 @@ class _RootPageState extends State<RootPage> {
       GlobalCache.get().getUuid(),
       host: chatConf.host,
       port: chatConf.port,
-      account: user.account,
+      account: user.id,
       passwd: user.accessToken,
       // passwd: "useraccessToken",
     );
@@ -49,6 +49,8 @@ class _RootPageState extends State<RootPage> {
           break;
         case ConnectState.notAuthorized:
           logout();
+          break;
+        case ConnectState.networkErr:
           break;
       }
     };

@@ -134,3 +134,11 @@ String removeDot(v) {
 
   return vStr;
 }
+
+bool addUnique2list(List list, obj) {
+  if (!list.contains(obj)) {
+    list.add(obj);
+    return true;
+  }
+  return false;
+}

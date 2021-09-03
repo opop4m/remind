@@ -6,6 +6,7 @@ class Rsp<T extends FromJson> {
   void fromJson(Map json, T t) {
     this.code = json["code"];
     this.msg = json["msg"];
+    data = t;
     if (this.code == 0) {
       data = t.fromJson(json["data"]);
     }
@@ -13,7 +14,8 @@ class Rsp<T extends FromJson> {
 }
 
 abstract class FromJson {
-  dynamic fromJson(Map json);
+  dynamic fromJson(json);
+  static dynamic decodeJson(json) {}
 }
 
 class Test {
@@ -24,7 +26,7 @@ class LoginRsp extends FromJson {
   User user = User();
   ChatConf chatConf = ChatConf();
   LoginRsp();
-  LoginRsp fromJson(Map json) {
+  LoginRsp fromJson(dynamic json) {
     user = user.fromJson(json["user"]);
     chatConf = chatConf.fromJson(json["chatConf"]);
     return this;
@@ -41,7 +43,7 @@ class ChatConf extends FromJson {
   String stun = "";
   String turn = "";
   ChatConf();
-  ChatConf fromJson(Map json) {
+  ChatConf fromJson(dynamic json) {
     host = json["host"];
     port = json["port"];
     stun = json["stun"];
@@ -68,7 +70,7 @@ class User extends FromJson {
   int showId = 0;
   String? avatar;
   User();
-  User fromJson(Map json) {
+  User fromJson(json) {
     this.avatar = json["avatar"];
     this.nickName = json["nickName"] ?? "";
     this.accessToken = json["accessToken"] ?? "";

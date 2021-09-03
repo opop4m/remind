@@ -20,4 +20,5 @@ class API {
   static String httpHost = "http://127.0.0.1:8082/";
   static String userRegister = httpHost + "user/register";
   static String userLogin = httpHost + "user/login";
+  static String chatList = httpHost + "chat/recent_list";
 }

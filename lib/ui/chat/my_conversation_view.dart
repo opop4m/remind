@@ -1,3 +1,4 @@
+import 'package:client/provider/model/chatList.dart';
 import 'package:client/ui/message_view/content_msg.dart';
 import 'package:flutter/material.dart';
 import 'package:client/tools/wechat_flutter.dart';
@@ -5,14 +6,15 @@ import 'package:client/tools/wechat_flutter.dart';
 class MyConversationView extends StatefulWidget {
   final String? imageUrl;
   final String? title;
-  final Map? content;
+  // final Map? content;
+  final Msg? msg;
   final Widget? time;
   final bool isBorder;
 
   MyConversationView({
     this.imageUrl,
     this.title,
-    this.content,
+    this.msg,
     this.time,
     this.isBorder = true,
   });
@@ -36,7 +38,7 @@ class _MyConversationViewState extends State<MyConversationView> {
                 style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.normal),
               ),
               new SizedBox(height: 2.0),
-              new ContentMsg(widget.content ?? Map()),
+              new ContentMsg(widget.msg!),
             ],
           ),
         ),
@@ -57,7 +59,7 @@ class _MyConversationViewState extends State<MyConversationView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           new ImageView(
-              img: widget.imageUrl!,
+              img: widget.imageUrl ?? defIcon,
               height: 50.0,
               width: 50.0,
               fit: BoxFit.cover),

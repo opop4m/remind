@@ -50,7 +50,7 @@ class _ChatMamBerState extends State<ChatMamBer> {
               ),
             ),
             onTap: () => routePush(new ContactsDetailsPage(
-                id: widget.model.identifier, title: name, avatar: face)),
+                id: widget.model.id, title: name, avatar: face)),
           );
         }).toList(),
       ),

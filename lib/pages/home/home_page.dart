@@ -1,5 +1,8 @@
 import 'package:client/pages/chat/chat_page.dart';
+import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/chat_list.dart';
+import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imApi.dart';
 import 'package:client/tools/utils/utils.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
@@ -13,9 +16,12 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+final _log = Logger("HomePage");
+
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  List<ChatList> _chatData = [];
+  List<Msg> _chatData = [];
+  Map<String, ChatUser> _chatUsers = {};
 
   var tapPos;
   TextSpanBuilder _builder = TextSpanBuilder();
@@ -29,12 +35,28 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getChatData() async {
-    final str = await ChatListData().chatListData();
-    List<ChatList> listChat = str;
-    if (!listNoEmpty(listChat)) return;
-    _chatData.clear();
-    _chatData..addAll(listChat.reversed);
-    if (mounted) setState(() {});
+    // final str = await ChatListData().chatListData();
+    // List<ChatList> listChat = str;
+    // if (!listNoEmpty(listChat)) return;
+    // _chatData.clear();
+    // _chatData..addAll(listChat.reversed);
+    // if (mounted) setState(() {});
+    var rsp = await ImApi.requestChatList();
+    if (rsp.code == 0) {
+      _chatData = rsp.data!.list;
+      if (mounted) setState(() {});
+    }
+    if (_chatData.length > 0) {
+      List<String> reqList = [];
+      _chatData.forEach((msg) {
+        addUnique2list(reqList, msg.fromId);
+        addUnique2list(reqList, msg.peerId);
+      });
+      var rspUser = await ImApi.getChatUser(reqList);
+      if (rspUser.code == 0) {
+        _chatUsers = rspUser.data!.users;
+      }
+    }
   }
 
   _showMenu(BuildContext context, Offset tapPos, int type, String id) {
@@ -129,32 +151,29 @@ class _HomePageState extends State<HomePage>
         behavior: MyBehavior(),
         child: new ListView.builder(
           itemBuilder: (BuildContext context, int index) {
-            ChatList model = _chatData[index];
-
+            Msg msg = _chatData[index];
+            ChatUser u = _chatUsers[msg.peerId]!;
             return InkWell(
               onTap: () {
-                routePush(new ChatPage(
-                    id: model.identifier,
-                    title: model.name,
-                    type: model.type == 'Group' ? 2 : 1));
+                routePush(
+                    new ChatPage(id: u.id, title: u.name, type: msg.type));
               },
               onTapDown: (TapDownDetails details) {
                 tapPos = details.globalPosition;
               },
               onLongPress: () {
                 if (PlatformUtils.isAndroid) {
-                  _showMenu(context, tapPos, model.type == 'Group' ? 2 : 1,
-                      model.identifier);
+                  _showMenu(context, tapPos, msg.type, u.id);
                 } else {
                   debugPrint("IOS聊天长按选项功能开发中");
                 }
               },
               child: new MyConversationView(
-                imageUrl: model.avatar,
-                title: model.name,
-                content: model.content,
-                time: timeView(model.time),
-                isBorder: model.name != _chatData[0].name,
+                imageUrl: u.avatar,
+                title: u.name,
+                msg: msg,
+                time: timeView(msg.createTime),
+                isBorder: u.id != _chatData[0].fromId,
               ),
             );
           },

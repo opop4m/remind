@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:client/provider/model/chatList.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/model/user.dart';
 export 'package:client/provider/service/mqttLib.dart';
 import 'package:client/provider/service/mqttLib.dart';
@@ -24,9 +26,10 @@ class Im {
     return _instance;
   }
 
-  static final String topicIm = "im/p2p/";
+  static final String topicP2P = "im/p2p/";
+  static final String topicGroup = "im/group/";
 
-  late String _selfId;
+  late String selfId;
   late String topicMe;
 
   OnStateListener? stateListener;
@@ -51,8 +54,8 @@ class Im {
     mqttConf.passwd = passwd;
     MqttLib.get().init(mqttConf);
 
-    _selfId = selfId;
-    topicMe = topicIm + _selfId;
+    this.selfId = selfId;
+    topicMe = topicP2P + selfId;
 
     MqttLib.get()
       ..setMsgListener(topicMe, (topic, msg) {
@@ -91,7 +94,7 @@ class Im {
       int time = 5;
       _log.info("reconnect afet $time s");
       Future.delayed(Duration(seconds: time), () {
-        connect();
+        Im.get().connect();
       });
     }
   }
@@ -104,7 +107,7 @@ class Im {
       onStateChange(ConnectState.notAuthorized);
     } else if (connectStatus.state == MqttConnectionState.connected) {
       reconnect = true;
-      MqttLib.get().subscribe(topicMe);
+      // MqttLib.get().subscribe("im/p2p/test");
     } else if (connectStatus.state == MqttConnectionState.connecting) {
       onStateChange(ConnectState.connecting);
     } else if (connectStatus.state == MqttConnectionState.faulted) {
@@ -120,14 +123,30 @@ class Im {
     }
   }
 
-  void sendMsg(String peer, String msg) {
-    String topic = topicIm + peer;
+  void sendMsg(String peerId, String msg) {
+    String topic = topicP2P + peerId;
     MqttLib.get().publish(topic, msg);
+  }
+
+  void sendChatMsg(Msg msg) {
+    String topic = topicP2P + msg.peerId;
+    if (msg.type == typeGroup) {
+      topic = topicGroup + msg.peerId;
+    }
+    var msgStr = json.encode(msg);
+    MqttLib.get().publish(topic, msgStr);
   }
 
   void disConnect() {
     print("disConnect");
     reconnect = false;
     MqttLib.get().disconnect();
+  }
+
+  static String newMsgId(String peerId) {
+    // uid + peerId + time
+    var t = DateTime.now().millisecondsSinceEpoch;
+    var newId = Im.get().selfId + "-" + peerId + "-" + t.toString();
+    return newId;
   }
 }

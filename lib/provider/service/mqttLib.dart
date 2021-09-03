@@ -44,9 +44,11 @@ class MqttLib {
     }
   }
 
+  bool hasInit = false;
   OnStateListener? mqLibState;
   late MqttClient client;
   init(MqttConf conf) {
+    hasInit = true;
     client = MqttClientImpl.withPort(conf.host, conf.clientId, conf.port);
     client.setProtocolV311();
     client.logging(on: false);
@@ -70,11 +72,13 @@ class MqttLib {
   }
 
   bool isConnect() {
-    return client.connectionStatus?.state == MqttConnectionState.connected;
+    return hasInit &&
+        client.connectionStatus?.state == MqttConnectionState.connected;
   }
 
   bool isConnecting() {
-    return client.connectionStatus?.state == MqttConnectionState.connecting;
+    return hasInit &&
+        client.connectionStatus?.state == MqttConnectionState.connecting;
   }
 
   Future<MqttClientConnectionStatus?> connect() async {
@@ -90,10 +94,14 @@ class MqttLib {
       return status;
     }
     // var completer = Completer();
-    var res;
+    MqttClientConnectionStatus? res;
     try {
       _log.info("go connect...");
-      return await client.connect();
+      res = await client.connect();
+      if (res!.returnCode == MqttConnectReturnCode.connectionAccepted) {
+        client.updates!.listen(onMessageArrive);
+      }
+      return res;
       // client.connect().then((value) {
       //   client.updates!.listen(onMessageArrive);
       //   completer.complete(value);
@@ -126,6 +134,7 @@ class MqttLib {
     // _log.info('');
     String topic = c[0].topic;
     // Map<String, dynamic> res = json.decode(pt);
+    // _log.info("topic: $topic map: ${_map}");
     if (_map.containsKey(topic)) {
       var cb = _map[topic];
       cb!(topic, pt);

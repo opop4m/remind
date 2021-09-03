@@ -57,6 +57,8 @@ class GlobalLogic {
     var userStr = await SharedUtil.instance.getString(Keys.user);
     if (strNoEmpty(userStr)) {
       _model.user = GlobalCache.get().user.fromJson(jsonDecode(userStr));
+    } else {
+      GlobalCache.get().hasLogin = false;
     }
     var chatConfStr = await SharedUtil.instance.getString(Keys.chatConf);
     if (strNoEmpty(chatConfStr)) {

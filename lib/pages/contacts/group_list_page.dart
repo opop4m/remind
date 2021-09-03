@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/contacts/group_launch_page.dart';
@@ -38,7 +39,7 @@ class _GroupListPageState extends State<GroupListPage> {
       onPressed: () {
         routePush(ChatPage(
           title: gName,
-          type: 2,
+          type: typeGroup,
           id: gId,
 //                returnType: 1,
         ));

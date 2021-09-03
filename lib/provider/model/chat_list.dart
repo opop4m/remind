@@ -8,7 +8,7 @@ class ChatList {
   ChatList({
     required this.avatar,
     required this.name,
-    required this.identifier,
+    required this.id,
     required this.content,
     required this.time,
     required this.type,
@@ -19,7 +19,7 @@ class ChatList {
   final String name;
   final int time;
   final Map content;
-  final String identifier;
+  final String id;
   final dynamic type;
   final String msgType;
 }
