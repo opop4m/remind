@@ -49,7 +49,7 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - permission_handler (3.1.0):
+  - "permission_handler (5.1.0+2)":
     - Flutter
   - photo_manager (1.0.0):
     - Flutter
@@ -66,6 +66,24 @@ PODS:
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
+  - sqlite3 (3.35.5):
+    - sqlite3/common (= 3.35.5)
+  - sqlite3/common (3.35.5)
+  - sqlite3/fts5 (3.35.5):
+    - sqlite3/common
+  - sqlite3/json1 (3.35.5):
+    - sqlite3/common
+  - sqlite3/perf-threadsafe (3.35.5):
+    - sqlite3/common
+  - sqlite3/rtree (3.35.5):
+    - sqlite3/common
+  - sqlite3_flutter_libs (0.0.1):
+    - Flutter
+    - sqlite3 (~> 3.35.4)
+    - sqlite3/fts5
+    - sqlite3/json1
+    - sqlite3/perf-threadsafe
+    - sqlite3/rtree
   - tau_core (8.3.9)
   - Toast (4.0.0)
   - url_launcher (0.0.1):
@@ -92,6 +110,7 @@ DEPENDENCIES:
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
@@ -107,6 +126,7 @@ SPEC REPOS:
     - Reachability
     - SDWebImage
     - SDWebImageWebPCoder
+    - sqlite3
     - tau_core
     - Toast
 
@@ -143,6 +163,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  sqlite3_flutter_libs:
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   video_player:
@@ -169,13 +191,15 @@ SPEC CHECKSUMS:
   open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  permission_handler: fa6b0d784b1a43cb96b468a5b8365cb130b1956a
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   photo_manager: 84fa94fbeb82e607333ea9a13c43b58e0903a463
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
+  sqlite3: 75da32fd4e3574f6c38566a9f0114cfe792c8db5
+  sqlite3_flutter_libs: aedb7b6ba191f9a052dcef77691cf5d37437431c
   tau_core: f7bbd1c6a632f52c2fa7c14feea385ab966b1e45
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef

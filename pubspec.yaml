@@ -59,14 +59,14 @@ dependencies:
   flutter_sound: 
     path: plugin/flutter_sound-8.3.9
   #权限处理
-  permission_handler: 3.1.0
+  permission_handler: ^8.1.4+2
   #音频处理
   #  audioplayers: 0.13.3 #1.22.5版本Flutter用这个
   audioplayers: ^0.18.3 #Flutter2用这个
   #调用相机
   # camera: # 0.5.7+1
   #   path: plugin/camera
-  camera: ^0.9.2+1
+  camera: ^0.9.2+2
   #视频播放
   #  video_player: 0.10.11+2 #1.22.5版本Flutter用这个
   video_player: ^2.1.1 #Flutter2用这个
@@ -84,6 +84,9 @@ dependencies:
   webview_flutter: ^2.0.12
   path_provider: ^2.0.2
   # reflectable: ^3.0.2
+  moor: ^4.5.0
+  sqlite3_flutter_libs: ^0.5.0
+  path: ^1.8.0
 
 dependency_overrides:
   # provider: ^6.0.0
@@ -91,6 +94,9 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  moor_generator: ^4.4.1
+  build_runner: ^2.1.1
+  build_web_compilers: ^3.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
