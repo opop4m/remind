@@ -114,7 +114,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       print("取消发送");
     } else {
       print("进行发送");
-      Notice.send(WeChatActions.voiceImg(), true);
+      Notice.send(UcActions.voiceImg(), true);
     }
   }
 

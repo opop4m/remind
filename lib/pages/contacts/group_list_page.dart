@@ -20,7 +20,7 @@ class _GroupListPageState extends State<GroupListPage> {
   void initState() {
     super.initState();
     _getGroupListModel();
-    Notice.addListener(WeChatActions.groupName(), (v) {
+    Notice.addListener(UcActions.groupName(), (v) {
       _getGroupListModel();
     });
   }
@@ -138,6 +138,6 @@ class _GroupListPageState extends State<GroupListPage> {
   @override
   void dispose() {
     super.dispose();
-    Notice.removeListenerByEvent(WeChatActions.groupName());
+    Notice.removeListenerByEvent(UcActions.groupName());
   }
 }

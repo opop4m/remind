@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/model/user.dart';
+import 'package:client/provider/service/imDb.dart';
 export 'package:client/provider/service/mqttLib.dart';
 import 'package:client/provider/service/mqttLib.dart';
 import 'package:client/tools/wechat_flutter.dart';
@@ -128,12 +129,13 @@ class Im {
     MqttLib.get().publish(topic, msg);
   }
 
-  void sendChatMsg(Msg msg) {
+  void sendChatMsg(ChatMsg msg) {
     String topic = topicP2P + msg.peerId;
     if (msg.type == typeGroup) {
       topic = topicGroup + msg.peerId;
     }
-    var msgStr = json.encode(msg);
+    var data = {"act": "chat", "data": msg};
+    var msgStr = json.encode(data);
     MqttLib.get().publish(topic, msgStr);
   }
 
@@ -148,5 +150,9 @@ class Im {
     var t = DateTime.now().millisecondsSinceEpoch;
     var newId = Im.get().selfId + "-" + peerId + "-" + t.toString();
     return newId;
+  }
+
+  static int newMsgTime() {
+    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 }

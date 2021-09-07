@@ -1,8 +1,12 @@
 import 'package:client/pages/chat/chat_page.dart';
-import 'package:client/provider/model/chatList.dart';
-import 'package:client/provider/model/chat_list.dart';
+import 'package:client/provider/loginc/global_loginc.dart';
+import 'package:client/provider/model/chatBean.dart';
+// import 'package:client/provider/model/chatList.dart';
+// import 'package:client/provider/model/chat_list.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imApi.dart';
+import 'package:client/provider/service/imData.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils/utils.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
@@ -20,8 +24,8 @@ final _log = Logger("HomePage");
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  List<Msg> _chatData = [];
-  Map<String, ChatUser> _chatUsers = {};
+  List<ChatRecentBean> _chatData = [];
+  // Map<String, ChatUser> _chatUsers = {};
 
   var tapPos;
   TextSpanBuilder _builder = TextSpanBuilder();
@@ -32,6 +36,7 @@ class _HomePageState extends State<HomePage>
     super.initState();
     initPlatformState();
     getChatData();
+    Notice.addListener(UcActions.logout(), (data) => logout());
   }
 
   Future getChatData() async {
@@ -41,23 +46,34 @@ class _HomePageState extends State<HomePage>
     // _chatData.clear();
     // _chatData..addAll(listChat.reversed);
     // if (mounted) setState(() {});
-    var rsp = await ImApi.requestChatList();
-    if (rsp.code == 0) {
-      _chatData = rsp.data!.list;
-      if (mounted) setState(() {});
-    }
-    if (_chatData.length > 0) {
-      List<String> reqList = [];
-      _chatData.forEach((msg) {
-        addUnique2list(reqList, msg.fromId);
-        addUnique2list(reqList, msg.peerId);
+    _chatData = await ImData.get().getRecentList(update: true);
+    Notice.addListener(UcActions.recentList(), (data) {
+      ImData.get().getRecentList().then((value) async {
+        //TODO
+        _chatData = await ImData.get().getRecentList();
+        // await initChatUsers(_chatData, update: true);
+        if (mounted) setState(() {});
       });
-      var rspUser = await ImApi.getChatUser(reqList);
-      if (rspUser.code == 0) {
-        _chatUsers = rspUser.data!.users;
-      }
-    }
+    });
+    // await initChatUsers(_chatData);
+    if (mounted) setState(() {});
   }
+
+  // initChatUsers(List<ChatRecent> _chatData, {bool update = false}) async {
+  //   if (_chatData.length > 0) {
+  //     List<String> reqList = [];
+  //     _chatData.forEach((recent) {
+  //       // addUnique2list(reqList, recent.fromId);
+  //       addUnique2list(reqList, recent.peerId);
+  //     });
+  //     _chatUsers = await ImData.get().getChatUsers(reqList, update: update);
+  //     //  = rspUser.res!;
+  //     Notice.addListener(UcActions.chatUser(), (data) async {
+  //       _chatUsers = await ImData.get().getChatUsers(reqList);
+  //       if (mounted) setState(() {});
+  //     });
+  //   }
+  // }
 
   _showMenu(BuildContext context, Offset tapPos, int type, String id) {
     final RenderBox overlay =
@@ -151,8 +167,9 @@ class _HomePageState extends State<HomePage>
         behavior: MyBehavior(),
         child: new ListView.builder(
           itemBuilder: (BuildContext context, int index) {
-            Msg msg = _chatData[index];
-            ChatUser u = _chatUsers[msg.peerId]!;
+            ChatRecentBean bean = _chatData[index];
+            ChatRecent msg = bean.recent;
+            ChatUser u = bean.user;
             return InkWell(
               onTap: () {
                 routePush(
@@ -173,7 +190,7 @@ class _HomePageState extends State<HomePage>
                 title: u.name,
                 msg: msg,
                 time: timeView(msg.createTime),
-                isBorder: u.id != _chatData[0].fromId,
+                isBorder: u.id != _chatData[0].recent.fromId,
               ),
             );
           },
@@ -186,6 +203,8 @@ class _HomePageState extends State<HomePage>
   @override
   void dispose() {
     super.dispose();
+    Notice.removeListenerByEvent(UcActions.chatUser());
+    Notice.removeListenerByEvent(UcActions.recentList());
     canCelListener();
   }
 }

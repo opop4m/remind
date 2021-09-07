@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/model/chat_data.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/message_view/msg_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
@@ -8,23 +13,26 @@ import 'package:client/tools/wechat_flutter.dart';
 import '../../provider/global_model.dart';
 
 class ImgMsg extends StatelessWidget {
-  final msg;
+  // final msg;
 
-  final ChatData model;
+  final ChatMsg msg;
+  final ChatUser user;
 
-  ImgMsg(this.msg, this.model);
+  ImgMsg(this.msg, this.user);
 
   @override
   Widget build(BuildContext context) {
-    if (!listNoEmpty(msg['imageList'])) return Text('发送中');
-    var msgInfo = msg['imageList'][1];
-    var _height = msgInfo['height'].toDouble();
+    if (msg.status == msgStateSending) return Text('发送中');
+    var my = GlobalCache.get().user;
+    List<MsgImg> list = jsonDecode(msg.ext!);
+    var msgInfo = list[1];
+    var _height = msgInfo.height;
     var resultH = _height > 200.0 ? 200.0 : _height;
-    var url = msgInfo['url'];
+    var url = msgInfo.url;
     var isFile = File(url).existsSync();
     final globalModel = Provider.of<GlobalModel>(context);
     var body = [
-      new MsgAvatar(model: model, globalModel: globalModel),
+      new MsgAvatar(model: msg, user: user),
       new Space(width: mainSpace),
       new Expanded(
         child: new GestureDetector(
@@ -63,7 +71,7 @@ class ImgMsg extends StatelessWidget {
       ),
       new Spacer(),
     ];
-    if (model.id == globalModel.user.account) {
+    if (user.id == my.id) {
       body = body.reversed.toList();
     } else {
       body = body;
@@ -73,4 +81,9 @@ class ImgMsg extends StatelessWidget {
       child: new Row(children: body),
     );
   }
+}
+
+class MsgImg {
+  double height = 0;
+  String url = "";
 }

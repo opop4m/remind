@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:client/provider/entity/i_sound_msg_entity.dart';
 import 'package:client/provider/entity/sound_msg_entity.dart';
+import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/chat_data.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils/utils.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:client/ui/message_view/msg_avatar.dart';
@@ -13,9 +17,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class SoundMsg extends StatefulWidget {
-  final ChatData model;
+  final ChatMsg msg;
+  final ChatUser user;
 
-  SoundMsg(this.model);
+  SoundMsg(this.msg, this.user);
 
   @override
   _SoundMsgState createState() => _SoundMsgState();
@@ -118,7 +123,8 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final globalModel = Provider.of<GlobalModel>(context);
-    bool isSelf = widget.model.id == globalModel.user.account;
+    var my = GlobalCache.get().user;
+    bool isSelf = widget.msg.fromId == my.id;
     var soundImg;
     var leftSoundNames = [
       'assets/images/chat/sound_left_0.webp',
@@ -138,15 +144,18 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     } else {
       soundImg = leftSoundNames;
     }
-
-    SoundMsgEntity model = SoundMsgEntity.fromJson(widget.model.msg);
-    ISoundMsgEntity iModel = ISoundMsgEntity.fromJson(widget.model.msg);
+    var json = jsonDecode(widget.msg.ext!);
+    SoundMsgEntity model = SoundMsgEntity.fromJson(json);
+    ISoundMsgEntity iModel = ISoundMsgEntity.fromJson(json);
     bool isIos = PlatformUtils.isIOS;
     if (!listNoEmpty(isIos ? iModel.soundUrls : model.urls)) return Container();
 
     var urls = isIos ? iModel.soundUrls![0] : model.urls![0];
     var body = [
-      new MsgAvatar(model: widget.model, globalModel: globalModel),
+      new MsgAvatar(
+        model: widget.msg,
+        user: widget.user,
+      ),
       new Container(
         width: 100.0,
         padding: EdgeInsets.only(right: 10.0),
@@ -169,7 +178,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
             ],
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          color: widget.model.id == globalModel.user.account
+          color: widget.user.id == globalModel.user.account
               ? Color(0xff98E165)
               : Colors.white,
           onPressed: () {

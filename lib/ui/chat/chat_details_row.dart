@@ -33,7 +33,7 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
   void initState() {
     super.initState();
 
-    Notice.addListener(WeChatActions.voiceImg(), (v) {
+    Notice.addListener(UcActions.voiceImg(), (v) {
       if (!v) return;
       if (!strNoEmpty(path)) return;
       // sendSoundMessages(

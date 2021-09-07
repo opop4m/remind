@@ -175,23 +175,30 @@ class Req {
     final id = _id++;
     int statusCode = -1;
     _client.options.headers["unicorn"] = UnicornHttp.getHeaderFormat();
+
+    Response<T> res;
     try {
       if (method == RequestType.GET) {
         ///组合GET请求的参数
         if (mapNoEmpty(queryParameters)) {
-          return await _client.get(url,
+          res = await _client.get(url,
               queryParameters: queryParameters, cancelToken: token);
         } else {
-          return await _client.get(url, cancelToken: token);
+          res = await _client.get(url, cancelToken: token);
         }
       } else {
-        return await _client.post(
+        res = await _client.post(
           url,
-          data: data,
+          data: FormData.fromMap(data),
           onSendProgress: progressCallBack,
           cancelToken: token,
         );
       }
+      dynamic rsp = res.data;
+      if (rsp["code"] == 401) {
+        Notice.once(UcActions.logout());
+      }
+      return res;
     } catch (e) {
       print(e);
       _handError(errorCallBack, statusCode);

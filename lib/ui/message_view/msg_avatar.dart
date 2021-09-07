@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:client/pages/contacts/contacts_details_page.dart';
+import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/chat_data.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 
 import 'package:client/tools/wechat_flutter.dart';
@@ -10,12 +12,14 @@ import 'package:client/ui/view/shake_view.dart';
 
 ///封装之后的拍一拍效果[ShakeView]
 class MsgAvatar extends StatefulWidget {
-  final GlobalModel globalModel;
-  final ChatData model;
+  // final GlobalModel globalModel;
+  final ChatMsg model;
+  final ChatUser user;
 
   MsgAvatar({
-    required this.globalModel,
+    // required this.globalModel,
     required this.model,
+    required this.user,
   });
 
   _MsgAvatarState createState() => _MsgAvatarState();
@@ -45,6 +49,7 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
   }
 
   Widget build(BuildContext context) {
+    var my = GlobalCache.get().user;
     return new InkWell(
       child: AnimateWidget(
         animation: animation,
@@ -55,9 +60,9 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
           ),
           margin: EdgeInsets.only(right: 10.0),
           child: new ImageView(
-            img: widget.model.id == widget.globalModel.user.account
-                ? widget.globalModel.user.avatar ?? defIcon
-                : widget.model.avatar!,
+            img: widget.model.fromId == my.id
+                ? my.avatar ?? defIcon
+                : widget.user.avatar ?? defIcon,
             height: 50,
             width: 50,
             fit: BoxFit.cover,
@@ -69,9 +74,9 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
       },
       onTap: () {
         routePush(new ContactsDetailsPage(
-          title: widget.model.nickName,
-          avatar: widget.model.avatar!,
-          id: widget.model.id,
+          title: widget.user.name,
+          avatar: widget.user.avatar ?? defIcon,
+          id: widget.user.id,
         ));
       },
     );

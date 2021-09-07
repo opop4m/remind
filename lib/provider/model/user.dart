@@ -13,6 +13,18 @@ class Rsp<T extends FromJson> {
   }
 }
 
+class RspDb<T> {
+  int code = -1;
+  String msg = "";
+  Map<String, dynamic>? data;
+  T? res;
+  void fromJson(Map json) {
+    this.code = json["code"];
+    this.msg = json["msg"];
+    data = json["data"];
+  }
+}
+
 abstract class FromJson {
   dynamic fromJson(json);
   static dynamic decodeJson(json) {}

@@ -1,5 +1,6 @@
 import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils/utils.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:client/ui/edit/text_span_builder.dart';
 
 class ContentMsg extends StatefulWidget {
   // final Map msg;
-  final Msg msg;
+  final ChatRecent msg;
 
   ContentMsg(this.msg);
 
@@ -25,7 +26,8 @@ class _ContentMsgState extends State<ContentMsg> {
   @override
   Widget build(BuildContext context) {
     if (widget.msg == null) return new Text('未知消息', style: _style);
-    Msg msg = widget.msg;
+    ChatRecent msg = widget.msg;
+
     // String msgType = msg['type'];
     // String msgStr = msg.toString();
 

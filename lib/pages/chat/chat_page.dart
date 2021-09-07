@@ -1,9 +1,12 @@
 import 'package:client/pages/chat/chat_more_page.dart';
 import 'package:client/pages/group/group_details_page.dart';
+import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/chat/chat_details_body.dart';
 import 'package:client/ui/chat/chat_details_row.dart';
 import 'package:client/ui/item/chat_more_icon.dart';
@@ -30,7 +33,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<ChatData> chatData = [];
+  List<ChatMsg> chatData = [];
   StreamSubscription<dynamic>? _msgStreamSubs;
   bool _isVoice = false;
   bool _isMore = false;
@@ -43,6 +46,8 @@ class _ChatPageState extends State<ChatPage> {
   ScrollController _sC = ScrollController();
   PageController pageC = new PageController();
 
+  late ChatUser peer;
+
   @override
   void initState() {
     super.initState();
@@ -50,9 +55,9 @@ class _ChatPageState extends State<ChatPage> {
 
     _sC.addListener(() => FocusScope.of(context).requestFocus(new FocusNode()));
     initPlatformState();
-    Notice.addListener(WeChatActions.msg(), (v) => getChatMsgData());
+    Notice.addListener(UcActions.msg(), (v) => getChatMsgData());
     if (widget.type == typeGroup) {
-      Notice.addListener(WeChatActions.groupName(), (v) {
+      Notice.addListener(UcActions.groupName(), (v) {
         setState(() => newGroupName = v);
       });
     }
@@ -62,10 +67,12 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future getChatMsgData() async {
-    final str = await ChatDataRep().repData(widget.id, widget.type);
-    List<ChatData> listChat = str;
-    chatData.clear();
-    chatData..addAll(listChat.reversed);
+    // final str = await ChatDataRep().repData(widget.id, widget.type);
+    // List<ChatData> listChat = str;
+    // chatData.clear();
+    // chatData..addAll(listChat.reversed);
+    var res = await ImData.get().getChatUsers([widget.id]);
+    peer = res[widget.id]!;
     if (mounted) setState(() {});
   }
 
@@ -113,16 +120,25 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  ChatMsg newMsg(int msgType, String content) {
+    var msg = ChatMsg(
+        msgId: Im.newMsgId(widget.id),
+        peerId: widget.id,
+        fromId: GlobalCache.get().user.id,
+        type: widget.type,
+        msgType: msgType,
+        tipsType: 0,
+        content: content,
+        createTime: Im.newMsgTime());
+    return msg;
+  }
+
   _handleSubmittedData(String text) async {
     _textController.clear();
-    chatData.insert(0, new ChatData(msg: {"text": text}));
+    chatData.insert(0, newMsg(msgTypeText, text));
     // await sendTextMsg('${widget?.id ?? widget.title}', widget.type, text);
     //TODO
-    var msg = Msg();
-    msg.peerId = widget.id;
-    msg.content = text;
-    msg.msgId = Im.newMsgId(msg.peerId);
-    msg.createTime = 0;
+    var msg = newMsg(msgTypeText, text);
     Im.get().sendChatMsg(msg);
   }
 
@@ -180,7 +196,11 @@ class _ChatPageState extends State<ChatPage> {
     }
     var body = [
       chatData.length > 0
-          ? new ChatDetailsBody(sC: _sC, chatData: chatData)
+          ? new ChatDetailsBody(
+              sC: _sC,
+              chatData: chatData,
+              user: peer,
+            )
           : new Spacer(),
       new ChatDetailsRow(
         voiceOnTap: () => onTapHandle(ButtonType.voice),
@@ -286,8 +306,8 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     super.dispose();
     canCelListener();
-    Notice.removeListenerByEvent(WeChatActions.msg());
-    Notice.removeListenerByEvent(WeChatActions.groupName());
+    Notice.removeListenerByEvent(UcActions.msg());
+    Notice.removeListenerByEvent(UcActions.groupName());
     _sC.dispose();
   }
 }
