@@ -114,6 +114,14 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> initPlatformState() async {
     if (!mounted) return;
 
+    Notice.addListener(UcActions.newMsg(), (data) {
+      ChatMsg msg = data;
+      if (msg.peerId == widget.id && msg.type == widget.type)
+        setState(() {
+          chatData.insert(0, data);
+        });
+    });
+
     if (_msgStreamSubs == null) {
       // _msgStreamSubs =
       // im.onMessage.listen((dynamic onData) => getChatMsgData());
@@ -135,7 +143,10 @@ class _ChatPageState extends State<ChatPage> {
 
   _handleSubmittedData(String text) async {
     _textController.clear();
-    chatData.insert(0, newMsg(msgTypeText, text));
+
+    setState(() {
+      chatData.insert(0, newMsg(msgTypeText, text));
+    });
     // await sendTextMsg('${widget?.id ?? widget.title}', widget.type, text);
     //TODO
     var msg = newMsg(msgTypeText, text);

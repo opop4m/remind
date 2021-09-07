@@ -20,16 +20,17 @@ class TextMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     // final globalModel = Provider.of<GlobalModel>(context);
     var my = GlobalCache.get().user;
+    bool isSelf = model.fromId == my.id;
     var body = [
       new MsgAvatar(model: model, user: user),
       new TextItemContainer(
         text: text,
         action: '',
-        isMyself: user.id == my.id,
+        isMyself: isSelf,
       ),
       new Spacer(),
     ];
-    if (user.id == my.id) {
+    if (isSelf) {
       body = body.reversed.toList();
     } else {
       body = body;
