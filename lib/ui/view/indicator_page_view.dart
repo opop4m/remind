@@ -1,4 +1,4 @@
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:client/tools/wechat_flutter.dart';

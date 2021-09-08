@@ -2,13 +2,14 @@ import 'package:camera/camera.dart';
 // import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'package:client/pages/chat/shoot_page.dart';
-import 'package:client/tools/utils/handle_util.dart';
+// import 'package:client/tools/handle_util.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:client/ui/card/more_item_card.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 // import 'package:photo_manager/photo_manager.dart';
+
+final _log = Logger("ChatMorePage");
 
 class ChatMorePage extends StatefulWidget {
   final int index;
@@ -73,7 +74,7 @@ class _ChatMorePageState extends State<ChatMorePage> {
 
         routePush(new ShootPage(cameras));
       } on CameraException catch (e) {
-        logError(e.code, e.description);
+        _log.info(e.code, e.description);
       }
     } else {
       showToast(context, '敬请期待$name');

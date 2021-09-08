@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:client/config/api.dart';
 import 'package:client/provider/global_cache.dart';
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger("UnicornHttp");

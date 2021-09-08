@@ -1,7 +1,7 @@
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:logging/logging.dart';
-import 'package:client/tools/utils/mqtt_client.dart'
-    if (dart.library.js) 'package:client/tools/utils/mqtt_client_web.dart';
+import 'package:client/tools/adapter/mqtt_client.dart'
+    if (dart.library.js) 'package:client/tools/adapter/mqtt_client_web.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 // import '../utils/utils.dart';

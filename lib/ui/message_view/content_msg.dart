@@ -1,7 +1,5 @@
-import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imDb.dart';
-import 'package:client/tools/utils/utils.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 

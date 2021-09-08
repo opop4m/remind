@@ -1,6 +1,6 @@
 import 'package:client/config/dictionary.dart';
 import 'package:client/provider/model/contacts.dart';
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:client/ui/item/contact_item.dart';
 import 'package:client/ui/item/contact_view.dart';
 import 'package:client/ui/item/launch_group.dart';

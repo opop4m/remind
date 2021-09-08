@@ -7,7 +7,7 @@ import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imApi.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:client/tools/wechat_flutter.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/material.dart';

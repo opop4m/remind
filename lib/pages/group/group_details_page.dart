@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:client/provider/global_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/group/select_members_page.dart';
@@ -109,11 +108,11 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
       //   nickName = userInfo[0]['nickName'];
       // }),
       builder: (context, snap) {
+        var my = GlobalCache.get().user;
         return new SizedBox(
           width: (winWidth(context) - 60) / 5,
           child: FlatButton(
-            onPressed: () =>
-                routePush(GroupMemberDetails(Data.user() == uId, uId)),
+            onPressed: () => routePush(GroupMemberDetails(my.id == uId, uId)),
             padding: EdgeInsets.all(0),
             highlightColor: Colors.transparent,
             child: Column(

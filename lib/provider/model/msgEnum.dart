@@ -15,6 +15,7 @@ const int tipsTypeQuit = 2;
 const int tipsTypeGroupNotice = 3;
 const int tipsTypeGroupNameChange = 4;
 
-const int msgStateSending = 0;
-const int msgStateSuccess = 1;
-const int msgStateFailed = 2;
+const int msgStateSending = 1;
+const int msgStateArrived = 2;
+const int msgStateReaded = 3;
+const int msgStateFailed = 4;

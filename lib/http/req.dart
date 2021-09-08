@@ -1,5 +1,4 @@
 import 'package:client/http/unicorn.dart';
-import 'package:client/tools/utils/check.dart';
 import 'package:dio/dio.dart';
 import 'package:client/tools/wechat_flutter.dart';
 

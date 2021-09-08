@@ -1,7 +1,7 @@
 import 'package:client/provider/model/chatDb.dart';
 import 'package:moor/moor.dart';
-import 'package:client/tools/utils/moor.dart'
-    if (dart.library.js) 'package:client/tools/utils/moor_web.dart';
+import 'package:client/tools/adapter/moor.dart'
+    if (dart.library.js) 'package:client/tools/adapter/moor_web.dart';
 
 part 'imDb.g.dart';
 

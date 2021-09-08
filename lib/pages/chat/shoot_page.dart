@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:client/tools/utils/handle_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +6,8 @@ import 'package:client/tools/wechat_flutter.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:path_provider/path_provider.dart';
+
+final _log = Logger("ShootPage");
 
 class ShootPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -522,7 +523,7 @@ class _ShootPageState extends State<ShootPage> with WidgetsBindingObserver {
   }
 
   void _showCameraException(CameraException e) {
-    logError(e.code, e.description);
+    _log.info(e.code, e.description);
     showToast(context, 'Error: ${e.code}\n${e.description}');
   }
 

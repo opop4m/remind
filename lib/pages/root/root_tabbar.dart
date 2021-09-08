@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:client/pages/contacts/group_launch_page.dart';
 import 'package:client/pages/home/search_page.dart';
 import 'package:client/pages/settings/language_page.dart';
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

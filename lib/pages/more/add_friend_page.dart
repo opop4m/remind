@@ -4,7 +4,7 @@ import 'package:client/pages/mine/code_page.dart';
 import 'package:client/pages/root/user_page.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/more/add_friend_details.dart';

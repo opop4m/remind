@@ -137,6 +137,7 @@ class _ChatPageState extends State<ChatPage> {
         msgType: msgType,
         tipsType: 0,
         content: content,
+        status: msgStateSending,
         createTime: Im.newMsgTime());
     return msg;
   }

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class Utils {
   static const _chars =
@@ -29,6 +30,24 @@ class Utils {
     var digest = md5.convert(content);
     // 这里其实就是 digest.toString()
     return hex.encode(digest.bytes);
+  }
+
+  /*
+  * Base64加密
+  */
+  static String encodeBase64(String data) {
+    var content = utf8.encode(data);
+    var digest = base64Encode(content);
+    return digest;
+  }
+
+  /*
+  * Base64解密
+  */
+  static String decodeBase64(String data) {
+    List<int> bytes = base64Decode(data);
+    String result = utf8.decode(bytes);
+    return result;
   }
 }
 

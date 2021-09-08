@@ -1,5 +1,5 @@
 import 'package:client/pages/contacts/contacts_details_page.dart';
-import 'package:client/tools/utils/utils.dart';
+import 'package:client/tools/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/contacts/group_launch_page.dart';
 
