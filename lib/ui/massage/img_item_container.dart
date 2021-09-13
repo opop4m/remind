@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/w_pop/magic_pop.dart';
 
 class ImgItemContainer extends StatefulWidget {

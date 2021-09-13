@@ -1,4 +1,4 @@
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/view/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';

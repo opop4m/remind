@@ -3,7 +3,7 @@ import 'package:client/http/req.dart';
 import 'package:client/provider/login_model.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/tools/shared_util.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class LoginLogic {
   final LoginModel _model;

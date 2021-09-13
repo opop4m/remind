@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class ModifyNotificationMessage extends StatefulWidget {
   final dynamic data;

@@ -6,7 +6,7 @@ import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/tools/shared_util.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'dart:convert';
 
 import 'package:logging/logging.dart';

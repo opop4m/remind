@@ -9,7 +9,7 @@ import 'package:client/pages/settings/language_page.dart';
 import 'package:client/pages/wallet/pay_home_page.dart';
 import 'package:client/provider/global_model.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/view/list_tile_view.dart';
 
 class MinePage extends StatefulWidget {

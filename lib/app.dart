@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:client/pages/login/login_begin_page.dart';
 // import 'package:client/pages/root/root_page.dart';
 import 'package:client/provider/global_model.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyApp extends StatelessWidget {

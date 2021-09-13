@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:client/http/api.dart';
 import 'package:client/pages/mine/code_page.dart';
 import 'package:client/tools/commom.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';

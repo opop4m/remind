@@ -1,6 +1,6 @@
 // import 'package:client/pages/root/user_page.dart';
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class LoadingView extends StatelessWidget {
   final bool isStr;

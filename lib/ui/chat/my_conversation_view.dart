@@ -2,7 +2,7 @@ import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/message_view/content_msg.dart';
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class MyConversationView extends StatefulWidget {
   final String? imageUrl;

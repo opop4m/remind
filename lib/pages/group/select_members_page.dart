@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:azlistview/azlistview.dart';
 
 import 'package:lpinyin/lpinyin.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class SelectMembersPage extends StatefulWidget {
   @override

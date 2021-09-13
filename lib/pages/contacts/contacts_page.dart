@@ -2,7 +2,7 @@ import 'package:client/config/dictionary.dart';
 import 'package:client/provider/model/contacts.dart';
 import 'package:client/ui/item/contact_view.dart';
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/item/contact_item.dart';
 
 class ContactsPage extends StatefulWidget {

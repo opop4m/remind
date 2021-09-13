@@ -1,6 +1,6 @@
 import 'package:client/config/contacts.dart';
 // import 'package:client/im/message_handle.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/item/chat_voice.dart';
 import 'package:flutter/material.dart';
 

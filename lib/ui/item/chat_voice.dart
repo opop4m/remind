@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:client/tools/date.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/voice_dialog.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';

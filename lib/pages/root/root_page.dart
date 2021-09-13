@@ -8,7 +8,7 @@ import 'package:client/pages/discover/discover_page.dart';
 import 'package:client/pages/home/home_page.dart';
 import 'package:client/pages/mine/mine_page.dart';
 import 'package:client/pages/root/root_tabbar.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 final _log = Logger("RootPage");
 

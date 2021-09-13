@@ -6,7 +6,7 @@ import 'package:client/pages/login/register_page.dart';
 // import 'package:client/pages/settings/language_page.dart';
 import 'package:client/provider/global_model.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 import 'login_page.dart';
 

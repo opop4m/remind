@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 // import 'package:wechat_flutter/im/login_handle.dart';
 // import 'package:wechat_flutter/pages/login/select_location_page.dart';
 import 'package:client/provider/login_model.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class LoginPage extends StatefulWidget {
   @override

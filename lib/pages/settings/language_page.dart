@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/tools/shared_util.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class LanguagePage extends StatefulWidget {
   @override

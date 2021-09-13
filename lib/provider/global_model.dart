@@ -1,5 +1,5 @@
 import 'package:client/provider/model/user.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 // import 'package:wechat_flutter/im/info_handle.dart';
 import 'package:client/provider/loginc/global_loginc.dart';

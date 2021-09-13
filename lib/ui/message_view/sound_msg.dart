@@ -8,7 +8,7 @@ import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/message_view/msg_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';

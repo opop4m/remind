@@ -1,8 +1,3 @@
-import 'package:flutter/material.dart';
-import 'dart:convert';
-
-import 'package:client/tools/wechat_flutter.dart';
-
 class UserData {
   UserData({
     required this.avatar,

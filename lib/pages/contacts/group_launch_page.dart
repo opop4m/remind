@@ -6,7 +6,7 @@ import 'package:client/ui/item/contact_view.dart';
 import 'package:client/ui/item/launch_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'dart:convert';
 import 'package:client/pages/more/add_friend_details.dart';
 

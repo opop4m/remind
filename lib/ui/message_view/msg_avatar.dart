@@ -7,7 +7,7 @@ import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/view/shake_view.dart';
 
 ///封装之后的拍一拍效果[ShakeView]

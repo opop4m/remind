@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:client/http/req.dart';
 import 'package:client/tools/file_util.dart';
 import 'package:client/tools/utils.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

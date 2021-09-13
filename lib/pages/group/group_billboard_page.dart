@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class GroupBillBoardPage extends StatefulWidget {
   final String groupOwner;

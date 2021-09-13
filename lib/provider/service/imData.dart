@@ -2,7 +2,7 @@ import 'package:client/provider/model/chatBean.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/provider/service/imApi.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 final _log = Logger("ImData");
 

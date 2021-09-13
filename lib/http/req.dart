@@ -1,6 +1,6 @@
 import 'package:client/http/unicorn.dart';
 import 'package:dio/dio.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 var _id = 0;
 

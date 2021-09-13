@@ -1,8 +1,8 @@
 import 'package:client/pages/wechat_friends/from.dart';
-import 'package:client/tools/wechat_flutter.dart' as prefix1;
+import 'package:client/tools/library.dart' as prefix1;
 import 'package:client/ui/w_pop/friend_pop.dart';
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart' as prefix0;
 
 import 'load_view.dart';

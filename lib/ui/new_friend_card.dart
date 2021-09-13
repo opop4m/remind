@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/config/const.dart';
 import './win_media.dart';
 

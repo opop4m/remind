@@ -6,7 +6,7 @@ import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/imDb.dart';
 export 'package:client/provider/service/mqttLib.dart';
 import 'package:client/provider/service/mqttLib.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 typedef OnMsgListener(String topic, Map<String, dynamic> res);

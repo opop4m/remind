@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 
 class ChatData {

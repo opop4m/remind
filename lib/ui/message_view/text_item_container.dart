@@ -1,7 +1,7 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/edit/text_span_builder.dart';
 import 'package:client/ui/w_pop/magic_pop.dart';
 

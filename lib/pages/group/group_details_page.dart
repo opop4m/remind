@@ -10,7 +10,7 @@ import 'package:client/pages/home/search_page.dart';
 import 'package:client/pages/mine/code_page.dart';
 import 'package:client/pages/settings/chat_background_page.dart';
 import 'package:client/tools/commom.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/confirm_alert.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 

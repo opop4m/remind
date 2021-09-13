@@ -14,7 +14,7 @@ import 'package:client/ui/view/indicator_page_view.dart';
 
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/edit/text_span_builder.dart';
 import 'package:client/ui/edit/emoji_text.dart';
 import 'chat_info_page.dart';

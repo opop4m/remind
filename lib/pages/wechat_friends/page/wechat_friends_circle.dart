@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:client/pages/wechat_friends/chat_style.dart';
 import 'package:client/pages/wechat_friends/from.dart';
 import 'package:client/pages/wechat_friends/ui/load_view.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

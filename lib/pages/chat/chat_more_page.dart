@@ -3,7 +3,7 @@ import 'package:camera/camera.dart';
 
 import 'package:client/pages/chat/shoot_page.dart';
 // import 'package:client/tools/handle_util.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/card/more_item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';

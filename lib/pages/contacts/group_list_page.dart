@@ -6,7 +6,7 @@ import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/contacts/group_launch_page.dart';
 import 'package:client/pages/home/search_page.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class GroupListPage extends StatefulWidget {
   @override

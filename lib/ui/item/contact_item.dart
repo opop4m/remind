@@ -4,7 +4,7 @@ import 'package:client/pages/contacts/group_list_page.dart';
 import 'package:client/pages/contacts/new_friend_page.dart';
 import 'package:client/pages/contacts/public_page.dart';
 import 'package:flutter/material.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 import 'contact_view.dart';
 

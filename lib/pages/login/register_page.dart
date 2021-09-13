@@ -6,7 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:client/provider/login_model.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/view/edit_view.dart';
 
 import 'select_location_page.dart';
@@ -304,7 +304,9 @@ class _RegisterPageState extends State<RegisterPage> {
     return new Container(
       padding: EdgeInsets.symmetric(horizontal: 10.0),
       child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start, children: column),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: column,
+      ),
     );
   }
 

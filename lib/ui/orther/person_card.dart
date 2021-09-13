@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class PersonCard extends StatelessWidget {
   final String imageUrl;
@@ -8,7 +8,11 @@ class PersonCard extends StatelessWidget {
   final String area;
   final int gender;
 
-  PersonCard({required this.imageUrl, required this.name, required this.area, this.gender = 0});
+  PersonCard(
+      {required this.imageUrl,
+      required this.name,
+      required this.area,
+      this.gender = 0});
 
   Widget dynamicAvatar(avatar, {size}) {
     if (isNetWorkImg(avatar))

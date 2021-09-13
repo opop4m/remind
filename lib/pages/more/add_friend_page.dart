@@ -9,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/more/add_friend_details.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/view/list_tile_view.dart';
 import 'package:client/ui/view/search_main_view.dart';
 import 'package:client/ui/view/search_tile_view.dart';

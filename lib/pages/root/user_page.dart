@@ -6,7 +6,7 @@ import 'package:client/ui/dialog/confirm_alert.dart';
 import 'package:client/ui/new_friend_card.dart';
 import 'package:flutter/material.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class UserPage extends StatefulWidget {
   @override

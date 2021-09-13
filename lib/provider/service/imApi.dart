@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:client/config/api.dart';
 import 'package:client/http/req.dart';
 import 'package:client/provider/model/chatDb.dart';
 // import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/imDb.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 final _log = Logger("ImApi");
 
@@ -26,7 +28,7 @@ class ImApi {
     if (rsp.data != null) {
       res.fromJson(rsp.data);
       if (res.data != null) {
-        List list = res.data!["chatList"];
+        List list = res.data!["chatList"] ?? [];
         List? userList = res.data!["users"];
 
         res.res = [];
@@ -37,8 +39,8 @@ class ImApi {
         }
 
         if (userList != null) {
-          for (var i = 0; i < list.length; i++) {
-            var user = ChatUser.fromJson(list[i]);
+          for (var i = 0; i < userList.length; i++) {
+            var user = ChatUser.fromJson(userList[i]);
             ImDb.g().db.chatUserDao.insertChatUser(user.toCompanion(false));
           }
         }

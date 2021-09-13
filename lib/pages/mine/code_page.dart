@@ -1,7 +1,7 @@
 import 'package:client/ui/dialog/code_dialog.dart';
 import 'package:flutter/material.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class CodePage extends StatefulWidget {
   final bool isGroup;

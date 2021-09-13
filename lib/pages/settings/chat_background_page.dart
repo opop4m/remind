@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:client/pages/group/group_details_page.dart';
 import 'package:client/pages/settings/select_backgroud_page.dart';
 import 'package:client/provider/global_model.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class ChatBackgroundPage extends StatefulWidget {
   @override

@@ -1,7 +1,7 @@
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/more/verification_page.dart';
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/ui/orther/button_row.dart';
 import 'package:client/ui/orther/label_row.dart';
 import 'package:client/ui/orther/person_card.dart';

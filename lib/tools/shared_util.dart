@@ -1,6 +1,7 @@
 import 'package:client/config/keys.dart';
 export 'package:client/config/keys.dart';
 import 'package:client/config/storage_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedUtil {
   factory SharedUtil() => _getInstance();
@@ -8,9 +9,14 @@ class SharedUtil {
   static SharedUtil get instance => _getInstance();
   static SharedUtil? _instance;
 
+  static late SharedPreferences sp;
+
   SharedUtil._internal() {
     //初始化
     //init
+    SharedPreferences.getInstance().then((value) {
+      sp = value;
+    });
   }
 
   static SharedUtil _getInstance() {
@@ -19,7 +25,6 @@ class SharedUtil {
     }
     return _instance!;
   }
-
 
   /// save
   Future saveString(String key, String value) async {
@@ -77,20 +82,20 @@ class SharedUtil {
   /// get
   Future<String> getString(String key) async {
     if (key == Keys.account) {
-      return StorageManager.sp.getString(key)??"";
+      return StorageManager.sp.getString(key) ?? "";
     }
     String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getString(key + account)??"";
+    return StorageManager.sp.getString(key + account) ?? "";
   }
 
   Future<int> getInt(String key) async {
     String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getInt(key + account)??0;
+    return StorageManager.sp.getInt(key + account) ?? 0;
   }
 
   Future<double> getDouble(String key) async {
     String account = StorageManager.sp.getString(Keys.account) ?? "default";
-    return StorageManager.sp.getDouble(key + account)?? 0;
+    return StorageManager.sp.getDouble(key + account) ?? 0;
   }
 
   Future<bool> getBoolean(String key) async {

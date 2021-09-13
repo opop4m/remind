@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:client/tools/wechat_flutter.dart';
+import 'package:client/tools/library.dart';
 
 class EditView extends StatelessWidget {
   final String label;
@@ -10,22 +10,25 @@ class EditView extends StatelessWidget {
   final FocusNode focusNode;
   final GestureTapCallback? onTap;
   final ValueChanged<String>? onChanged;
+  final double? width;
 
-  EditView(
-      {required this.label,
-      required this.hint,
-      required this.controller,
-      this.bottomLineColor,
-      required this.focusNode,
-      this.onTap,
-      this.onChanged});
+  EditView({
+    required this.label,
+    required this.hint,
+    required this.controller,
+    this.width,
+    this.bottomLineColor,
+    required this.focusNode,
+    this.onTap,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     var row = new Row(
       children: <Widget>[
         new Container(
-          width: winWidth(context) * 0.25,
+          width: width ?? winWidth(context) * 0.25,
           alignment: Alignment.centerLeft,
           child: new Text(label,
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400)),
