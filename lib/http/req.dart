@@ -43,7 +43,7 @@ class Req {
     OnError? errorCallBack,
     CancelToken? token,
   }) async {
-    return this._request2(
+    return this._request(
       url,
       method: RequestType.GET,
       queryParameters: params,
@@ -59,7 +59,7 @@ class Req {
     OnError? errorCallBack,
     CancelToken? token,
   }) async {
-    return this._request2(
+    return this._request(
       url,
       method: RequestType.POST,
       data: params,
@@ -93,7 +93,7 @@ class Req {
     OnError? errorCallBack,
     CancelToken? token,
   }) async {
-    return this._request2(
+    return this._request(
       url,
       method: RequestType.POST,
       formData: formData,
@@ -161,7 +161,7 @@ class Req {
   //   }
   // }
 
-  Future<Response<T>> _request2<T>(
+  Future<Response<T>> _request<T>(
     String url, {
     required RequestType method,
     Map<String, dynamic>? queryParameters,

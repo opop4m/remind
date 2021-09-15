@@ -49,7 +49,7 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
   }
 
   Widget build(BuildContext context) {
-    var my = GlobalCache.get().user;
+    var my = Global.get().curUser;
     return new InkWell(
       child: AnimateWidget(
         animation: animation,

@@ -123,7 +123,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final globalModel = Provider.of<GlobalModel>(context);
-    var my = GlobalCache.get().user;
+    var my = Global.get().curUser;
     bool isSelf = widget.msg.fromId == my.id;
     var soundImg;
     var leftSoundNames = [

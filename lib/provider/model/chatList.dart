@@ -1,5 +1,6 @@
 import 'package:client/provider/model/user.dart';
 
+
 // class ChatList extends FromJson {
 //   List<Msg> list = [];
 //   @override

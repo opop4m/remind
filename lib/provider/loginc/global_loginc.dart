@@ -32,8 +32,8 @@ class GlobalLogic {
 
   void onLogin(LoginRsp rsp) {
     _model.user = rsp.user;
-    GlobalCache.get().user = rsp.user;
-    GlobalCache.get().chatConf = rsp.chatConf;
+    Global.get().curUser = rsp.user;
+    Global.get().chatConf = rsp.chatConf;
     _model.saveInfo();
     _model.refresh();
   }
@@ -52,17 +52,17 @@ class GlobalLogic {
 
   Future init() async {
     _model.appName = await SharedUtil.instance.getString(Keys.appName);
-    GlobalCache.get().hasLogin =
+    Global.get().hasLogin =
         await SharedUtil.instance.getBoolean(Keys.hasLogged);
     var userStr = await SharedUtil.instance.getString(Keys.user);
     if (strNoEmpty(userStr)) {
-      _model.user = GlobalCache.get().user.fromJson(jsonDecode(userStr));
+      _model.user = Global.get().curUser.fromJson(jsonDecode(userStr));
     } else {
-      GlobalCache.get().hasLogin = false;
+      Global.get().hasLogin = false;
     }
     var chatConfStr = await SharedUtil.instance.getString(Keys.chatConf);
     if (strNoEmpty(chatConfStr)) {
-      GlobalCache.get().chatConf.fromJson(jsonDecode(chatConfStr));
+      Global.get().chatConf.fromJson(jsonDecode(chatConfStr));
     }
 
     var lcode = await SharedUtil.instance.getString(Keys.currentLanguageCode);
@@ -70,13 +70,13 @@ class GlobalLogic {
       _model.currentLocale = Locale(lcode);
     }
     _log.info(
-        "user: ${userStr} \n chatConf: ${chatConfStr} \n has login: ${GlobalCache.get().hasLogin}");
+        "user: ${userStr} \n chatConf: ${chatConfStr} \n has login: ${Global.get().hasLogin}");
   }
 
   void saveInfo() async {
     if (_model.user.id != "") {
       String userStr = jsonEncode(_model.user);
-      String chatConfStr = jsonEncode(GlobalCache.get().chatConf);
+      String chatConfStr = jsonEncode(Global.get().chatConf);
       // _log.info("save user str: $userStr");
       SharedUtil.instance.saveString(Keys.chatConf, chatConfStr);
       SharedUtil.instance.saveString(Keys.user, userStr);
@@ -87,7 +87,7 @@ class GlobalLogic {
 }
 
 void logout() async {
-  GlobalCache.get().hasLogin = false;
+  Global.get().hasLogin = false;
   try {
     await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
     Im.get().disConnect();

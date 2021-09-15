@@ -36,7 +36,7 @@ class WebRtcCtr {
   static final String typeData = "data";
 
   late MqttLib mqtt;
-  String _selfId = GlobalCache.get().user.id;
+  String _selfId = Global.get().curUser.id;
   late Webrtc _rtc = Webrtc(_selfId, iceService);
   // Map<String, RtcSession> _sessions = {};
   //被呼叫时触发

@@ -1,5 +1,6 @@
 import 'package:client/config/dictionary.dart';
 import 'package:client/provider/model/contacts.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils.dart';
 import 'package:client/ui/item/contact_item.dart';
 import 'package:client/ui/item/contact_view.dart';
@@ -7,8 +8,6 @@ import 'package:client/ui/item/launch_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:client/tools/library.dart';
-import 'dart:convert';
-import 'package:client/pages/more/add_friend_details.dart';
 
 class GroupLaunchPage extends StatefulWidget {
   @override
@@ -21,7 +20,7 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
   bool isResult = false;
 
   List defItems = ['选择一个群', '面对面建群'];
-  List<Contact> _contacts = [];
+  List<Friend> _contacts = [];
   List<String> selectData = [];
 
   FocusNode searchF = new FocusNode();
@@ -58,11 +57,10 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
   Future getContacts() async {
     final str = await ContactsPageData().listFriend();
 
-    List<Contact> listContact = str;
+    List<Friend> listContact = str;
     _contacts.clear();
     _contacts..addAll(listContact);
-    _contacts
-        .sort((Contact a, Contact b) => a.nameIndex.compareTo(b.nameIndex));
+    _contacts.sort((a, b) => a.nameIndex!.compareTo(b.nameIndex!));
     sC = new ScrollController();
 
     /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
@@ -70,7 +68,7 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
     for (int i = 0; i < _contacts.length; i++) {
       bool _hasGroupTitle = true;
       if (i > 0 &&
-          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
+          _contacts[i].nameIndex!.compareTo(_contacts[i - 1].nameIndex!) == 0)
         _hasGroupTitle = false;
 
       if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;

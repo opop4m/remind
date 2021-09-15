@@ -25,8 +25,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    emailC.text = GlobalCache.get().user.email;
-    print(GlobalCache.get().user.toJson());
+    emailC.text = Global.get().curUser.email;
+    print(Global.get().curUser.toJson());
   }
 
   Widget bottomItem(item) {

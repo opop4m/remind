@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:client/tools/library.dart';
 import 'package:logging/logging.dart';
 import 'package:client/tools/adapter/mqtt_client.dart'
@@ -58,7 +60,7 @@ class MqttLib {
     client.onSubscribed = onSubscribed;
     client.onSubscribeFail = onSubscribeFail;
     client.pongCallback = pong;
-    client.keepAlivePeriod = 60;
+    client.keepAlivePeriod = 20;
     _log.info("accout: ${conf.account},passwd: ${conf.passwd}");
     final connMessage = MqttConnectMessage()
         .authenticateAs(conf.account, conf.passwd)
@@ -121,8 +123,10 @@ class MqttLib {
 
   void onMessageArrive(List<MqttReceivedMessage<MqttMessage?>>? c) {
     final recMess = c![0].payload as MqttPublishMessage;
-    final pt =
-        MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
+    var utf8 = Utf8Decoder();
+    final pt = utf8.convert(recMess.payload.message);
+    // MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
     /// The above may seem a little convoluted for users only interested in the
     /// payload, some users however may be interested in the received publish message,
@@ -147,11 +151,13 @@ class MqttLib {
 
   void publish(String topic, String msg) {
     Uint8Buffer uint8buffer = Uint8Buffer();
+    var utf8 = new Utf8Encoder();
+    var byte = utf8.convert(msg);
 
     ///字符串转成int数组 类似于java的String.getBytes?
-    var codeUnits = msg.codeUnits;
+    // var codeUnits = msg.codeUnits;
     //uint8buffer.add()
-    uint8buffer.addAll(codeUnits);
+    uint8buffer.addAll(byte);
     client.publishMessage(topic, MqttQos.atLeastOnce, uint8buffer);
   }
 

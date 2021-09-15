@@ -108,7 +108,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
       //   nickName = userInfo[0]['nickName'];
       // }),
       builder: (context, snap) {
-        var my = GlobalCache.get().user;
+        var my = Global.get().curUser;
         return new SizedBox(
           width: (winWidth(context) - 60) / 5,
           child: FlatButton(

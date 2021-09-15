@@ -19,3 +19,7 @@ const int msgStateSending = 1;
 const int msgStateArrived = 2;
 const int msgStateReaded = 3;
 const int msgStateFailed = 4;
+
+const int genderUnknow = 0;
+const int genderMale = 1;
+const int genderFemale = 2;

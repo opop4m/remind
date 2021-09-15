@@ -23,7 +23,7 @@ class ImgMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (msg.status == msgStateSending) return Text('发送中');
-    var my = GlobalCache.get().user;
+    var my = Global.get().curUser;
     List<MsgImg> list = jsonDecode(msg.ext!);
     var msgInfo = list[1];
     var _height = msgInfo.height;

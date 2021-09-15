@@ -22,4 +22,6 @@ class API {
   static String userLogin = httpHost + "user/login";
   static String recentList = httpHost + "chat/recent_list"; //get
   static String getChatUser = httpHost + "chat/chat_user"; //post
+  static String searchUser = httpHost + "chat/search_user"; //get
+  static String addFriend = httpHost + "chat/add_friend"; //post
 }

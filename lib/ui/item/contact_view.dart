@@ -1,4 +1,5 @@
 import 'package:client/provider/model/contacts.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:client/tools/library.dart';
@@ -9,7 +10,7 @@ enum ClickType { select, open }
 class ContactView extends StatelessWidget {
   final ScrollController? sC;
   final List<ContactItem> functionButtons;
-  final List<Contact> contacts;
+  final List<Friend> contacts;
   final ClickType type;
   final Callback? callback;
 
@@ -33,7 +34,7 @@ class ContactView extends StatelessWidget {
 
           int _contactIndex = index - functionButtons.length;
           bool _isGroupTitle = true;
-          Contact _contact = contacts[_contactIndex];
+          Friend _contact = contacts[_contactIndex];
           if (_contactIndex >= 1 &&
               _contact.nameIndex == contacts[_contactIndex - 1].nameIndex) {
             _isGroupTitle = false;
@@ -42,9 +43,9 @@ class ContactView extends StatelessWidget {
               _contact.nameIndex == contacts[_contactIndex + 1].nameIndex;
           if (_contact.name != contacts[contacts.length - 1].name) {
             return new ContactItem(
-              avatar: _contact.avatar,
-              title: _contact.name,
-              identifier: _contact.identifier,
+              avatar: _contact.avatar ?? defIcon,
+              title: _contact.name!,
+              identifier: _contact.id,
               groupTitle: _isGroupTitle ? _contact.nameIndex : null,
               isLine: _isBorder,
               type: type,
@@ -60,9 +61,9 @@ class ContactView extends StatelessWidget {
           } else {
             return new Column(children: <Widget>[
               new ContactItem(
-                avatar: _contact.avatar,
-                title: _contact.name,
-                identifier: _contact.identifier,
+                avatar: _contact.avatar ?? defIcon,
+                title: _contact.name!,
+                identifier: _contact.id,
                 groupTitle: _isGroupTitle ? _contact.nameIndex : null,
                 isLine: false,
                 type: type,

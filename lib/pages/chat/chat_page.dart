@@ -19,6 +19,8 @@ import 'package:client/ui/edit/text_span_builder.dart';
 import 'package:client/ui/edit/emoji_text.dart';
 import 'chat_info_page.dart';
 
+final _log = Logger("ChatPage");
+
 enum ButtonType { voice, more }
 
 class ChatPage extends StatefulWidget {
@@ -71,6 +73,7 @@ class _ChatPageState extends State<ChatPage> {
     // List<ChatData> listChat = str;
     // chatData.clear();
     // chatData..addAll(listChat.reversed);
+    chatData = await ImData.get().getChatList(widget.id, widget.type, 0);
     var res = await ImData.get().getChatUsers([widget.id]);
     peer = res[widget.id]!;
     if (mounted) setState(() {});
@@ -116,7 +119,10 @@ class _ChatPageState extends State<ChatPage> {
 
     Notice.addListener(UcActions.newMsg(), (data) {
       ChatMsg msg = data;
-      if (msg.peerId == widget.id && msg.type == widget.type)
+      _log.warning("message");
+      _log.info(
+          "new msg peerId: ${msg.peerId} ,widget.id:${widget.id},widget.type: ${widget.type}");
+      if (msg.fromId == widget.id && msg.type == widget.type)
         setState(() {
           chatData.insert(0, data);
         });
@@ -132,7 +138,7 @@ class _ChatPageState extends State<ChatPage> {
     var msg = ChatMsg(
         msgId: Im.newMsgId(widget.id),
         peerId: widget.id,
-        fromId: GlobalCache.get().user.id,
+        fromId: Global.get().curUser.id,
         type: widget.type,
         msgType: msgType,
         tipsType: 0,
@@ -148,10 +154,9 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       chatData.insert(0, newMsg(msgTypeText, text));
     });
-    // await sendTextMsg('${widget?.id ?? widget.title}', widget.type, text);
-    //TODO
     var msg = newMsg(msgTypeText, text);
     Im.get().sendChatMsg(msg);
+    ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
   }
 
   onTapHandle(ButtonType type) {

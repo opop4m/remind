@@ -19,7 +19,7 @@ class TextMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final globalModel = Provider.of<GlobalModel>(context);
-    var my = GlobalCache.get().user;
+    var my = Global.get().curUser;
     bool isSelf = model.fromId == my.id;
     var body = [
       new MsgAvatar(model: model, user: user),

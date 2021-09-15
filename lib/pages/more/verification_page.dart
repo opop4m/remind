@@ -1,3 +1,4 @@
+import 'package:client/provider/service/imApi.dart';
 import 'package:flutter/material.dart';
 
 import 'package:client/tools/library.dart';
@@ -6,9 +7,9 @@ import 'package:client/ui/orther/verify_switch.dart';
 
 class VerificationPage extends StatefulWidget {
   final String nickName;
-  final String? id;
+  final String id;
 
-  VerificationPage({this.nickName = '', this.id});
+  VerificationPage({this.nickName = '', required this.id});
 
   @override
   _VerificationPageState createState() => new _VerificationPageState();
@@ -20,6 +21,8 @@ class _VerificationPageState extends State<VerificationPage> {
 
   FocusNode infoF = new FocusNode();
   FocusNode remarksF = new FocusNode();
+
+  bool switcher = false;
 
   Widget body() {
     var content = [
@@ -38,7 +41,10 @@ class _VerificationPageState extends State<VerificationPage> {
           focusNode: remarksF,
         ),
       ),
-      new VerifySwitch(title: '设置朋友圈和视频动态权限'),
+      new VerifySwitch(
+        title: '设置朋友圈和视频动态权限',
+        onChanged: (value) => switcher = value,
+      ),
     ];
 
     return new Column(children: content);
@@ -56,6 +62,7 @@ class _VerificationPageState extends State<VerificationPage> {
             width: 55.0,
             margin: EdgeInsets.only(right: 15.0, top: 10.0, bottom: 10.0),
             radius: 4.0,
+            onTap: () => _addFriend(),
             // onTap: () => addFriend(widget.id, context),
           ),
         ],
@@ -67,5 +74,16 @@ class _VerificationPageState extends State<VerificationPage> {
         },
       ),
     );
+  }
+
+  _addFriend() {
+    var params = {
+      "friendUid": widget.id,
+      "msg": infoC.text,
+      "alias": remarksC.text,
+      "postAuth": switcher,
+    };
+    ImApi.requestAddFriend(params);
+    navGK.currentState!.pop();
   }
 }

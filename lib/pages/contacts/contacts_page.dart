@@ -1,5 +1,6 @@
 import 'package:client/config/dictionary.dart';
 import 'package:client/provider/model/contacts.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/item/contact_view.dart';
 import 'package:flutter/material.dart';
 import 'package:client/tools/library.dart';
@@ -16,7 +17,7 @@ class _ContactsPageState extends State<ContactsPage>
   var isNull = false;
 
   ScrollController? sC;
-  List<Contact> _contacts = [];
+  List<Friend> _contacts = [];
   StreamSubscription<dynamic>? _messageStreamSubscription;
 
   List<ContactItem> _functionButtons = [
@@ -32,11 +33,10 @@ class _ContactsPageState extends State<ContactsPage>
     final str = await ContactsPageData().listFriend();
     isNull = await ContactsPageData().contactIsNull();
 
-    List<Contact> listContact = str;
+    List<Friend> listContact = str;
     _contacts.clear();
     _contacts..addAll(listContact);
-    _contacts
-        .sort((Contact a, Contact b) => a.nameIndex.compareTo(b.nameIndex));
+    _contacts.sort((a, b) => a.nameIndex!.compareTo(b.nameIndex!));
     sC = new ScrollController();
 
     /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
@@ -45,7 +45,7 @@ class _ContactsPageState extends State<ContactsPage>
     for (int i = 0; i < _contacts.length; i++) {
       bool _hasGroupTitle = true;
       if (i > 0 &&
-          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
+          _contacts[i].nameIndex!.compareTo(_contacts[i - 1].nameIndex!) == 0)
         _hasGroupTitle = false;
 
       if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;

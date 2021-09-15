@@ -83,4 +83,25 @@ class ImApi {
     }
     return res;
   }
+
+  static Future<RspDb<ChatUser>> searchUser(String search) async {
+    var rsp = await Req.g().get(API.searchUser, params: {"uid": search});
+    var res = new RspDb<ChatUser>();
+    if (rsp.data != null) {
+      res.fromJson(rsp.data);
+      if (res.code == 0) {
+        res.res = ChatUser.fromJson(res.data!["user"]);
+      }
+    }
+    return res;
+  }
+
+  static Future<RspDb> requestAddFriend(Map params) async {
+    var rsp = await Req.g().post(API.addFriend, params);
+    var res = RspDb();
+    if (rsp.data != null) {
+      res.fromJson(rsp.data);
+    }
+    return res;
+  }
 }

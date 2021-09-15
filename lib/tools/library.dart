@@ -30,6 +30,7 @@ export 'package:client/tools/bus/notice.dart';
 export 'package:client/tools/bus/event.dart';
 export 'package:client/l10n/l18n.dart';
 export 'package:logging/logging.dart';
+export 'package:client/provider/global_cache.dart';
 import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';

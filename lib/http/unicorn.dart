@@ -23,11 +23,11 @@ class UnicornHttp {
   static Map<String, dynamic> getHeader() {
     var rng = new Random();
     Map<String, dynamic> header = {
-      "accessToken": GlobalCache.get().user.accessToken,
+      "accessToken": Global.get().curUser.accessToken,
       "appKey": API.appKey,
       "platform": PlatformUtils.platform(),
-      "channel": GlobalCache.get().getChannel(),
-      "uuid": GlobalCache.get().getUuid(),
+      "channel": Global.get().getChannel(),
+      "uuid": Global.get().getUuid(),
       "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
       "n": rng.nextInt(intMaxValue),
     };

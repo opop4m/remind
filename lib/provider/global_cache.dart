@@ -1,28 +1,28 @@
 import 'package:client/provider/model/user.dart';
 
-class GlobalCache {
-  static GlobalCache? _instance;
+class Global {
+  static Global? _instance;
 
-  static GlobalCache get() {
+  static Global get() {
     if (_instance == null) {
-      _instance = GlobalCache._();
+      _instance = Global._();
     }
     return _instance!;
   }
 
-  GlobalCache._();
+  Global._();
 
   String getChannel() {
     return "unicorn";
   }
 
   String getUuid() {
-    return user.showId.toString();
+    return curUser.showId.toString();
   }
 
   ///是否已登陆
   bool hasLogin = false;
   // String accessToken = "";
-  User user = User();
+  User curUser = User();
   ChatConf chatConf = ChatConf();
 }

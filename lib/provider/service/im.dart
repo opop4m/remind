@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/msgEnum.dart';
-import 'package:client/provider/model/user.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 export 'package:client/provider/service/mqttLib.dart';
 import 'package:client/provider/service/mqttLib.dart';
@@ -134,8 +133,10 @@ class Im {
     if (msg.type == typeGroup) {
       topic = topicGroup + msg.peerId;
     }
+    ImData.get().onNewRecent(msg);
     var data = {"act": "chat", "data": msg};
     var msgStr = json.encode(data);
+    _log.info(msgStr);
     MqttLib.get().publish(topic, msgStr);
   }
 

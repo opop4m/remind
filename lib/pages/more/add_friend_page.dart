@@ -4,6 +4,8 @@ import 'package:client/pages/mine/code_page.dart';
 import 'package:client/pages/root/user_page.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:client/tools/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +165,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
     } else {
       // currentUser = null;
     }
-    currentUser = GlobalCache.get().user.id;
+    currentUser = Global.get().curUser.id;
     setState(() {});
   }
 
@@ -197,6 +199,16 @@ class _AddFriendPageState extends State<AddFriendPage> {
     //     }
     //   }
     // });
+
+    var rsp = await ImData.get().searchUser(userName);
+    if (rsp.code == 0) {
+      var user = rsp.res!;
+      print("AddFriendsDetails");
+      routePush(new AddFriendsDetails('search', user.id, user.avatar ?? defIcon,
+          user.name, user.gender ?? genderMale));
+    } else {
+      isResult = true;
+    }
   }
 
   @override

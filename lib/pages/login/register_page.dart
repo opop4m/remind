@@ -1,3 +1,4 @@
+import 'package:client/pages/root/root_page.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/tools/utils.dart';
 import 'package:flutter/material.dart';
@@ -353,7 +354,7 @@ class _RegisterPageState extends State<RegisterPage> {
     var u = await gModel.logic.register(params);
     if (u.code == 0) {
       showToast(context, '注册成功');
-      popToRootPage();
+      routePushAndRemove(new RootPage());
     } else {
       showToast(context, u.msg);
     }

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:client/provider/model/chatBean.dart';
+import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/provider/service/imApi.dart';
@@ -34,19 +37,29 @@ class ImData {
   }
 
   void onChatMsg(data) {
-    ChatRecent recent = ChatRecent.fromJson(data);
-    ImDb.g().db.chatRecentDao.insertChat(recent.toCompanion(true));
     ChatMsg msg = ChatMsg.fromJson(data);
     ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
+    onNewRecent(msg);
     Notice.send(UcActions.newMsg(), msg);
   }
-  // late UcDatabase _db;
-  // ImData._internal() {
-  //   _db = new UcDatabase();
-  // }
 
-  void getChatList(int page, int offset) {
-    // ImApi.requestChatList()
+  void onNewRecent(ChatMsg msg) {
+    var jsonMsg = msg.toJson();
+    var my = Global.get().curUser;
+    jsonMsg["targetId"] = msg.peerId;
+    if (my.id == msg.peerId) {
+      jsonMsg["targetId"] = msg.fromId;
+    }
+    var recent = ChatRecent.fromJson(jsonMsg);
+    ImDb.g().db.chatRecentDao.insertChat(recent.toCompanion(true));
+  }
+
+  Future<List<ChatMsg>> getChatList(String peerId, int type, int offset) async {
+    var res =
+        await ImDb.g().db.chatMsgDao.getMsgList(peerId, type, 100, offset);
+    // var json = jsonEncode(res);
+    // _log.info("getChatList: $json");
+    return res;
   }
 
   Future<List<ChatRecentBean>> getRecentList({bool update = false}) async {
@@ -85,9 +98,14 @@ class ImData {
       var uid = uids[i];
       if (res[uid] == null) {
         res[uid] = ChatUser(id: uid, name: "loading...");
-      }
-      if (!update) {
-        _log.info("not found userInfo uid: $uid");
+        if (!update) {
+          _log.info("not found userInfo uid: $uid");
+
+          // List<ChatUser> debug =
+          //     await ImDb.g().db.chatUserDao.getChatUsers(uids);
+          // String str = jsonEncode(debug);
+          // _log.info("all chat user: $str");
+        }
       }
     }
 
@@ -102,5 +120,9 @@ class ImData {
     List<ChatMsg> list =
         await ImDb.g().db.chatMsgDao.getMsgList(peerId, type, limit, offset);
     return list;
+  }
+
+  Future<RspDb<ChatUser>> searchUser(String search) async {
+    return await ImApi.searchUser(search);
   }
 }

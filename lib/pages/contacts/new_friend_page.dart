@@ -106,7 +106,7 @@ class _NewFriendPageState extends State<NewFriendPage> {
   }
 
   getUser() async {
-    currentUser = GlobalCache.get().user.id;
+    currentUser = Global.get().curUser.id;
     setState(() {});
   }
 

@@ -37,9 +37,7 @@ class MyApp extends StatelessWidget {
       locale: model.currentLocale,
       routes: {
         '/': (context) {
-          return GlobalCache.get().hasLogin
-              ? new RootPage()
-              : new LoginBeginPage();
+          return Global.get().hasLogin ? new RootPage() : new LoginBeginPage();
           // return new LoginBeginPage();
         }
       },

@@ -27,8 +27,8 @@ class ImDb {
 }
 
 @UseMoor(
-    tables: [ChatRecents, ChatUsers, ChatMsgs],
-    daos: [ChatMsgDao, ChatRecentDao, ChatUserDao])
+    tables: [ChatRecents, ChatUsers, ChatMsgs, Friends],
+    daos: [ChatMsgDao, ChatRecentDao, ChatUserDao, FriendDao])
 class UcDatabase extends _$UcDatabase {
   // we tell the database where to store the data with this constructor
   UcDatabase()
@@ -39,7 +39,30 @@ class UcDatabase extends _$UcDatabase {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) {
+          return m.createAll();
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          if (from == 1) {
+            // we added the dueDate property in the change from version 1
+            await m.addColumn(chatUsers, chatUsers.gender);
+          }
+        },
+      );
+}
+
+@UseDao(tables: [Friends])
+class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
+  FriendDao(UcDatabase attachedDatabase) : super(attachedDatabase);
+
+  Future<List<Friend>> getAllFriend() => select(friends).get();
+
+  Future insertFriend(FriendsCompanion f) =>
+      into(friends).insertOnConflictUpdate(f);
 }
 
 @UseDao(tables: [ChatRecents])
@@ -49,8 +72,6 @@ class ChatRecentDao extends DatabaseAccessor<UcDatabase>
 
   Future<List<ChatRecent>> getRecentList(int limit, int offset) {
     var q = select(chatRecents)
-      // ..where((tbl) => tbl.type.equals(type))
-      // ..where((tbl) => tbl.peerId.equals(peerId))
       ..orderBy([
         (msg) =>
             OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
@@ -71,8 +92,10 @@ class ChatMsgDao extends DatabaseAccessor<UcDatabase> with _$ChatMsgDaoMixin {
   Future<List<ChatMsg>> getMsgList(
       String peerId, int type, int limit, int offset) {
     var q = select(chatMsgs)
-      ..where((tbl) => tbl.type.equals(type))
-      ..where((tbl) => tbl.peerId.equals(peerId))
+      ..where((tbl) {
+        return (tbl.peerId.equals(peerId) |
+            tbl.fromId.equals(peerId) & tbl.type.equals(type));
+      })
       ..orderBy([
         (msg) =>
             OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
@@ -97,6 +120,12 @@ class ChatUserDao extends DatabaseAccessor<UcDatabase> with _$ChatUserDaoMixin {
   Future<List<ChatUser>> getChatUsers(List<String> uids) {
     final q = select(chatUsers);
     q.where((tbl) => tbl.id.isIn(uids));
+    return q.get();
+  }
+
+  Future<List<ChatUser>> getAllChatUsers(List<String> uids) {
+    final q = select(chatUsers);
+    // q.where((tbl) => tbl.id.isIn(uids));
     return q.get();
   }
 

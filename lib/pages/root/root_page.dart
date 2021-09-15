@@ -1,4 +1,5 @@
 import 'package:client/http/api.dart';
+import 'package:client/pages/WidgetsBinding.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/service/im.dart';
@@ -18,21 +19,24 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  WidgetsBind bind = WidgetsBind();
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(bind);
     // ifBrokenNetwork();
     initChat();
     updateApi(context);
   }
 
   initChat() async {
-    var chatConf = GlobalCache.get().chatConf;
-    var user = GlobalCache.get().user;
+    var chatConf = Global.get().chatConf;
+    var user = Global.get().curUser;
     _log.info("go connect: ${chatConf.toJson()}");
     await Im.get().init(
       user.id,
-      GlobalCache.get().getUuid(),
+      Global.get().getUuid(),
       host: chatConf.host,
       port: chatConf.port,
       account: user.id,
@@ -89,6 +93,13 @@ class _RootPageState extends State<RootPage> {
       key: scaffoldGK,
       body: new RootTabBar(pages: pages, currentIndex: 0),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _log.info("dispose");
+    WidgetsBinding.instance?.removeObserver(bind); //添加观察者
   }
 }
 

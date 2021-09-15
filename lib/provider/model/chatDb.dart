@@ -2,6 +2,7 @@ import 'package:moor/moor.dart';
 
 class ChatRecents extends Table {
   TextColumn get msgId => text()();
+  TextColumn get targetId => text()();
   TextColumn get peerId => text()();
   TextColumn get fromId => text()();
   IntColumn get type => integer().withDefault(const Constant(0))();
@@ -12,7 +13,7 @@ class ChatRecents extends Table {
   TextColumn get ext => text().nullable()();
 
   @override
-  Set<Column> get primaryKey => {peerId, type};
+  Set<Column> get primaryKey => {targetId, type};
 }
 
 class ChatMsgs extends Table {
@@ -35,6 +36,20 @@ class ChatUsers extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get avatar => text().nullable()();
+  IntColumn get gender => integer().nullable().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class Friends extends Table {
+  TextColumn get id => text()();
+  TextColumn get alias => text()();
+  TextColumn get nickName => text()();
+  TextColumn get avatar => text().nullable()();
+  IntColumn get gender => integer().nullable().withDefault(const Constant(0))();
+  TextColumn get nameIndex => text().nullable()();
+  TextColumn get name => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

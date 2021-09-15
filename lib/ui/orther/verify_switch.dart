@@ -7,8 +7,9 @@ import 'package:client/tools/library.dart';
 class VerifySwitch extends StatefulWidget {
   final String title;
   final String defStr;
+  Function(bool)? onChanged;
 
-  VerifySwitch({required this.title, this.defStr = ''});
+  VerifySwitch({required this.title, this.defStr = '', this.onChanged});
 
   @override
   _VerifySwitchState createState() => new _VerifySwitchState();
@@ -27,6 +28,7 @@ class _VerifySwitchState extends State<VerifySwitch> {
           dragStartBehavior: DragStartBehavior.start,
           onChanged: (value) {
             valueSwitch = value;
+            widget.onChanged?.call(value);
             setState(() {});
           },
         )

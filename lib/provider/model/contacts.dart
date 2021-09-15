@@ -1,33 +1,35 @@
+import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:client/tools/library.dart';
 
-class Contact {
-  Contact({
-    required this.avatar,
-    required this.name,
-    required this.nameIndex,
-    required this.identifier,
-  });
+// class Contact {
+//   Contact({
+//     required this.avatar,
+//     required this.name,
+//     required this.nameIndex,
+//     required this.identifier,
+//   });
 
-  final String avatar;
-  final String name;
-  final String nameIndex;
-  final String identifier;
-}
+//   final String avatar;
+//   final String name;
+//   final String nameIndex;
+//   final String identifier;
+// }
 
 class ContactsPageData {
+  List<Friend> _contacts = [];
+
   Future<bool> contactIsNull() async {
     // final user = await SharedUtil.instance.getString(Keys.account);
     // final result = await getContactsFriends(user);
     // List<dynamic> data = json.decode(result);
-    // return !listNoEmpty(data);
-    return true;
+    return !listNoEmpty(_contacts);
   }
 
   listFriend() async {
-    List<Contact> contacts = [];
+    List<Friend> contacts = [];
     String avatar;
     String nickName;
     String identifier;
