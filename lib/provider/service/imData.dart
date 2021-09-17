@@ -25,15 +25,28 @@ class ImData {
     Im.get().setListenner("dbMsg", dispatch);
   }
 
-  void dispatch(String topic, Map<String, dynamic> res) {
-    _log.info("message: $res");
-    String act = res["act"];
-    var data = res["data"];
-    switch (act) {
+  void dispatch(String topic, res) {
+    var tb = parserTopic(topic);
+    _log.info(tb.act);
+    _log.info("dispatch message: $res");
+    // var data = res["data"];
+    switch (tb.act) {
       case "chat":
-        onChatMsg(data);
+        onChatMsg(res);
+        break;
+      case "chatUser":
+        onChatUser(res);
         break;
     }
+  }
+
+  void onChatUser(data) {
+    List list = data;
+    for (var i = 0; i < list.length; i++) {
+      var user = ChatUser.fromJson(list[i]);
+      ImDb.g().db.chatUserDao.insertChatUser(user.toCompanion(false));
+    }
+    Notice.send(UcActions.chatUser());
   }
 
   void onChatMsg(data) {
@@ -51,7 +64,18 @@ class ImData {
       jsonMsg["targetId"] = msg.fromId;
     }
     var recent = ChatRecent.fromJson(jsonMsg);
-    ImDb.g().db.chatRecentDao.insertChat(recent.toCompanion(true));
+    ImDb.g()
+        .db
+        .chatRecentDao
+        .insertChat(recent.toCompanion(true))
+        .then((value) => Notice.send(UcActions.recentList()));
+    ImDb.g().db.chatUserDao.getChatUsers([jsonMsg["targetId"]]).then((value) {
+      if (value.length == 0) {
+        Im.get().requestSystem(API.actChatUser, {
+          "uids": [jsonMsg["targetId"]]
+        });
+      }
+    });
   }
 
   Future<List<ChatMsg>> getChatList(String peerId, int type, int offset) async {
@@ -71,11 +95,11 @@ class ImData {
     if (list.length > 0) {
       list.forEach((recent) {
         // addUnique2list(reqList, recent.fromId);
-        addUnique2list(reqList, recent.peerId);
+        addUnique2list(reqList, recent.targetId);
       });
       var uMap = await getChatUsers(reqList);
       list.forEach((recent) {
-        var bean = ChatRecentBean(recent, uMap[recent.peerId]!);
+        var bean = ChatRecentBean(recent, uMap[recent.targetId]!);
         res.add(bean);
       });
     }
@@ -125,4 +149,32 @@ class ImData {
   Future<RspDb<ChatUser>> searchUser(String search) async {
     return await ImApi.searchUser(search);
   }
+
+  Future<List<Friend>> friendList() async {
+    var res = await ImDb.g().db.friendDao.getAllFriend();
+    ImApi.friendList()
+        .then((value) => Notice.send(UcActions.friendList(), value.res));
+    return res;
+  }
+
+  static TopicBean parserTopic(String topic) {
+    var tb = TopicBean();
+    var arr = topic.split("/");
+    if (arr.length > 3) {
+      tb.type = arr[1];
+      tb.targetId = arr[2];
+      tb.act = arr[3];
+      if (arr.length > 4) {
+        tb.msgId = arr[4];
+      }
+    }
+    return tb;
+  }
+}
+
+class TopicBean {
+  String type = "";
+  String targetId = "";
+  String act = "";
+  String msgId = "";
 }

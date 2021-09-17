@@ -1,4 +1,3 @@
-import 'package:client/provider/model/contacts.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +43,8 @@ class ContactView extends StatelessWidget {
           if (_contact.name != contacts[contacts.length - 1].name) {
             return new ContactItem(
               avatar: _contact.avatar ?? defIcon,
-              title: _contact.name!,
-              identifier: _contact.id,
+              title: _contact.name,
+              id: _contact.id,
               groupTitle: _isGroupTitle ? _contact.nameIndex : null,
               isLine: _isBorder,
               type: type,
@@ -62,8 +61,8 @@ class ContactView extends StatelessWidget {
             return new Column(children: <Widget>[
               new ContactItem(
                 avatar: _contact.avatar ?? defIcon,
-                title: _contact.name!,
-                identifier: _contact.id,
+                title: _contact.name,
+                id: _contact.id,
                 groupTitle: _isGroupTitle ? _contact.nameIndex : null,
                 isLine: false,
                 type: type,

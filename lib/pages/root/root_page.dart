@@ -1,5 +1,6 @@
 import 'package:client/http/api.dart';
 import 'package:client/pages/WidgetsBinding.dart';
+import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/service/im.dart';
@@ -80,7 +81,8 @@ class _RootPageState extends State<RootPage> {
         title: S.of(context).discover,
         icon: new LoadImage("assets/images/tabbar_discover_c.webp"),
         selectIcon: new LoadImage("assets/images/tabbar_discover_s.webp"),
-        page: new DiscoverPage(),
+        // page: new DiscoverPage(),
+        page: new Test(),
       ),
       new TabBarModel(
         title: S.of(context).me,

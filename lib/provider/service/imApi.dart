@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:client/config/api.dart';
 import 'package:client/http/req.dart';
-import 'package:client/provider/model/chatDb.dart';
 // import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/library.dart';
+import 'package:lpinyin/lpinyin.dart';
 
 final _log = Logger("ImApi");
 
@@ -32,6 +30,7 @@ class ImApi {
         List? userList = res.data!["users"];
 
         res.res = [];
+        ImDb.g().db.chatRecentDao.delAll();
         for (var i = 0; i < list.length; i++) {
           var recent = ChatRecent.fromJson(list[i]);
           ImDb.g().db.chatRecentDao.insertChat(recent.toCompanion(true));
@@ -101,6 +100,33 @@ class ImApi {
     var res = RspDb();
     if (rsp.data != null) {
       res.fromJson(rsp.data);
+    }
+    return res;
+  }
+
+  static Future<RspDb<List<Friend>>> friendList() async {
+    var rsp = await Req.g().get(API.friendList);
+    var res = RspDb<List<Friend>>();
+    if (rsp.data != null) {
+      res.fromJson(rsp.data);
+      if (res.data != null) {
+        List? list = res.data!["friends"];
+        if (list != null) {
+          res.res = [];
+          for (var i = 0; i < list.length; i++) {
+            var fJson = list[i];
+            if (strNoEmpty(fJson["alias"])) {
+              fJson["name"] = fJson["alias"];
+            } else {
+              fJson["name"] = fJson["nickname"];
+            }
+            fJson["nameIndex"] = PinyinHelper.getFirstWordPinyin(fJson["name"]);
+            var friend = Friend.fromJson(fJson);
+            ImDb.g().db.friendDao.insertFriend(friend.toCompanion(true));
+            res.res!.add(friend);
+          }
+        }
+      }
     }
     return res;
   }

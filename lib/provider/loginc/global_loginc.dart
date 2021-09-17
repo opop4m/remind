@@ -80,7 +80,7 @@ class GlobalLogic {
       // _log.info("save user str: $userStr");
       SharedUtil.instance.saveString(Keys.chatConf, chatConfStr);
       SharedUtil.instance.saveString(Keys.user, userStr);
-      SharedUtil.instance.saveString(Keys.account, _model.user.account);
+      SharedUtil.instance.saveString(Keys.account, _model.user.id);
       SharedUtil.instance.saveBoolean(Keys.hasLogged, true);
     }
   }

@@ -130,12 +130,12 @@ class WebRtcCtr {
   }
 
   _send(String targetId, String act, Map<String, dynamic> data) {
-    Map<String, dynamic> send = Map();
-    send["act"] = act;
-    send["data"] = data;
-    String msg = json.encode(send);
+    // Map<String, dynamic> send = Map();
+    // send["act"] = act;
+    // send["data"] = data;
+    String msg = json.encode(data);
     _log.info("send msg: $act");
-    Im.get().sendMsg(targetId, msg);
+    Im.get().sendMsg(targetId, act, msg);
   }
 
   _onCandidate(Map<String, dynamic> data) async {

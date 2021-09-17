@@ -1,5 +1,5 @@
 import 'package:client/config/dictionary.dart';
-import 'package:client/provider/model/contacts.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/item/contact_view.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,8 @@ import 'package:client/ui/item/contact_item.dart';
 class ContactsPage extends StatefulWidget {
   _ContactsPageState createState() => _ContactsPageState();
 }
+
+final _log = Logger("ContactsPage");
 
 class _ContactsPageState extends State<ContactsPage>
     with AutomaticKeepAliveClientMixin {
@@ -30,13 +32,21 @@ class _ContactsPageState extends State<ContactsPage>
   final Map _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
 
   Future getContacts() async {
-    final str = await ContactsPageData().listFriend();
-    isNull = await ContactsPageData().contactIsNull();
+    Notice.addListener(UcActions.friendList(), (data) {
+      // _log.info("notice : ${data}");
+      List<Friend> list = data;
+      _contacts.clear();
+      _contacts..addAll(list);
+      setState(() {});
+    });
+    final contacts = await ImData.get().friendList();
 
-    List<Friend> listContact = str;
+    isNull = !listNoEmpty(contacts);
+
+    List<Friend> listContact = contacts;
     _contacts.clear();
     _contacts..addAll(listContact);
-    _contacts.sort((a, b) => a.nameIndex!.compareTo(b.nameIndex!));
+    _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));
     sC = new ScrollController();
 
     /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
@@ -45,7 +55,7 @@ class _ContactsPageState extends State<ContactsPage>
     for (int i = 0; i < _contacts.length; i++) {
       bool _hasGroupTitle = true;
       if (i > 0 &&
-          _contacts[i].nameIndex!.compareTo(_contacts[i - 1].nameIndex!) == 0)
+          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
         _hasGroupTitle = false;
 
       if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;

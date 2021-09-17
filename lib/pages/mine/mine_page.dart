@@ -98,7 +98,7 @@ class _MinePageState extends State<MinePage> {
                   fontWeight: FontWeight.w500),
             ),
             new Text(
-              '微信号：' + model.user.account,
+              model.user.email,
               style: TextStyle(color: mainTextColor),
             ),
           ],

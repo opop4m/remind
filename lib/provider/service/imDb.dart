@@ -5,6 +5,8 @@ import 'package:client/tools/adapter/moor.dart'
 
 part 'imDb.g.dart';
 
+Map<String, UcDatabase> _cache = Map();
+
 class ImDb {
   static ImDb? _instance;
 
@@ -17,13 +19,20 @@ class ImDb {
     return _instance;
   }
 
-  late UcDatabase _db;
-  ImDb._internal() {
-    _db = new UcDatabase();
+  UcDatabase? _db;
+  ImDb._internal() {}
+
+  void init(String account) {
+    if (_cache[account] != null) {
+      _db = _cache[account];
+      return;
+    }
+    _db = UcDatabase(account);
+    _cache[account] = _db!;
   }
 
   // UcDatabase getDb() => _db;
-  UcDatabase get db => _db;
+  UcDatabase get db => _db!;
 }
 
 @UseMoor(
@@ -31,10 +40,10 @@ class ImDb {
     daos: [ChatMsgDao, ChatRecentDao, ChatUserDao, FriendDao])
 class UcDatabase extends _$UcDatabase {
   // we tell the database where to store the data with this constructor
-  UcDatabase()
+  UcDatabase(String account)
       // : super(FlutterQueryExecutor.inDatabaseFolder(
       //       path: "db.sqlite", logStatements: true));
-      : super(getMoorDataBase());
+      : super(getMoorDataBase(account));
 
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
@@ -83,6 +92,8 @@ class ChatRecentDao extends DatabaseAccessor<UcDatabase>
   Future insertChat(ChatRecentsCompanion chat) {
     return into(chatRecents).insertOnConflictUpdate(chat);
   }
+
+  Future delAll() => delete(chatRecents).go();
 }
 
 @UseDao(tables: [ChatMsgs])

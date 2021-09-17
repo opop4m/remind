@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/chat/chat_page.dart';

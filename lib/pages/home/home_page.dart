@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    _log.info("initState");
     initPlatformState();
     getChatData();
     Notice.addListener(UcActions.logout(), (data) => logout());
@@ -48,12 +49,16 @@ class _HomePageState extends State<HomePage>
     // if (mounted) setState(() {});
     _chatData = await ImData.get().getRecentList(update: true);
     Notice.addListener(UcActions.recentList(), (data) {
+      // _log.info("notice recentList");
       ImData.get().getRecentList().then((value) async {
-        //TODO
         _chatData = await ImData.get().getRecentList();
-        // await initChatUsers(_chatData, update: true);
         if (mounted) setState(() {});
       });
+    });
+    Notice.addListener(UcActions.chatUser(), (data) async {
+      _log.info("notice chatUser");
+      _chatData = await ImData.get().getRecentList();
+      if (mounted) setState(() {});
     });
     // await initChatUsers(_chatData);
     if (mounted) setState(() {});
@@ -203,6 +208,7 @@ class _HomePageState extends State<HomePage>
   @override
   void dispose() {
     super.dispose();
+    _log.info("dispose");
     Notice.removeListenerByEvent(UcActions.chatUser());
     Notice.removeListenerByEvent(UcActions.recentList());
     canCelListener();

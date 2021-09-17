@@ -16,7 +16,7 @@ typedef OnCancel = void Function(String v);
 class ContactItem extends StatefulWidget {
   final String avatar;
   final String title;
-  final String? identifier;
+  final String? id;
   final String? groupTitle;
   final bool isLine;
   final ClickType type;
@@ -26,7 +26,7 @@ class ContactItem extends StatefulWidget {
   ContactItem({
     required this.avatar,
     required this.title,
-    this.identifier,
+    this.id,
     this.isLine = true,
     this.groupTitle,
     this.type = ClickType.open,
@@ -125,8 +125,8 @@ class ContactItemState extends State<ContactItem> {
               ),
               onTap: () {
                 setState(() => isSelect = !isSelect);
-                if (isSelect) widget.add?.call(widget.identifier!);
-                if (!isSelect) widget.cancel?.call(widget.identifier!);
+                if (isSelect) widget.add?.call(widget.id!);
+                if (!isSelect) widget.cancel?.call(widget.id!);
               },
             )
           : new Container()
@@ -138,8 +138,8 @@ class ContactItemState extends State<ContactItem> {
       onPressed: () {
         if (widget.type == ClickType.select) {
           setState(() => isSelect = !isSelect);
-          if (isSelect) widget.add?.call(widget.identifier!);
-          if (!isSelect) widget.cancel?.call(widget.identifier!);
+          if (isSelect) widget.add?.call(widget.id!);
+          if (!isSelect) widget.cancel?.call(widget.id!);
           return;
         }
         if (widget.title == '新的朋友') {
@@ -152,9 +152,7 @@ class ContactItemState extends State<ContactItem> {
           routePush(new PublicPage());
         } else {
           routePush(new ContactsDetailsPage(
-              id: widget.identifier,
-              avatar: widget.avatar,
-              title: widget.title));
+              id: widget.id!, avatar: widget.avatar, title: widget.title));
         }
       },
       child: new Row(children: content),

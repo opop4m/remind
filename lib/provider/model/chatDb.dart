@@ -7,7 +7,8 @@ class ChatRecents extends Table {
   TextColumn get fromId => text()();
   IntColumn get type => integer().withDefault(const Constant(0))();
   IntColumn get msgType => integer().withDefault(const Constant(0))();
-  IntColumn get tipsType => integer().withDefault(const Constant(0))();
+  IntColumn get tipsType =>
+      integer().nullable().withDefault(const Constant(0))();
   TextColumn get content => text()();
   IntColumn get createTime => integer().withDefault(const Constant(0))();
   TextColumn get ext => text().nullable()();
@@ -22,7 +23,8 @@ class ChatMsgs extends Table {
   TextColumn get fromId => text()();
   IntColumn get type => integer().withDefault(const Constant(0))();
   IntColumn get msgType => integer().withDefault(const Constant(0))();
-  IntColumn get tipsType => integer().withDefault(const Constant(0))();
+  IntColumn get tipsType =>
+      integer().nullable().withDefault(const Constant(0))();
   TextColumn get content => text()();
   IntColumn get createTime => integer().withDefault(const Constant(0))();
   TextColumn get ext => text().nullable()();
@@ -45,11 +47,11 @@ class ChatUsers extends Table {
 class Friends extends Table {
   TextColumn get id => text()();
   TextColumn get alias => text()();
-  TextColumn get nickName => text()();
+  TextColumn get nickname => text()();
   TextColumn get avatar => text().nullable()();
   IntColumn get gender => integer().nullable().withDefault(const Constant(0))();
-  TextColumn get nameIndex => text().nullable()();
-  TextColumn get name => text().nullable()();
+  TextColumn get nameIndex => text()();
+  TextColumn get name => text()();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -12,7 +12,8 @@ class UcActions {
 
   static String chatUser() => 'chatUser';
   static String logout() => 'logout';
-  static String newMsg() => 'newMsg';
+  static String newMsg() => 'chat';
+  static String friendList() => 'friendList';
 }
 
 // class Data {

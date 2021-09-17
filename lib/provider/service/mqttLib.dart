@@ -139,10 +139,13 @@ class MqttLib {
     String topic = c[0].topic;
     // Map<String, dynamic> res = json.decode(pt);
     // _log.info("topic: $topic map: ${_map}");
-    if (_map.containsKey(topic)) {
-      var cb = _map[topic];
-      cb!(topic, pt);
-    }
+    _map.forEach((key, cb) {
+      cb(topic, pt);
+    });
+    // if (_map.containsKey(topic)) {
+    //   var cb = _map[topic];
+    //   cb!(topic, pt);
+    // }
   }
 
   void subscribe(String topic) {

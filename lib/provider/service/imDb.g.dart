@@ -14,7 +14,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
   final String fromId;
   final int type;
   final int msgType;
-  final int tipsType;
+  final int? tipsType;
   final String content;
   final int createTime;
   final String? ext;
@@ -25,7 +25,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       required this.fromId,
       required this.type,
       required this.msgType,
-      required this.tipsType,
+      this.tipsType,
       required this.content,
       required this.createTime,
       this.ext});
@@ -46,7 +46,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       msgType: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}msg_type'])!,
       tipsType: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tips_type'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}tips_type']),
       content: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}content'])!,
       createTime: const IntType()
@@ -64,7 +64,9 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
     map['from_id'] = Variable<String>(fromId);
     map['type'] = Variable<int>(type);
     map['msg_type'] = Variable<int>(msgType);
-    map['tips_type'] = Variable<int>(tipsType);
+    if (!nullToAbsent || tipsType != null) {
+      map['tips_type'] = Variable<int?>(tipsType);
+    }
     map['content'] = Variable<String>(content);
     map['create_time'] = Variable<int>(createTime);
     if (!nullToAbsent || ext != null) {
@@ -81,7 +83,9 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       fromId: Value(fromId),
       type: Value(type),
       msgType: Value(msgType),
-      tipsType: Value(tipsType),
+      tipsType: tipsType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tipsType),
       content: Value(content),
       createTime: Value(createTime),
       ext: ext == null && nullToAbsent ? const Value.absent() : Value(ext),
@@ -98,7 +102,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       fromId: serializer.fromJson<String>(json['fromId']),
       type: serializer.fromJson<int>(json['type']),
       msgType: serializer.fromJson<int>(json['msgType']),
-      tipsType: serializer.fromJson<int>(json['tipsType']),
+      tipsType: serializer.fromJson<int?>(json['tipsType']),
       content: serializer.fromJson<String>(json['content']),
       createTime: serializer.fromJson<int>(json['createTime']),
       ext: serializer.fromJson<String?>(json['ext']),
@@ -114,7 +118,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       'fromId': serializer.toJson<String>(fromId),
       'type': serializer.toJson<int>(type),
       'msgType': serializer.toJson<int>(msgType),
-      'tipsType': serializer.toJson<int>(tipsType),
+      'tipsType': serializer.toJson<int?>(tipsType),
       'content': serializer.toJson<String>(content),
       'createTime': serializer.toJson<int>(createTime),
       'ext': serializer.toJson<String?>(ext),
@@ -203,7 +207,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
   final Value<String> fromId;
   final Value<int> type;
   final Value<int> msgType;
-  final Value<int> tipsType;
+  final Value<int?> tipsType;
   final Value<String> content;
   final Value<int> createTime;
   final Value<String?> ext;
@@ -242,7 +246,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
     Expression<String>? fromId,
     Expression<int>? type,
     Expression<int>? msgType,
-    Expression<int>? tipsType,
+    Expression<int?>? tipsType,
     Expression<String>? content,
     Expression<int>? createTime,
     Expression<String?>? ext,
@@ -268,7 +272,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
       Value<String>? fromId,
       Value<int>? type,
       Value<int>? msgType,
-      Value<int>? tipsType,
+      Value<int?>? tipsType,
       Value<String>? content,
       Value<int>? createTime,
       Value<String?>? ext}) {
@@ -308,7 +312,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
       map['msg_type'] = Variable<int>(msgType.value);
     }
     if (tipsType.present) {
-      map['tips_type'] = Variable<int>(tipsType.value);
+      map['tips_type'] = Variable<int?>(tipsType.value);
     }
     if (content.present) {
       map['content'] = Variable<String>(content.value);
@@ -375,7 +379,7 @@ class $ChatRecentsTable extends ChatRecents
       defaultValue: const Constant(0));
   final VerificationMeta _tipsTypeMeta = const VerificationMeta('tipsType');
   late final GeneratedColumn<int?> tipsType = GeneratedColumn<int?>(
-      'tips_type', aliasedName, false,
+      'tips_type', aliasedName, true,
       typeName: 'INTEGER',
       requiredDuringInsert: false,
       defaultValue: const Constant(0));
@@ -732,7 +736,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
   final String fromId;
   final int type;
   final int msgType;
-  final int tipsType;
+  final int? tipsType;
   final String content;
   final int createTime;
   final String? ext;
@@ -743,7 +747,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       required this.fromId,
       required this.type,
       required this.msgType,
-      required this.tipsType,
+      this.tipsType,
       required this.content,
       required this.createTime,
       this.ext,
@@ -763,7 +767,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       msgType: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}msg_type'])!,
       tipsType: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tips_type'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}tips_type']),
       content: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}content'])!,
       createTime: const IntType()
@@ -782,7 +786,9 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
     map['from_id'] = Variable<String>(fromId);
     map['type'] = Variable<int>(type);
     map['msg_type'] = Variable<int>(msgType);
-    map['tips_type'] = Variable<int>(tipsType);
+    if (!nullToAbsent || tipsType != null) {
+      map['tips_type'] = Variable<int?>(tipsType);
+    }
     map['content'] = Variable<String>(content);
     map['create_time'] = Variable<int>(createTime);
     if (!nullToAbsent || ext != null) {
@@ -801,7 +807,9 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       fromId: Value(fromId),
       type: Value(type),
       msgType: Value(msgType),
-      tipsType: Value(tipsType),
+      tipsType: tipsType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tipsType),
       content: Value(content),
       createTime: Value(createTime),
       ext: ext == null && nullToAbsent ? const Value.absent() : Value(ext),
@@ -819,7 +827,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       fromId: serializer.fromJson<String>(json['fromId']),
       type: serializer.fromJson<int>(json['type']),
       msgType: serializer.fromJson<int>(json['msgType']),
-      tipsType: serializer.fromJson<int>(json['tipsType']),
+      tipsType: serializer.fromJson<int?>(json['tipsType']),
       content: serializer.fromJson<String>(json['content']),
       createTime: serializer.fromJson<int>(json['createTime']),
       ext: serializer.fromJson<String?>(json['ext']),
@@ -835,7 +843,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       'fromId': serializer.toJson<String>(fromId),
       'type': serializer.toJson<int>(type),
       'msgType': serializer.toJson<int>(msgType),
-      'tipsType': serializer.toJson<int>(tipsType),
+      'tipsType': serializer.toJson<int?>(tipsType),
       'content': serializer.toJson<String>(content),
       'createTime': serializer.toJson<int>(createTime),
       'ext': serializer.toJson<String?>(ext),
@@ -922,7 +930,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
   final Value<String> fromId;
   final Value<int> type;
   final Value<int> msgType;
-  final Value<int> tipsType;
+  final Value<int?> tipsType;
   final Value<String> content;
   final Value<int> createTime;
   final Value<String?> ext;
@@ -960,7 +968,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
     Expression<String>? fromId,
     Expression<int>? type,
     Expression<int>? msgType,
-    Expression<int>? tipsType,
+    Expression<int?>? tipsType,
     Expression<String>? content,
     Expression<int>? createTime,
     Expression<String?>? ext,
@@ -986,7 +994,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
       Value<String>? fromId,
       Value<int>? type,
       Value<int>? msgType,
-      Value<int>? tipsType,
+      Value<int?>? tipsType,
       Value<String>? content,
       Value<int>? createTime,
       Value<String?>? ext,
@@ -1024,7 +1032,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
       map['msg_type'] = Variable<int>(msgType.value);
     }
     if (tipsType.present) {
-      map['tips_type'] = Variable<int>(tipsType.value);
+      map['tips_type'] = Variable<int?>(tipsType.value);
     }
     if (content.present) {
       map['content'] = Variable<String>(content.value);
@@ -1089,7 +1097,7 @@ class $ChatMsgsTable extends ChatMsgs with TableInfo<$ChatMsgsTable, ChatMsg> {
       defaultValue: const Constant(0));
   final VerificationMeta _tipsTypeMeta = const VerificationMeta('tipsType');
   late final GeneratedColumn<int?> tipsType = GeneratedColumn<int?>(
-      'tips_type', aliasedName, false,
+      'tips_type', aliasedName, true,
       typeName: 'INTEGER',
       requiredDuringInsert: false,
       defaultValue: const Constant(0));
@@ -1205,19 +1213,19 @@ class $ChatMsgsTable extends ChatMsgs with TableInfo<$ChatMsgsTable, ChatMsg> {
 class Friend extends DataClass implements Insertable<Friend> {
   final String id;
   final String alias;
-  final String nickName;
+  final String nickname;
   final String? avatar;
   final int? gender;
-  final String? nameIndex;
-  final String? name;
+  final String nameIndex;
+  final String name;
   Friend(
       {required this.id,
       required this.alias,
-      required this.nickName,
+      required this.nickname,
       this.avatar,
       this.gender,
-      this.nameIndex,
-      this.name});
+      required this.nameIndex,
+      required this.name});
   factory Friend.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -1226,16 +1234,16 @@ class Friend extends DataClass implements Insertable<Friend> {
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       alias: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}alias'])!,
-      nickName: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}nick_name'])!,
+      nickname: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}nickname'])!,
       avatar: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}avatar']),
       gender: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}gender']),
       nameIndex: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name_index']),
+          .mapFromDatabaseResponse(data['${effectivePrefix}name_index'])!,
       name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
     );
   }
   @override
@@ -1243,19 +1251,15 @@ class Friend extends DataClass implements Insertable<Friend> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['alias'] = Variable<String>(alias);
-    map['nick_name'] = Variable<String>(nickName);
+    map['nickname'] = Variable<String>(nickname);
     if (!nullToAbsent || avatar != null) {
       map['avatar'] = Variable<String?>(avatar);
     }
     if (!nullToAbsent || gender != null) {
       map['gender'] = Variable<int?>(gender);
     }
-    if (!nullToAbsent || nameIndex != null) {
-      map['name_index'] = Variable<String?>(nameIndex);
-    }
-    if (!nullToAbsent || name != null) {
-      map['name'] = Variable<String?>(name);
-    }
+    map['name_index'] = Variable<String>(nameIndex);
+    map['name'] = Variable<String>(name);
     return map;
   }
 
@@ -1263,15 +1267,13 @@ class Friend extends DataClass implements Insertable<Friend> {
     return FriendsCompanion(
       id: Value(id),
       alias: Value(alias),
-      nickName: Value(nickName),
+      nickname: Value(nickname),
       avatar:
           avatar == null && nullToAbsent ? const Value.absent() : Value(avatar),
       gender:
           gender == null && nullToAbsent ? const Value.absent() : Value(gender),
-      nameIndex: nameIndex == null && nullToAbsent
-          ? const Value.absent()
-          : Value(nameIndex),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      nameIndex: Value(nameIndex),
+      name: Value(name),
     );
   }
 
@@ -1281,11 +1283,11 @@ class Friend extends DataClass implements Insertable<Friend> {
     return Friend(
       id: serializer.fromJson<String>(json['id']),
       alias: serializer.fromJson<String>(json['alias']),
-      nickName: serializer.fromJson<String>(json['nickName']),
+      nickname: serializer.fromJson<String>(json['nickname']),
       avatar: serializer.fromJson<String?>(json['avatar']),
       gender: serializer.fromJson<int?>(json['gender']),
-      nameIndex: serializer.fromJson<String?>(json['nameIndex']),
-      name: serializer.fromJson<String?>(json['name']),
+      nameIndex: serializer.fromJson<String>(json['nameIndex']),
+      name: serializer.fromJson<String>(json['name']),
     );
   }
   @override
@@ -1294,18 +1296,18 @@ class Friend extends DataClass implements Insertable<Friend> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'alias': serializer.toJson<String>(alias),
-      'nickName': serializer.toJson<String>(nickName),
+      'nickname': serializer.toJson<String>(nickname),
       'avatar': serializer.toJson<String?>(avatar),
       'gender': serializer.toJson<int?>(gender),
-      'nameIndex': serializer.toJson<String?>(nameIndex),
-      'name': serializer.toJson<String?>(name),
+      'nameIndex': serializer.toJson<String>(nameIndex),
+      'name': serializer.toJson<String>(name),
     };
   }
 
   Friend copyWith(
           {String? id,
           String? alias,
-          String? nickName,
+          String? nickname,
           String? avatar,
           int? gender,
           String? nameIndex,
@@ -1313,7 +1315,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       Friend(
         id: id ?? this.id,
         alias: alias ?? this.alias,
-        nickName: nickName ?? this.nickName,
+        nickname: nickname ?? this.nickname,
         avatar: avatar ?? this.avatar,
         gender: gender ?? this.gender,
         nameIndex: nameIndex ?? this.nameIndex,
@@ -1324,7 +1326,7 @@ class Friend extends DataClass implements Insertable<Friend> {
     return (StringBuffer('Friend(')
           ..write('id: $id, ')
           ..write('alias: $alias, ')
-          ..write('nickName: $nickName, ')
+          ..write('nickname: $nickname, ')
           ..write('avatar: $avatar, ')
           ..write('gender: $gender, ')
           ..write('nameIndex: $nameIndex, ')
@@ -1339,7 +1341,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       $mrjc(
           alias.hashCode,
           $mrjc(
-              nickName.hashCode,
+              nickname.hashCode,
               $mrjc(
                   avatar.hashCode,
                   $mrjc(gender.hashCode,
@@ -1350,7 +1352,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       (other is Friend &&
           other.id == this.id &&
           other.alias == this.alias &&
-          other.nickName == this.nickName &&
+          other.nickname == this.nickname &&
           other.avatar == this.avatar &&
           other.gender == this.gender &&
           other.nameIndex == this.nameIndex &&
@@ -1360,15 +1362,15 @@ class Friend extends DataClass implements Insertable<Friend> {
 class FriendsCompanion extends UpdateCompanion<Friend> {
   final Value<String> id;
   final Value<String> alias;
-  final Value<String> nickName;
+  final Value<String> nickname;
   final Value<String?> avatar;
   final Value<int?> gender;
-  final Value<String?> nameIndex;
-  final Value<String?> name;
+  final Value<String> nameIndex;
+  final Value<String> name;
   const FriendsCompanion({
     this.id = const Value.absent(),
     this.alias = const Value.absent(),
-    this.nickName = const Value.absent(),
+    this.nickname = const Value.absent(),
     this.avatar = const Value.absent(),
     this.gender = const Value.absent(),
     this.nameIndex = const Value.absent(),
@@ -1377,27 +1379,29 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
   FriendsCompanion.insert({
     required String id,
     required String alias,
-    required String nickName,
+    required String nickname,
     this.avatar = const Value.absent(),
     this.gender = const Value.absent(),
-    this.nameIndex = const Value.absent(),
-    this.name = const Value.absent(),
+    required String nameIndex,
+    required String name,
   })  : id = Value(id),
         alias = Value(alias),
-        nickName = Value(nickName);
+        nickname = Value(nickname),
+        nameIndex = Value(nameIndex),
+        name = Value(name);
   static Insertable<Friend> custom({
     Expression<String>? id,
     Expression<String>? alias,
-    Expression<String>? nickName,
+    Expression<String>? nickname,
     Expression<String?>? avatar,
     Expression<int?>? gender,
-    Expression<String?>? nameIndex,
-    Expression<String?>? name,
+    Expression<String>? nameIndex,
+    Expression<String>? name,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (alias != null) 'alias': alias,
-      if (nickName != null) 'nick_name': nickName,
+      if (nickname != null) 'nickname': nickname,
       if (avatar != null) 'avatar': avatar,
       if (gender != null) 'gender': gender,
       if (nameIndex != null) 'name_index': nameIndex,
@@ -1408,15 +1412,15 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
   FriendsCompanion copyWith(
       {Value<String>? id,
       Value<String>? alias,
-      Value<String>? nickName,
+      Value<String>? nickname,
       Value<String?>? avatar,
       Value<int?>? gender,
-      Value<String?>? nameIndex,
-      Value<String?>? name}) {
+      Value<String>? nameIndex,
+      Value<String>? name}) {
     return FriendsCompanion(
       id: id ?? this.id,
       alias: alias ?? this.alias,
-      nickName: nickName ?? this.nickName,
+      nickname: nickname ?? this.nickname,
       avatar: avatar ?? this.avatar,
       gender: gender ?? this.gender,
       nameIndex: nameIndex ?? this.nameIndex,
@@ -1433,8 +1437,8 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
     if (alias.present) {
       map['alias'] = Variable<String>(alias.value);
     }
-    if (nickName.present) {
-      map['nick_name'] = Variable<String>(nickName.value);
+    if (nickname.present) {
+      map['nickname'] = Variable<String>(nickname.value);
     }
     if (avatar.present) {
       map['avatar'] = Variable<String?>(avatar.value);
@@ -1443,10 +1447,10 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
       map['gender'] = Variable<int?>(gender.value);
     }
     if (nameIndex.present) {
-      map['name_index'] = Variable<String?>(nameIndex.value);
+      map['name_index'] = Variable<String>(nameIndex.value);
     }
     if (name.present) {
-      map['name'] = Variable<String?>(name.value);
+      map['name'] = Variable<String>(name.value);
     }
     return map;
   }
@@ -1456,7 +1460,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
     return (StringBuffer('FriendsCompanion(')
           ..write('id: $id, ')
           ..write('alias: $alias, ')
-          ..write('nickName: $nickName, ')
+          ..write('nickname: $nickname, ')
           ..write('avatar: $avatar, ')
           ..write('gender: $gender, ')
           ..write('nameIndex: $nameIndex, ')
@@ -1478,9 +1482,9 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
   late final GeneratedColumn<String?> alias = GeneratedColumn<String?>(
       'alias', aliasedName, false,
       typeName: 'TEXT', requiredDuringInsert: true);
-  final VerificationMeta _nickNameMeta = const VerificationMeta('nickName');
-  late final GeneratedColumn<String?> nickName = GeneratedColumn<String?>(
-      'nick_name', aliasedName, false,
+  final VerificationMeta _nicknameMeta = const VerificationMeta('nickname');
+  late final GeneratedColumn<String?> nickname = GeneratedColumn<String?>(
+      'nickname', aliasedName, false,
       typeName: 'TEXT', requiredDuringInsert: true);
   final VerificationMeta _avatarMeta = const VerificationMeta('avatar');
   late final GeneratedColumn<String?> avatar = GeneratedColumn<String?>(
@@ -1494,15 +1498,15 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
       defaultValue: const Constant(0));
   final VerificationMeta _nameIndexMeta = const VerificationMeta('nameIndex');
   late final GeneratedColumn<String?> nameIndex = GeneratedColumn<String?>(
-      'name_index', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      'name_index', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      'name', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, alias, nickName, avatar, gender, nameIndex, name];
+      [id, alias, nickname, avatar, gender, nameIndex, name];
   @override
   String get aliasedName => _alias ?? 'friends';
   @override
@@ -1523,11 +1527,11 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
     } else if (isInserting) {
       context.missing(_aliasMeta);
     }
-    if (data.containsKey('nick_name')) {
-      context.handle(_nickNameMeta,
-          nickName.isAcceptableOrUnknown(data['nick_name']!, _nickNameMeta));
+    if (data.containsKey('nickname')) {
+      context.handle(_nicknameMeta,
+          nickname.isAcceptableOrUnknown(data['nickname']!, _nicknameMeta));
     } else if (isInserting) {
-      context.missing(_nickNameMeta);
+      context.missing(_nicknameMeta);
     }
     if (data.containsKey('avatar')) {
       context.handle(_avatarMeta,
@@ -1540,10 +1544,14 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
     if (data.containsKey('name_index')) {
       context.handle(_nameIndexMeta,
           nameIndex.isAcceptableOrUnknown(data['name_index']!, _nameIndexMeta));
+    } else if (isInserting) {
+      context.missing(_nameIndexMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
     }
     return context;
   }

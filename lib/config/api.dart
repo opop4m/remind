@@ -24,4 +24,7 @@ class API {
   static String getChatUser = httpHost + "chat/chat_user"; //post
   static String searchUser = httpHost + "chat/search_user"; //get
   static String addFriend = httpHost + "chat/add_friend"; //post
+  static String friendList = httpHost + "chat/friend_list"; //get
+
+  static String actChatUser = "chatUser";
 }

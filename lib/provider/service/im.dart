@@ -8,7 +8,7 @@ import 'package:client/provider/service/mqttLib.dart';
 import 'package:client/tools/library.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
-typedef OnMsgListener(String topic, Map<String, dynamic> res);
+typedef OnMsgListener(String topic, dynamic res);
 
 final _log = Logger("im");
 
@@ -26,6 +26,7 @@ class Im {
     return _instance;
   }
 
+  static final String topicSystem = "im/system";
   static final String topicP2P = "im/p2p/";
   static final String topicGroup = "im/group/";
 
@@ -46,6 +47,7 @@ class Im {
     String account = "",
     String passwd = "",
   }) async {
+    ImDb.g().init(account);
     var mqttConf = MqttConf();
     mqttConf.host = "ws://127.0.0.1/mqtt";
     mqttConf.port = int.parse(port);
@@ -59,7 +61,7 @@ class Im {
 
     MqttLib.get()
       ..setMsgListener(topicMe, (topic, msg) {
-        Map<String, dynamic> res = json.decode(msg);
+        var res = json.decode(msg);
         msgArrive.forEach((String tag, OnMsgListener? cb) {
           cb?.call(topic, res);
         });
@@ -123,19 +125,27 @@ class Im {
     }
   }
 
-  void sendMsg(String peerId, String msg) {
-    String topic = topicP2P + peerId;
+  void sendMsg(String peerId, String act, String msg) {
+    String topic = topicP2P + peerId + "/$act";
+    MqttLib.get().publish(topic, msg);
+  }
+
+  void requestSystem(String act, Map<String, dynamic> params) {
+    var fromId = Global.get().curUser.id;
+    String topic = topicSystem + "/$fromId/$act";
+    // String msg = jsonEncode({"act": act, "data": params});
+    String msg = jsonEncode(params);
     MqttLib.get().publish(topic, msg);
   }
 
   void sendChatMsg(ChatMsg msg) {
-    String topic = topicP2P + msg.peerId;
+    String topic = topicP2P + msg.peerId + "/chat/${msg.msgId}";
     if (msg.type == typeGroup) {
       topic = topicGroup + msg.peerId;
     }
-    ImData.get().onNewRecent(msg);
-    var data = {"act": "chat", "data": msg};
-    var msgStr = json.encode(data);
+    // ImData.get().onNewRecent(msg);
+    // var data = {"act": "chat", "data": msg};
+    var msgStr = json.encode(msg);
     _log.info(msgStr);
     MqttLib.get().publish(topic, msgStr);
   }

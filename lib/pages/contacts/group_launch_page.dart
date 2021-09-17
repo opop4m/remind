@@ -1,5 +1,5 @@
 import 'package:client/config/dictionary.dart';
-import 'package:client/provider/model/contacts.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils.dart';
 import 'package:client/ui/item/contact_item.dart';
@@ -55,12 +55,12 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
   }
 
   Future getContacts() async {
-    final str = await ContactsPageData().listFriend();
+    final str = await ImData.get().friendList();
 
     List<Friend> listContact = str;
     _contacts.clear();
     _contacts..addAll(listContact);
-    _contacts.sort((a, b) => a.nameIndex!.compareTo(b.nameIndex!));
+    _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));
     sC = new ScrollController();
 
     /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
@@ -68,7 +68,7 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
     for (int i = 0; i < _contacts.length; i++) {
       bool _hasGroupTitle = true;
       if (i > 0 &&
-          _contacts[i].nameIndex!.compareTo(_contacts[i - 1].nameIndex!) == 0)
+          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
         _hasGroupTitle = false;
 
       if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;

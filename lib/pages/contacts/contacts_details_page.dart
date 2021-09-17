@@ -13,10 +13,11 @@ import 'package:client/tools/library.dart';
 import 'package:provider/provider.dart';
 
 class ContactsDetailsPage extends StatefulWidget {
-  final String? title, id;
+  final String title, id;
   final String avatar;
 
-  ContactsDetailsPage({required this.avatar, this.title, this.id});
+  ContactsDetailsPage(
+      {required this.avatar, required this.title, required this.id});
 
   @override
   _ContactsDetailsPageState createState() => _ContactsDetailsPageState();
@@ -55,8 +56,8 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         margin: EdgeInsets.only(top: 10.0),
         text: '发消息',
         isBorder: true,
-        // onPressed: () => routePushReplace(
-        //     new ChatPage(id: widget.id, title: widget.title, type: 1)),
+        onPressed: () => routePushReplace(
+            new ChatPage(id: widget.id, title: widget.title, type: 1)),
       ),
       new Visibility(
         visible: !isSelf,

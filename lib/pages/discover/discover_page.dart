@@ -1,5 +1,6 @@
 import 'package:client/pages/settings/language_page.dart';
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
+import 'package:client/provider/service/im.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,10 @@ class _DiscoverPageState extends State<DiscoverPage> {
       onPressed: () {
         if (item['name'] == '朋友圈') {
           routePush(new WeChatFriendsCircle());
+        } else if (item['name'] == '扫一扫') {
+          Im.get().requestSystem(API.actChatUser, {
+            "uids": ["6130dfd3d0d0922579160683"]
+          });
         } else {
           routePush(new LanguagePage());
         }
