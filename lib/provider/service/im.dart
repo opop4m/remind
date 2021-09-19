@@ -108,6 +108,7 @@ class Im {
       reconnect = true;
       // MqttLib.get().subscribe("im/p2p/test");
       Im.get().requestSystem(actOnline, {}, msgId: UcNavigation.curPage);
+      ImData.get().initSub();
     } else if (connectStatus.state == MqttConnectionState.connecting) {
       onStateChange(ConnectState.connecting);
     } else if (connectStatus.state == MqttConnectionState.faulted) {

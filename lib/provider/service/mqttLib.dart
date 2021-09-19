@@ -72,6 +72,8 @@ class MqttLib {
     client.connectionMessage = connMessage;
   }
 
+  Stream<MqttPublishMessage>? get published => client.published;
+
   bool isConnect() {
     return hasInit &&
         client.connectionStatus?.state == MqttConnectionState.connected;

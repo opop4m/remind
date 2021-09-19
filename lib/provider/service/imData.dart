@@ -38,6 +38,18 @@ class ImData {
     });
   }
 
+  void initSub() {
+    MqttLib.get().published?.listen((message) {
+      String? topic = message.variableHeader?.topicName;
+      if (topic == null) return;
+      // _log.info("published topic: $topic");
+      var tb = parserTopic(topic);
+      if (tb.act == actChat) {
+        ImDb.g().db.chatMsgDao.updateArrived(tb.msgId);
+      }
+    });
+  }
+
   void dispatch(String topic, res) {
     var tb = parserTopic(topic);
     _log.info(tb.act);
