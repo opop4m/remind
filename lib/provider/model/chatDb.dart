@@ -46,13 +46,24 @@ class ChatUsers extends Table {
 
 class Friends extends Table {
   TextColumn get id => text()();
-  TextColumn get alias => text()();
+  TextColumn get alias => text().nullable()();
   TextColumn get nickname => text()();
   TextColumn get avatar => text().nullable()();
   IntColumn get gender => integer().nullable().withDefault(const Constant(0))();
   TextColumn get nameIndex => text()();
   TextColumn get name => text()();
+  IntColumn get readTime =>
+      integer().nullable().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};
+}
+
+class Pops extends Table {
+  TextColumn get targetId => text()();
+  IntColumn get type => integer()();
+  IntColumn get count => integer()();
+
+  @override
+  Set<Column> get primaryKey => {targetId, type};
 }

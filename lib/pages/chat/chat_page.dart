@@ -1,8 +1,8 @@
+import 'dart:convert';
+
 import 'package:client/pages/chat/chat_more_page.dart';
 import 'package:client/pages/group/group_details_page.dart';
 import 'package:client/provider/global_cache.dart';
-import 'package:client/provider/model/chatList.dart';
-import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
@@ -54,6 +54,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     getChatMsgData();
+    readedMsg();
 
     _sC.addListener(() => FocusScope.of(context).requestFocus(new FocusNode()));
     initPlatformState();
@@ -63,6 +64,12 @@ class _ChatPageState extends State<ChatPage> {
         setState(() => newGroupName = v);
       });
     }
+    Notice.addListener(UcActions.chatRead(), (data) {
+      String id = data["friendUid"];
+      if (id == widget.id) {
+        getChatMsgData();
+      }
+    });
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) _emojiState = false;
     });
@@ -75,8 +82,19 @@ class _ChatPageState extends State<ChatPage> {
     // chatData..addAll(listChat.reversed);
     chatData = await ImData.get().getChatList(widget.id, widget.type, 0);
     var res = await ImData.get().getChatUsers([widget.id]);
+
+    if (chatData.length > 0) {
+      var msg = chatData[chatData.length - 1];
+      var msgStr = jsonEncode(msg);
+      _log.info("init msg: $msgStr");
+    }
     peer = res[widget.id]!;
     if (mounted) setState(() {});
+  }
+
+  void readedMsg() {
+    if (widget.type == typePerson)
+      ImData.get().readMsg(widget.id, Im.newMsgTime());
   }
 
   void insertText(String text) {
@@ -324,6 +342,8 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
     canCelListener();
     Notice.removeListenerByEvent(UcActions.msg());
+    Notice.removeListenerByEvent(UcActions.newMsg());
+    Notice.removeListenerByEvent(UcActions.chatRead());
     Notice.removeListenerByEvent(UcActions.groupName());
     _sC.dispose();
   }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:client/provider/model/chatBean.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
@@ -8,6 +9,12 @@ import 'package:client/provider/service/imApi.dart';
 import 'package:client/tools/library.dart';
 
 final _log = Logger("ImData");
+
+const actChatUser = "chatUser";
+const actChat = "chat";
+const actChatRead = "chatRead";
+const actChatDelivered = "chatDelivered";
+const actChatPop = "chatPop";
 
 class ImData {
   static ImData? _instance;
@@ -31,13 +38,55 @@ class ImData {
     _log.info("dispatch message: $res");
     // var data = res["data"];
     switch (tb.act) {
-      case "chat":
+      case actChat:
         onChatMsg(res);
         break;
-      case "chatUser":
+      case actChatUser:
         onChatUser(res);
         break;
+      case actChatRead:
+        onChatRead(res);
+        break;
+      case actChatDelivered:
+        onChatDelivered(tb);
+        break;
+      case actChatPop:
+        onChatPop(res);
+        break;
     }
+  }
+
+  void onChatPop(data) {
+    List list = data;
+    if (list.length > 1) {
+      ImDb.g().db.popsDao.delAll();
+    }
+    for (var i = 0; i < list.length; i++) {
+      var pop = Pop.fromJson(list[i]);
+      ImDb.g().db.popsDao.insertPop(pop.toCompanion(true));
+    }
+    Notice.send(UcActions.chatPop());
+  }
+
+  void onChatDelivered(TopicBean tb) async {
+    await ImDb.g().db.chatMsgDao.updateArrived(tb.msgId);
+    Notice.send(UcActions.msg());
+  }
+
+  void onChatRead(data) async {
+    Map<String, dynamic> res = data;
+    String fUid = res["friendUid"];
+    int readTime = res["readTime"];
+    var changeRow = await ImDb.g().db.friendDao.updateReadTime(fUid, readTime);
+    if (changeRow == 0) {
+      await ImApi.friendList();
+      changeRow = await ImDb.g().db.friendDao.updateReadTime(fUid, readTime);
+      if (changeRow == 0) {
+        _log.info("error: not found fUid: $fUid");
+      }
+    }
+    await ImDb.g().db.chatMsgDao.updateReaded(fUid, readTime);
+    Notice.send(UcActions.chatRead(), res);
   }
 
   void onChatUser(data) {
@@ -156,6 +205,32 @@ class ImData {
         .then((value) => Notice.send(UcActions.friendList(), value.res));
     return res;
   }
+
+  Future<Map<String, int>> getUnread() async {
+    var list = await ImDb.g().db.popsDao.queryAll();
+    var res = Map<String, int>();
+    for (var i = 0; i < list.length; i++) {
+      var pop = list[i];
+      var key = pop.type.toString();
+      if (pop.type == PopTypeGroup) {
+        key = pop.targetId + "_" + typeGroup.toString();
+      } else if (pop.type == PopTypeP2P) {
+        key = pop.targetId + "_" + typePerson.toString();
+      }
+      res[key] = pop.count;
+    }
+    return res;
+  }
+
+  void readMsg(String fUid, int readTime) {
+    var params = {"friendUid": fUid, "readTime": readTime};
+    Im.get().requestSystem(actChatRead, params);
+    int t = PopTypeP2P;
+    ImDb.g().db.popsDao.delPop(fUid, t);
+    Notice.send(UcActions.chatPop());
+  }
+
+  void getChatPopSum() {}
 
   static TopicBean parserTopic(String topic) {
     var tb = TopicBean();

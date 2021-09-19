@@ -1,9 +1,11 @@
+import 'package:badges/badges.dart';
 import 'package:client/http/api.dart';
 import 'package:client/pages/WidgetsBinding.dart';
 import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/contacts/contacts_page.dart';
 import 'package:client/pages/discover/discover_page.dart';
@@ -22,6 +24,10 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   WidgetsBind bind = WidgetsBind();
 
+  late StreamSubscription<int?> _popSub;
+
+  int chatPopSum = 0;
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +35,11 @@ class _RootPageState extends State<RootPage> {
     // ifBrokenNetwork();
     initChat();
     updateApi(context);
+    _popSub = ImDb.g().db.popsDao.queryChatPopSum().listen((event) {
+      _log.info("imdb update pop: $event");
+      chatPopSum = event ?? 0;
+      if (mounted) setState(() {});
+    });
   }
 
   initChat() async {
@@ -67,10 +78,12 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     List<TabBarModel> pages = <TabBarModel>[
       new TabBarModel(
-          title: S.of(context).message,
-          icon: new LoadImage("assets/images/tabbar_chat_c.webp"),
-          selectIcon: new LoadImage("assets/images/tabbar_chat_s.webp"),
-          page: new HomePage()),
+        title: S.of(context).message,
+        icon: LoadImage("assets/images/tabbar_chat_c.webp"),
+        selectIcon: new LoadImage("assets/images/tabbar_chat_s.webp"),
+        page: new HomePage(),
+        pop: chatPopSum,
+      ),
       new TabBarModel(
         title: S.of(context).contacts,
         icon: new LoadImage("assets/images/tabbar_contacts_c.webp"),
@@ -101,6 +114,7 @@ class _RootPageState extends State<RootPage> {
   void dispose() {
     super.dispose();
     _log.info("dispose");
+    _popSub.cancel();
     WidgetsBinding.instance?.removeObserver(bind); //添加观察者
   }
 }

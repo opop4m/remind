@@ -1212,20 +1212,22 @@ class $ChatMsgsTable extends ChatMsgs with TableInfo<$ChatMsgsTable, ChatMsg> {
 
 class Friend extends DataClass implements Insertable<Friend> {
   final String id;
-  final String alias;
+  final String? alias;
   final String nickname;
   final String? avatar;
   final int? gender;
   final String nameIndex;
   final String name;
+  final int? readTime;
   Friend(
       {required this.id,
-      required this.alias,
+      this.alias,
       required this.nickname,
       this.avatar,
       this.gender,
       required this.nameIndex,
-      required this.name});
+      required this.name,
+      this.readTime});
   factory Friend.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -1233,7 +1235,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       id: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       alias: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}alias'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}alias']),
       nickname: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}nickname'])!,
       avatar: const StringType()
@@ -1244,13 +1246,17 @@ class Friend extends DataClass implements Insertable<Friend> {
           .mapFromDatabaseResponse(data['${effectivePrefix}name_index'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      readTime: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}read_time']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['alias'] = Variable<String>(alias);
+    if (!nullToAbsent || alias != null) {
+      map['alias'] = Variable<String?>(alias);
+    }
     map['nickname'] = Variable<String>(nickname);
     if (!nullToAbsent || avatar != null) {
       map['avatar'] = Variable<String?>(avatar);
@@ -1260,13 +1266,17 @@ class Friend extends DataClass implements Insertable<Friend> {
     }
     map['name_index'] = Variable<String>(nameIndex);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || readTime != null) {
+      map['read_time'] = Variable<int?>(readTime);
+    }
     return map;
   }
 
   FriendsCompanion toCompanion(bool nullToAbsent) {
     return FriendsCompanion(
       id: Value(id),
-      alias: Value(alias),
+      alias:
+          alias == null && nullToAbsent ? const Value.absent() : Value(alias),
       nickname: Value(nickname),
       avatar:
           avatar == null && nullToAbsent ? const Value.absent() : Value(avatar),
@@ -1274,6 +1284,9 @@ class Friend extends DataClass implements Insertable<Friend> {
           gender == null && nullToAbsent ? const Value.absent() : Value(gender),
       nameIndex: Value(nameIndex),
       name: Value(name),
+      readTime: readTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(readTime),
     );
   }
 
@@ -1282,12 +1295,13 @@ class Friend extends DataClass implements Insertable<Friend> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Friend(
       id: serializer.fromJson<String>(json['id']),
-      alias: serializer.fromJson<String>(json['alias']),
+      alias: serializer.fromJson<String?>(json['alias']),
       nickname: serializer.fromJson<String>(json['nickname']),
       avatar: serializer.fromJson<String?>(json['avatar']),
       gender: serializer.fromJson<int?>(json['gender']),
       nameIndex: serializer.fromJson<String>(json['nameIndex']),
       name: serializer.fromJson<String>(json['name']),
+      readTime: serializer.fromJson<int?>(json['readTime']),
     );
   }
   @override
@@ -1295,12 +1309,13 @@ class Friend extends DataClass implements Insertable<Friend> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'alias': serializer.toJson<String>(alias),
+      'alias': serializer.toJson<String?>(alias),
       'nickname': serializer.toJson<String>(nickname),
       'avatar': serializer.toJson<String?>(avatar),
       'gender': serializer.toJson<int?>(gender),
       'nameIndex': serializer.toJson<String>(nameIndex),
       'name': serializer.toJson<String>(name),
+      'readTime': serializer.toJson<int?>(readTime),
     };
   }
 
@@ -1311,7 +1326,8 @@ class Friend extends DataClass implements Insertable<Friend> {
           String? avatar,
           int? gender,
           String? nameIndex,
-          String? name}) =>
+          String? name,
+          int? readTime}) =>
       Friend(
         id: id ?? this.id,
         alias: alias ?? this.alias,
@@ -1320,6 +1336,7 @@ class Friend extends DataClass implements Insertable<Friend> {
         gender: gender ?? this.gender,
         nameIndex: nameIndex ?? this.nameIndex,
         name: name ?? this.name,
+        readTime: readTime ?? this.readTime,
       );
   @override
   String toString() {
@@ -1330,7 +1347,8 @@ class Friend extends DataClass implements Insertable<Friend> {
           ..write('avatar: $avatar, ')
           ..write('gender: $gender, ')
           ..write('nameIndex: $nameIndex, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('readTime: $readTime')
           ..write(')'))
         .toString();
   }
@@ -1344,8 +1362,10 @@ class Friend extends DataClass implements Insertable<Friend> {
               nickname.hashCode,
               $mrjc(
                   avatar.hashCode,
-                  $mrjc(gender.hashCode,
-                      $mrjc(nameIndex.hashCode, name.hashCode)))))));
+                  $mrjc(
+                      gender.hashCode,
+                      $mrjc(nameIndex.hashCode,
+                          $mrjc(name.hashCode, readTime.hashCode))))))));
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1356,17 +1376,19 @@ class Friend extends DataClass implements Insertable<Friend> {
           other.avatar == this.avatar &&
           other.gender == this.gender &&
           other.nameIndex == this.nameIndex &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.readTime == this.readTime);
 }
 
 class FriendsCompanion extends UpdateCompanion<Friend> {
   final Value<String> id;
-  final Value<String> alias;
+  final Value<String?> alias;
   final Value<String> nickname;
   final Value<String?> avatar;
   final Value<int?> gender;
   final Value<String> nameIndex;
   final Value<String> name;
+  final Value<int?> readTime;
   const FriendsCompanion({
     this.id = const Value.absent(),
     this.alias = const Value.absent(),
@@ -1375,28 +1397,30 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
     this.gender = const Value.absent(),
     this.nameIndex = const Value.absent(),
     this.name = const Value.absent(),
+    this.readTime = const Value.absent(),
   });
   FriendsCompanion.insert({
     required String id,
-    required String alias,
+    this.alias = const Value.absent(),
     required String nickname,
     this.avatar = const Value.absent(),
     this.gender = const Value.absent(),
     required String nameIndex,
     required String name,
+    this.readTime = const Value.absent(),
   })  : id = Value(id),
-        alias = Value(alias),
         nickname = Value(nickname),
         nameIndex = Value(nameIndex),
         name = Value(name);
   static Insertable<Friend> custom({
     Expression<String>? id,
-    Expression<String>? alias,
+    Expression<String?>? alias,
     Expression<String>? nickname,
     Expression<String?>? avatar,
     Expression<int?>? gender,
     Expression<String>? nameIndex,
     Expression<String>? name,
+    Expression<int?>? readTime,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1406,17 +1430,19 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
       if (gender != null) 'gender': gender,
       if (nameIndex != null) 'name_index': nameIndex,
       if (name != null) 'name': name,
+      if (readTime != null) 'read_time': readTime,
     });
   }
 
   FriendsCompanion copyWith(
       {Value<String>? id,
-      Value<String>? alias,
+      Value<String?>? alias,
       Value<String>? nickname,
       Value<String?>? avatar,
       Value<int?>? gender,
       Value<String>? nameIndex,
-      Value<String>? name}) {
+      Value<String>? name,
+      Value<int?>? readTime}) {
     return FriendsCompanion(
       id: id ?? this.id,
       alias: alias ?? this.alias,
@@ -1425,6 +1451,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
       gender: gender ?? this.gender,
       nameIndex: nameIndex ?? this.nameIndex,
       name: name ?? this.name,
+      readTime: readTime ?? this.readTime,
     );
   }
 
@@ -1435,7 +1462,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
       map['id'] = Variable<String>(id.value);
     }
     if (alias.present) {
-      map['alias'] = Variable<String>(alias.value);
+      map['alias'] = Variable<String?>(alias.value);
     }
     if (nickname.present) {
       map['nickname'] = Variable<String>(nickname.value);
@@ -1452,6 +1479,9 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (readTime.present) {
+      map['read_time'] = Variable<int?>(readTime.value);
+    }
     return map;
   }
 
@@ -1464,7 +1494,8 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
           ..write('avatar: $avatar, ')
           ..write('gender: $gender, ')
           ..write('nameIndex: $nameIndex, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('readTime: $readTime')
           ..write(')'))
         .toString();
   }
@@ -1480,8 +1511,8 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
       typeName: 'TEXT', requiredDuringInsert: true);
   final VerificationMeta _aliasMeta = const VerificationMeta('alias');
   late final GeneratedColumn<String?> alias = GeneratedColumn<String?>(
-      'alias', aliasedName, false,
-      typeName: 'TEXT', requiredDuringInsert: true);
+      'alias', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _nicknameMeta = const VerificationMeta('nickname');
   late final GeneratedColumn<String?> nickname = GeneratedColumn<String?>(
       'nickname', aliasedName, false,
@@ -1504,9 +1535,15 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _readTimeMeta = const VerificationMeta('readTime');
+  late final GeneratedColumn<int?> readTime = GeneratedColumn<int?>(
+      'read_time', aliasedName, true,
+      typeName: 'INTEGER',
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, alias, nickname, avatar, gender, nameIndex, name];
+      [id, alias, nickname, avatar, gender, nameIndex, name, readTime];
   @override
   String get aliasedName => _alias ?? 'friends';
   @override
@@ -1524,8 +1561,6 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
     if (data.containsKey('alias')) {
       context.handle(
           _aliasMeta, alias.isAcceptableOrUnknown(data['alias']!, _aliasMeta));
-    } else if (isInserting) {
-      context.missing(_aliasMeta);
     }
     if (data.containsKey('nickname')) {
       context.handle(_nicknameMeta,
@@ -1553,6 +1588,10 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('read_time')) {
+      context.handle(_readTimeMeta,
+          readTime.isAcceptableOrUnknown(data['read_time']!, _readTimeMeta));
+    }
     return context;
   }
 
@@ -1570,21 +1609,228 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
   }
 }
 
+class Pop extends DataClass implements Insertable<Pop> {
+  final String targetId;
+  final int type;
+  final int count;
+  Pop({required this.targetId, required this.type, required this.count});
+  factory Pop.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Pop(
+      targetId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}target_id'])!,
+      type: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}type'])!,
+      count: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}count'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['target_id'] = Variable<String>(targetId);
+    map['type'] = Variable<int>(type);
+    map['count'] = Variable<int>(count);
+    return map;
+  }
+
+  PopsCompanion toCompanion(bool nullToAbsent) {
+    return PopsCompanion(
+      targetId: Value(targetId),
+      type: Value(type),
+      count: Value(count),
+    );
+  }
+
+  factory Pop.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Pop(
+      targetId: serializer.fromJson<String>(json['targetId']),
+      type: serializer.fromJson<int>(json['type']),
+      count: serializer.fromJson<int>(json['count']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'targetId': serializer.toJson<String>(targetId),
+      'type': serializer.toJson<int>(type),
+      'count': serializer.toJson<int>(count),
+    };
+  }
+
+  Pop copyWith({String? targetId, int? type, int? count}) => Pop(
+        targetId: targetId ?? this.targetId,
+        type: type ?? this.type,
+        count: count ?? this.count,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Pop(')
+          ..write('targetId: $targetId, ')
+          ..write('type: $type, ')
+          ..write('count: $count')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      $mrjf($mrjc(targetId.hashCode, $mrjc(type.hashCode, count.hashCode)));
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Pop &&
+          other.targetId == this.targetId &&
+          other.type == this.type &&
+          other.count == this.count);
+}
+
+class PopsCompanion extends UpdateCompanion<Pop> {
+  final Value<String> targetId;
+  final Value<int> type;
+  final Value<int> count;
+  const PopsCompanion({
+    this.targetId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.count = const Value.absent(),
+  });
+  PopsCompanion.insert({
+    required String targetId,
+    required int type,
+    required int count,
+  })  : targetId = Value(targetId),
+        type = Value(type),
+        count = Value(count);
+  static Insertable<Pop> custom({
+    Expression<String>? targetId,
+    Expression<int>? type,
+    Expression<int>? count,
+  }) {
+    return RawValuesInsertable({
+      if (targetId != null) 'target_id': targetId,
+      if (type != null) 'type': type,
+      if (count != null) 'count': count,
+    });
+  }
+
+  PopsCompanion copyWith(
+      {Value<String>? targetId, Value<int>? type, Value<int>? count}) {
+    return PopsCompanion(
+      targetId: targetId ?? this.targetId,
+      type: type ?? this.type,
+      count: count ?? this.count,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (targetId.present) {
+      map['target_id'] = Variable<String>(targetId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(type.value);
+    }
+    if (count.present) {
+      map['count'] = Variable<int>(count.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PopsCompanion(')
+          ..write('targetId: $targetId, ')
+          ..write('type: $type, ')
+          ..write('count: $count')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PopsTable extends Pops with TableInfo<$PopsTable, Pop> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $PopsTable(this._db, [this._alias]);
+  final VerificationMeta _targetIdMeta = const VerificationMeta('targetId');
+  late final GeneratedColumn<String?> targetId = GeneratedColumn<String?>(
+      'target_id', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  late final GeneratedColumn<int?> type = GeneratedColumn<int?>(
+      'type', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  final VerificationMeta _countMeta = const VerificationMeta('count');
+  late final GeneratedColumn<int?> count = GeneratedColumn<int?>(
+      'count', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [targetId, type, count];
+  @override
+  String get aliasedName => _alias ?? 'pops';
+  @override
+  String get actualTableName => 'pops';
+  @override
+  VerificationContext validateIntegrity(Insertable<Pop> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('target_id')) {
+      context.handle(_targetIdMeta,
+          targetId.isAcceptableOrUnknown(data['target_id']!, _targetIdMeta));
+    } else if (isInserting) {
+      context.missing(_targetIdMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('count')) {
+      context.handle(
+          _countMeta, count.isAcceptableOrUnknown(data['count']!, _countMeta));
+    } else if (isInserting) {
+      context.missing(_countMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {targetId, type};
+  @override
+  Pop map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Pop.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $PopsTable createAlias(String alias) {
+    return $PopsTable(_db, alias);
+  }
+}
+
 abstract class _$UcDatabase extends GeneratedDatabase {
   _$UcDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $ChatRecentsTable chatRecents = $ChatRecentsTable(this);
   late final $ChatUsersTable chatUsers = $ChatUsersTable(this);
   late final $ChatMsgsTable chatMsgs = $ChatMsgsTable(this);
   late final $FriendsTable friends = $FriendsTable(this);
+  late final $PopsTable pops = $PopsTable(this);
   late final ChatMsgDao chatMsgDao = ChatMsgDao(this as UcDatabase);
   late final ChatRecentDao chatRecentDao = ChatRecentDao(this as UcDatabase);
   late final ChatUserDao chatUserDao = ChatUserDao(this as UcDatabase);
   late final FriendDao friendDao = FriendDao(this as UcDatabase);
+  late final PopsDao popsDao = PopsDao(this as UcDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [chatRecents, chatUsers, chatMsgs, friends];
+      [chatRecents, chatUsers, chatMsgs, friends, pops];
 }
 
 // **************************************************************************
@@ -1602,4 +1848,7 @@ mixin _$ChatMsgDaoMixin on DatabaseAccessor<UcDatabase> {
 }
 mixin _$ChatUserDaoMixin on DatabaseAccessor<UcDatabase> {
   $ChatUsersTable get chatUsers => attachedDatabase.chatUsers;
+}
+mixin _$PopsDaoMixin on DatabaseAccessor<UcDatabase> {
+  $PopsTable get pops => attachedDatabase.pops;
 }

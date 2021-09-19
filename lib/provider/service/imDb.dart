@@ -1,4 +1,5 @@
 import 'package:client/provider/model/chatDb.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:moor/moor.dart';
 import 'package:client/tools/adapter/moor.dart'
     if (dart.library.js) 'package:client/tools/adapter/moor_web.dart';
@@ -36,8 +37,8 @@ class ImDb {
 }
 
 @UseMoor(
-    tables: [ChatRecents, ChatUsers, ChatMsgs, Friends],
-    daos: [ChatMsgDao, ChatRecentDao, ChatUserDao, FriendDao])
+    tables: [ChatRecents, ChatUsers, ChatMsgs, Friends, Pops],
+    daos: [ChatMsgDao, ChatRecentDao, ChatUserDao, FriendDao, PopsDao])
 class UcDatabase extends _$UcDatabase {
   // we tell the database where to store the data with this constructor
   UcDatabase(String account)
@@ -72,6 +73,17 @@ class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
 
   Future insertFriend(FriendsCompanion f) =>
       into(friends).insertOnConflictUpdate(f);
+
+  Future<int> updateReadTime(String fUid, int readTime) {
+    var q = update(friends);
+    q.where((tbl) => tbl.id.equals(fUid));
+    return q.write(FriendsCompanion(readTime: Value(readTime)));
+  }
+
+  Future<Friend> queryFriend(String fUid) {
+    var q = select(friends)..where((tbl) => tbl.id.equals(fUid));
+    return q.getSingle();
+  }
 }
 
 @UseDao(tables: [ChatRecents])
@@ -122,6 +134,30 @@ class ChatMsgDao extends DatabaseAccessor<UcDatabase> with _$ChatMsgDaoMixin {
     var q = select(chatMsgs)..where((tbl) => tbl.msgId.equals(msgId));
     return q.getSingleOrNull();
   }
+
+  Future updateReaded(String peerId, int readTime) {
+    var q = update(chatMsgs);
+    q.where((tbl) =>
+        tbl.peerId.equals(peerId) &
+        tbl.type.equals(typePerson) &
+        tbl.createTime.isSmallerOrEqualValue(readTime) &
+        tbl.status.equals(msgStateReaded).not());
+
+    return q.write(ChatMsgsCompanion(
+      status: Value(msgStateReaded),
+    ));
+  }
+
+  Future updateArrived(String msgId) {
+    var q = update(chatMsgs);
+    q.where((tbl) =>
+        tbl.msgId.equals(msgId) &
+        tbl.type.equals(typePerson) &
+        tbl.status.isSmallerOrEqualValue(msgStateArrived));
+    return q.write(ChatMsgsCompanion(
+      status: Value(msgStateArrived),
+    ));
+  }
 }
 
 @UseDao(tables: [ChatUsers])
@@ -142,4 +178,29 @@ class ChatUserDao extends DatabaseAccessor<UcDatabase> with _$ChatUserDaoMixin {
 
   Future insertChatUser(ChatUsersCompanion user) =>
       into(chatUsers).insertOnConflictUpdate(user);
+}
+
+@UseDao(tables: [Pops])
+class PopsDao extends DatabaseAccessor<UcDatabase> with _$PopsDaoMixin {
+  PopsDao(UcDatabase attachedDatabase) : super(attachedDatabase);
+
+  Future insertPop(PopsCompanion pop) => into(pops).insertOnConflictUpdate(pop);
+
+  Future<List<Pop>> queryAll() => select(pops).get();
+
+  Future delAll() => delete(pops).go();
+
+  Future delPop(String targetId, int type) {
+    var q = delete(pops);
+    q.where((tbl) => tbl.targetId.equals(targetId) & tbl.type.equals(type));
+    return q.go();
+  }
+
+  Stream<int?> queryChatPopSum() {
+    var q = selectOnly(pops);
+    var sum = pops.count.sum();
+    q.addColumns([sum]);
+    q.where(pops.type.equals(PopTypeGroup) | pops.type.equals(PopTypeP2P));
+    return q.map((row) => row.read(sum)).watchSingle();
+  }
 }

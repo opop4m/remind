@@ -25,6 +25,7 @@ final _log = Logger("HomePage");
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   List<ChatRecentBean> _chatData = [];
+  Map<String, int> _pop = {};
   // Map<String, ChatUser> _chatUsers = {};
 
   var tapPos;
@@ -48,6 +49,7 @@ class _HomePageState extends State<HomePage>
     // _chatData..addAll(listChat.reversed);
     // if (mounted) setState(() {});
     _chatData = await ImData.get().getRecentList(update: true);
+    _pop = await ImData.get().getUnread();
     Notice.addListener(UcActions.recentList(), (data) {
       // _log.info("notice recentList");
       ImData.get().getRecentList().then((value) async {
@@ -58,6 +60,11 @@ class _HomePageState extends State<HomePage>
     Notice.addListener(UcActions.chatUser(), (data) async {
       _log.info("notice chatUser");
       _chatData = await ImData.get().getRecentList();
+      if (mounted) setState(() {});
+    });
+    Notice.addListener(UcActions.chatPop(), (data) async {
+      _pop = await ImData.get().getUnread();
+      _log.info("chatPop: $_pop");
       if (mounted) setState(() {});
     });
     // await initChatUsers(_chatData);
@@ -175,6 +182,8 @@ class _HomePageState extends State<HomePage>
             ChatRecentBean bean = _chatData[index];
             ChatRecent msg = bean.recent;
             ChatUser u = bean.user;
+            var key = u.id + "_" + msg.type.toString();
+            int unread = _pop[key] ?? 0;
             return InkWell(
               onTap: () {
                 routePush(
@@ -196,6 +205,7 @@ class _HomePageState extends State<HomePage>
                 msg: msg,
                 time: timeView(msg.createTime),
                 isBorder: u.id != _chatData[0].recent.fromId,
+                unread: unread,
               ),
             );
           },

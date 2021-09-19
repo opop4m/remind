@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:badges/badges.dart';
 import 'package:client/pages/contacts/group_launch_page.dart';
 import 'package:client/pages/home/search_page.dart';
 import 'package:client/pages/settings/language_page.dart';
@@ -26,7 +27,7 @@ class RootTabBar extends StatefulWidget {
 }
 
 class RootTabBarState extends State<RootTabBar> {
-  List<BottomNavigationBarItem> pages = [];
+  // List<BottomNavigationBarItem> pages = [];
   late int currentIndex;
   List<Offstage> contents = [];
   late PageController pageController;
@@ -36,16 +37,30 @@ class RootTabBarState extends State<RootTabBar> {
     super.initState();
     currentIndex = widget.currentIndex;
     pageController = PageController(initialPage: currentIndex);
+  }
+
+  List<BottomNavigationBarItem> getBottomNavigationBarItem() {
+    List<BottomNavigationBarItem> pages = [];
     for (int i = 0; i < widget.pages.length; i++) {
       TabBarModel model = widget.pages[i];
       pages.add(
         new BottomNavigationBarItem(
-          icon: model.icon,
-          activeIcon: model.selectIcon,
+          // icon: model.icon,
+          icon: Badge(
+            showBadge: model.pop > 0,
+            badgeContent: Text(""),
+            child: model.icon,
+          ),
+          activeIcon: Badge(
+            showBadge: model.pop > 0,
+            badgeContent: Text(""),
+            child: model.selectIcon,
+          ),
           title: new Text(model.title, style: new TextStyle(fontSize: 12.0)),
         ),
       );
     }
+    return pages;
   }
 
   actionsHandle(v) {
@@ -62,6 +77,7 @@ class RootTabBarState extends State<RootTabBar> {
 
   @override
   Widget build(BuildContext context) {
+    var pages = getBottomNavigationBarItem();
     final List actions = [
       {"title": '发起群聊', 'icon': 'assets/images/contacts_add_newmessage.png'},
       {"title": '添加朋友', 'icon': 'assets/images/ic_add_friend.webp'},
@@ -149,9 +165,14 @@ class RootTabBarState extends State<RootTabBar> {
 
 class TabBarModel {
   const TabBarModel(
-      {required this.title, this.page, required this.icon, this.selectIcon});
+      {this.pop = 0,
+      required this.title,
+      this.page,
+      required this.icon,
+      this.selectIcon});
 
   final String title;
+  final int pop;
   final Widget icon;
   final Widget? selectIcon;
   final Widget? page;

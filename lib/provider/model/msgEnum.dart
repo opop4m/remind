@@ -18,8 +18,13 @@ const int tipsTypeGroupNameChange = 4;
 const int msgStateSending = 1;
 const int msgStateArrived = 2;
 const int msgStateReaded = 3;
-const int msgStateFailed = 4;
+const int msgStateFailed = -1;
 
 const int genderUnknow = 0;
 const int genderMale = 1;
 const int genderFemale = 2;
+
+const int PopTypeP2P = 1;
+const int PopTypeGroup = 2;
+const int PopTypeNewFriend = 3;
+const int PopTypePosts = 4;

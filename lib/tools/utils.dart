@@ -49,6 +49,23 @@ class Utils {
     String result = utf8.decode(bytes);
     return result;
   }
+
+  static String formatTimeHM(int time) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(time * 1000);
+
+    String hourParse = "0${dateTime.hour}";
+    String minuteParse = "0${dateTime.minute}";
+
+    String hour = dateTime.hour.toString().length == 1
+        ? hourParse
+        : dateTime.hour.toString();
+    String minute = dateTime.minute.toString().length == 1
+        ? minuteParse
+        : dateTime.minute.toString();
+
+    String timeStr = '$hour:$minute';
+    return timeStr;
+  }
 }
 
 class PlatformUtils {
