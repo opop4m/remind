@@ -47,6 +47,12 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
     getContacts();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _sub.cancel();
+  }
+
   unFocusMethod() {
     searchF.unfocus();
     isSearch = false;
@@ -54,28 +60,29 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
     setState(() {});
   }
 
+  late StreamSubscription<List<Friend>> _sub;
   Future getContacts() async {
-    final str = await ImData.get().friendList();
+    _sub = ImData.get().friendList().listen((event) {
+      _contacts.clear();
+      _contacts..addAll(event);
+      _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));
 
-    List<Friend> listContact = str;
-    _contacts.clear();
-    _contacts..addAll(listContact);
-    _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));
+      /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
+      var _totalPos = ContactItemState.heightItem(false);
+      for (int i = 0; i < _contacts.length; i++) {
+        bool _hasGroupTitle = true;
+        if (i > 0 &&
+            _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
+          _hasGroupTitle = false;
+
+        if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;
+
+        _totalPos += ContactItemState.heightItem(_hasGroupTitle);
+      }
+      if (mounted) setState(() {});
+    });
+
     sC = new ScrollController();
-
-    /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
-    var _totalPos = ContactItemState.heightItem(false);
-    for (int i = 0; i < _contacts.length; i++) {
-      bool _hasGroupTitle = true;
-      if (i > 0 &&
-          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
-        _hasGroupTitle = false;
-
-      if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;
-
-      _totalPos += ContactItemState.heightItem(_hasGroupTitle);
-    }
-    if (mounted) setState(() {});
   }
 
   // 搜索好友

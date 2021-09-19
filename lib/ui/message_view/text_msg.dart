@@ -26,7 +26,7 @@ class TextMsg extends StatelessWidget {
         action: '',
         isMyself: isSelf,
         timeStr: Utils.formatTimeHM(model.createTime),
-        status: model.type == typeGroup ? -2 : model.status ?? 0,
+        status: model.type == typeGroup || !isSelf ? -2 : model.status ?? 0,
       ),
       new Spacer(),
     ];

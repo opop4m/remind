@@ -20,7 +20,6 @@ class _ContactsPageState extends State<ContactsPage>
 
   ScrollController? sC;
   List<Friend> _contacts = [];
-  StreamSubscription<dynamic>? _messageStreamSubscription;
 
   List<ContactItem> _functionButtons = [
     new ContactItem(
@@ -31,38 +30,30 @@ class _ContactsPageState extends State<ContactsPage>
   ];
   final Map _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
 
+  late StreamSubscription<List<Friend>> _sub;
   Future getContacts() async {
-    Notice.addListener(UcActions.friendList(), (data) {
-      // _log.info("notice : ${data}");
-      List<Friend> list = data;
+    _sub = ImData.get().friendList().listen((event) {
       _contacts.clear();
-      _contacts..addAll(list);
-      setState(() {});
+      _contacts..addAll(event);
+      _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));
+      isNull = !listNoEmpty(event);
+
+      /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
+      var _totalPos = ContactItemState.heightItem(false);
+      for (int i = 0; i < _contacts.length; i++) {
+        bool _hasGroupTitle = true;
+        if (i > 0 &&
+            _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
+          _hasGroupTitle = false;
+
+        if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;
+
+        _totalPos += ContactItemState.heightItem(_hasGroupTitle);
+      }
+      if (mounted) setState(() {});
     });
-    final contacts = await ImData.get().friendList();
 
-    isNull = !listNoEmpty(contacts);
-
-    List<Friend> listContact = contacts;
-    _contacts.clear();
-    _contacts..addAll(listContact);
-    _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));
     sC = new ScrollController();
-
-    /// 计算用于 IndexBar 进行定位的关键通讯录列表项的位置
-    var _totalPos =
-        _functionButtons.length * ContactItemState.heightItem(false);
-    for (int i = 0; i < _contacts.length; i++) {
-      bool _hasGroupTitle = true;
-      if (i > 0 &&
-          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0)
-        _hasGroupTitle = false;
-
-      if (_hasGroupTitle) _letterPosMap[_contacts[i].nameIndex] = _totalPos;
-
-      _totalPos += ContactItemState.heightItem(_hasGroupTitle);
-    }
-    if (mounted) setState(() {});
   }
 
   @override
@@ -125,20 +116,10 @@ class _ContactsPageState extends State<ContactsPage>
   void initState() {
     super.initState();
     getContacts();
-    initPlatformState();
   }
 
   void canCelListener() {
-    if (_messageStreamSubscription != null)
-      _messageStreamSubscription?.cancel();
-  }
-
-  Future<void> initPlatformState() async {
-    if (!mounted) return;
-    if (_messageStreamSubscription == null) {
-      // _messageStreamSubscription =
-      //     im.onMessage.listen((dynamic onData) => getContacts());
-    }
+    _sub.cancel();
   }
 
   @override

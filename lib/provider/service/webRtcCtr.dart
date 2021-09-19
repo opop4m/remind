@@ -43,8 +43,9 @@ class WebRtcCtr {
   OnOffer? onReceiveOffer;
 
   init() {
-    Im.get().setListenner("webRtc", (topic, res) {
-      onMessageFromSocket(topic, res);
+    MqttLib.get().messageStream.listen((mqMsg) {
+      var res = jsonDecode(mqMsg.pt);
+      onMessageFromSocket(mqMsg.topic, res);
     });
   }
 

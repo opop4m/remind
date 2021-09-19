@@ -10,9 +10,9 @@ class UcActions {
 
   static String chatUser() => 'chatUser';
   static String logout() => 'logout';
-  static String newMsg() => 'chat';
-  static String msg() => 'msg'; //msg delivered
-  static String friendList() => 'friendList';
+  // static String newMsg() => 'chat';
+  // static String msg() => 'msg'; //msg delivered
+  // static String friendList() => 'friendList';
   static String chatRead() => 'chatRead';
   static String chatPop() => 'chatPop';
 }

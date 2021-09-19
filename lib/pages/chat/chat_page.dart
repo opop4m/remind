@@ -36,7 +36,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<ChatMsg> chatData = [];
-  StreamSubscription<dynamic>? _msgStreamSubs;
+  late StreamSubscription<List<ChatMsg>> _msgStreamSubs;
   bool _isVoice = false;
   bool _isMore = false;
   double keyboardHeight = 270.0;
@@ -57,19 +57,18 @@ class _ChatPageState extends State<ChatPage> {
     readedMsg();
 
     _sC.addListener(() => FocusScope.of(context).requestFocus(new FocusNode()));
-    initPlatformState();
-    Notice.addListener(UcActions.msg(), (v) => getChatMsgData());
+    // Notice.addListener(UcActions.msg(), (v) => getChatMsgData());
     if (widget.type == typeGroup) {
       Notice.addListener(UcActions.groupName(), (v) {
         setState(() => newGroupName = v);
       });
     }
-    Notice.addListener(UcActions.chatRead(), (data) {
-      String id = data["friendUid"];
-      if (id == widget.id) {
-        getChatMsgData();
-      }
-    });
+    // Notice.addListener(UcActions.chatRead(), (data) {
+    //   String id = data["friendUid"];
+    //   if (id == widget.id) {
+    //     getChatMsgData();
+    //   }
+    // });
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) _emojiState = false;
     });
@@ -80,14 +79,18 @@ class _ChatPageState extends State<ChatPage> {
     // List<ChatData> listChat = str;
     // chatData.clear();
     // chatData..addAll(listChat.reversed);
-    chatData = await ImData.get().getChatList(widget.id, widget.type, 0);
+    _msgStreamSubs =
+        ImData.get().getChatList(widget.id, widget.type, 0).listen((event) {
+      chatData = event;
+      if (chatData.length > 0) {
+        var msg = chatData[chatData.length - 1];
+        var msgStr = jsonEncode(msg);
+        _log.info("init msg: $msgStr");
+      }
+      if (mounted) setState(() {});
+    });
     var res = await ImData.get().getChatUsers([widget.id]);
 
-    if (chatData.length > 0) {
-      var msg = chatData[chatData.length - 1];
-      var msgStr = jsonEncode(msg);
-      _log.info("init msg: $msgStr");
-    }
     peer = res[widget.id]!;
     if (mounted) setState(() {});
   }
@@ -129,27 +132,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void canCelListener() {
-    if (_msgStreamSubs != null) _msgStreamSubs?.cancel();
-  }
-
-  Future<void> initPlatformState() async {
-    if (!mounted) return;
-
-    Notice.addListener(UcActions.newMsg(), (data) {
-      ChatMsg msg = data;
-      _log.warning("message");
-      _log.info(
-          "new msg peerId: ${msg.peerId} ,widget.id:${widget.id},widget.type: ${widget.type}");
-      if (msg.fromId == widget.id && msg.type == widget.type)
-        setState(() {
-          chatData.insert(0, data);
-        });
-    });
-
-    if (_msgStreamSubs == null) {
-      // _msgStreamSubs =
-      // im.onMessage.listen((dynamic onData) => getChatMsgData());
-    }
+    _msgStreamSubs.cancel();
   }
 
   ChatMsg newMsg(int msgType, String content) {
@@ -169,9 +152,6 @@ class _ChatPageState extends State<ChatPage> {
   _handleSubmittedData(String text) async {
     _textController.clear();
 
-    setState(() {
-      chatData.insert(0, newMsg(msgTypeText, text));
-    });
     var msg = newMsg(msgTypeText, text);
     Im.get().sendChatMsg(msg);
     ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
@@ -341,8 +321,8 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     super.dispose();
     canCelListener();
-    Notice.removeListenerByEvent(UcActions.msg());
-    Notice.removeListenerByEvent(UcActions.newMsg());
+    // Notice.removeListenerByEvent(UcActions.msg());
+    // Notice.removeListenerByEvent(UcActions.newMsg());
     Notice.removeListenerByEvent(UcActions.chatRead());
     Notice.removeListenerByEvent(UcActions.groupName());
     _sC.dispose();

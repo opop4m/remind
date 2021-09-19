@@ -5,7 +5,6 @@ import 'package:logging/logging.dart';
 import 'package:client/tools/adapter/mqtt_client.dart'
     if (dart.library.js) 'package:client/tools/adapter/mqtt_client_web.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 // import '../utils/utils.dart';
 import 'package:typed_data/typed_data.dart';
 
@@ -19,7 +18,7 @@ class MqttConf {
 
 final _log = Logger("MqttLib");
 
-typedef OnMsgCallBack(String topic, String msg);
+// typedef OnMsgCallBack(String topic, String msg);
 // enum MqttState{}
 
 class MqttLib {
@@ -36,15 +35,15 @@ class MqttLib {
     return _instance;
   }
 
-  Map<String, OnMsgCallBack> _map = Map();
+  // Map<String, OnMsgCallBack> _map = Map();
 
-  setMsgListener(String topic, OnMsgCallBack? cb) {
-    if (cb == null) {
-      _map.remove(topic);
-    } else {
-      _map[topic] = cb;
-    }
-  }
+  // setMsgListener(String topic, OnMsgCallBack? cb) {
+  //   if (cb == null) {
+  //     _map.remove(topic);
+  //   } else {
+  //     _map[topic] = cb;
+  //   }
+  // }
 
   bool hasInit = false;
   OnStateListener? mqLibState;
@@ -121,6 +120,9 @@ class MqttLib {
     }
   }
 
+  StreamController<MqMsg> _msgStreamC = StreamController.broadcast();
+  Stream<MqMsg> get messageStream => _msgStreamC.stream;
+
   void onMessageArrive(List<MqttReceivedMessage<MqttMessage?>>? c) {
     final recMess = c![0].payload as MqttPublishMessage;
 
@@ -139,13 +141,7 @@ class MqttLib {
     String topic = c[0].topic;
     // Map<String, dynamic> res = json.decode(pt);
     // _log.info("topic: $topic map: ${_map}");
-    _map.forEach((key, cb) {
-      cb(topic, pt);
-    });
-    // if (_map.containsKey(topic)) {
-    //   var cb = _map[topic];
-    //   cb!(topic, pt);
-    // }
+    _msgStreamC.add(MqMsg(topic, pt));
   }
 
   void subscribe(String topic) {
@@ -214,3 +210,9 @@ enum ConnectState {
 }
 
 typedef OnStateListener(ConnectState state);
+
+class MqMsg {
+  String topic = "";
+  String pt = "";
+  MqMsg(this.topic, this.pt);
+}

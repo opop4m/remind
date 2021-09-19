@@ -8,7 +8,7 @@ final _log = Logger("UcNavigation");
 class UcNavigation extends NavigatorObserver {
   static String curPage = "RootPage";
 
-  final String _chatPage = "ChatPage";
+  static final String chatPage = "ChatPage";
 
   @override
   void didPop(Route route, Route? pre) {
@@ -22,7 +22,7 @@ class UcNavigation extends NavigatorObserver {
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
     }
-    if (name == _chatPage) {
+    if (name == chatPage) {
       name += "-" + (pre?.settings.arguments.toString() ?? "");
     }
     curPage = name;
@@ -41,7 +41,7 @@ class UcNavigation extends NavigatorObserver {
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
     }
-    if (name == _chatPage) {
+    if (name == chatPage) {
       name += "-" + route.settings.arguments.toString();
     }
     curPage = name;

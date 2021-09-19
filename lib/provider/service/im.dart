@@ -34,7 +34,7 @@ class Im {
   late String selfId;
   late String topicMe;
 
-  OnStateListener? stateListener;
+  // OnStateListener? stateListener;
   ConnectState currentState = ConnectState.disconnect;
   ConnectivityResult currentNetwork = ConnectivityResult.none;
   Map<String, OnMsgListener?> msgArrive = {}; //tag,cb
@@ -60,13 +60,6 @@ class Im {
     this.selfId = selfId;
     topicMe = topicP2P + selfId;
 
-    MqttLib.get()
-      ..setMsgListener(topicMe, (topic, msg) {
-        var res = json.decode(msg);
-        msgArrive.forEach((String tag, OnMsgListener? cb) {
-          cb?.call(topic, res);
-        });
-      });
     MqttLib.get().mqLibState = onStateListenerForLib;
 
     initListenNetwork();
@@ -85,10 +78,13 @@ class Im {
     });
   }
 
+  StreamController<ConnectState> _stateStreamC = StreamController.broadcast();
+  Stream<ConnectState> get statusStream => _stateStreamC.stream;
+
   void onStateChange(ConnectState state) {
     _log.info("onStateChange: $state");
     currentState = state;
-    stateListener?.call(state);
+    _stateStreamC.add(state);
   }
 
   void onStateListenerForLib(ConnectState state) {
@@ -116,14 +112,6 @@ class Im {
       onStateChange(ConnectState.connecting);
     } else if (connectStatus.state == MqttConnectionState.faulted) {
       onStateListenerForLib(ConnectState.networkErr);
-    }
-  }
-
-  void setListenner(String tag, OnMsgListener? cb) {
-    if (cb == null) {
-      msgArrive.remove(tag);
-    } else {
-      msgArrive[tag] = cb;
     }
   }
 

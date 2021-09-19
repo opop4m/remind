@@ -69,7 +69,7 @@ class UcDatabase extends _$UcDatabase {
 class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
   FriendDao(UcDatabase attachedDatabase) : super(attachedDatabase);
 
-  Future<List<Friend>> getAllFriend() => select(friends).get();
+  Stream<List<Friend>> getAllFriend() => select(friends).watch();
 
   Future insertFriend(FriendsCompanion f) =>
       into(friends).insertOnConflictUpdate(f);
@@ -112,7 +112,7 @@ class ChatRecentDao extends DatabaseAccessor<UcDatabase>
 class ChatMsgDao extends DatabaseAccessor<UcDatabase> with _$ChatMsgDaoMixin {
   ChatMsgDao(UcDatabase attachedDatabase) : super(attachedDatabase);
 
-  Future<List<ChatMsg>> getMsgList(
+  Stream<List<ChatMsg>> getMsgList(
       String peerId, int type, int limit, int offset) {
     var q = select(chatMsgs)
       ..where((tbl) {
@@ -124,7 +124,7 @@ class ChatMsgDao extends DatabaseAccessor<UcDatabase> with _$ChatMsgDaoMixin {
             OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
       ])
       ..limit(limit, offset: offset);
-    return q.get();
+    return q.watch();
   }
 
   Future insertChatMsgData(ChatMsgsCompanion msg) =>

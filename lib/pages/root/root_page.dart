@@ -26,6 +26,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
   WidgetsBind bind = WidgetsBind();
 
   late StreamSubscription<int?> _popSub;
+  late StreamSubscription<ConnectState> _connectSub;
 
   int chatPopSum = 0;
 
@@ -61,21 +62,11 @@ class _RootPageState extends State<RootPage> with RouteAware {
       passwd: user.accessToken,
       // passwd: "useraccessToken",
     );
-    Im.get().stateListener = (state) {
-      switch (state) {
-        case ConnectState.connected:
-          break;
-        case ConnectState.connecting:
-          break;
-        case ConnectState.disconnect:
-          break;
-        case ConnectState.notAuthorized:
-          logout();
-          break;
-        case ConnectState.networkErr:
-          break;
+    _connectSub = Im.get().statusStream.listen((state) {
+      if (state == ConnectState.notAuthorized) {
+        logout();
       }
-    };
+    });
 
     Im.get().connect();
   }
@@ -121,6 +112,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     super.dispose();
     _log.info("dispose");
     _popSub.cancel();
+    _connectSub.cancel();
     WidgetsBinding.instance?.removeObserver(bind); //添加观察者
   }
 }

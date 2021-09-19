@@ -30,8 +30,12 @@ class ImData {
     return _instance;
   }
 
+  late StreamSubscription<MqMsg> _subMsg;
   ImData._internal() {
-    Im.get().setListenner("dbMsg", dispatch);
+    _subMsg = MqttLib.get().messageStream.listen((mqMsg) {
+      var res = jsonDecode(mqMsg.pt);
+      dispatch(mqMsg.topic, res);
+    });
   }
 
   void dispatch(String topic, res) {
@@ -75,7 +79,7 @@ class ImData {
 
   void onChatDelivered(TopicBean tb) async {
     await ImDb.g().db.chatMsgDao.updateArrived(tb.msgId);
-    Notice.send(UcActions.msg());
+    // Notice.send(UcActions.msg());
   }
 
   void onChatRead(data) async {
@@ -107,7 +111,14 @@ class ImData {
     ChatMsg msg = ChatMsg.fromJson(data);
     ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
     onNewRecent(msg);
-    Notice.send(UcActions.newMsg(), msg);
+    if (msg.type == typePerson) {
+      String pageKey = UcNavigation.chatPage + "-${typePerson}-" + msg.fromId;
+      if (pageKey == UcNavigation.curPage) {
+        readMsg(msg.fromId, Im.newMsgTime());
+      }
+    }
+
+    // Notice.send(UcActions.newMsg(), msg);
   }
 
   void onNewRecent(ChatMsg msg) {
@@ -132,9 +143,8 @@ class ImData {
     });
   }
 
-  Future<List<ChatMsg>> getChatList(String peerId, int type, int offset) async {
-    var res =
-        await ImDb.g().db.chatMsgDao.getMsgList(peerId, type, 100, offset);
+  Stream<List<ChatMsg>> getChatList(String peerId, int type, int offset) {
+    var res = ImDb.g().db.chatMsgDao.getMsgList(peerId, type, 100, offset);
     // var json = jsonEncode(res);
     // _log.info("getChatList: $json");
     return res;
@@ -193,21 +203,14 @@ class ImData {
     return res;
   }
 
-  Future<List<ChatMsg>> getMsgList(String peerId, int type, int limit,
-      {int offset = 0}) async {
-    List<ChatMsg> list =
-        await ImDb.g().db.chatMsgDao.getMsgList(peerId, type, limit, offset);
-    return list;
-  }
-
   Future<RspDb<ChatUser>> searchUser(String search) async {
     return await ImApi.searchUser(search);
   }
 
-  Future<List<Friend>> friendList() async {
-    var res = await ImDb.g().db.friendDao.getAllFriend();
-    ImApi.friendList()
-        .then((value) => Notice.send(UcActions.friendList(), value.res));
+  Stream<List<Friend>> friendList() {
+    var res = ImDb.g().db.friendDao.getAllFriend();
+    ImApi.friendList();
+    // .then((value) => Notice.send(UcActions.friendList(), value.res));
     return res;
   }
 

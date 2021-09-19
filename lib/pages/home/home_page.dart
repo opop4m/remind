@@ -186,8 +186,9 @@ class _HomePageState extends State<HomePage>
             int unread = _pop[key] ?? 0;
             return InkWell(
               onTap: () {
+                String key = "${msg.type}-" + u.id;
                 routePush(new ChatPage(id: u.id, title: u.name, type: msg.type),
-                    arguments: u.id);
+                    arguments: key);
               },
               onTapDown: (TapDownDetails details) {
                 tapPos = details.globalPosition;
