@@ -1,6 +1,6 @@
-import 'package:badges/badges.dart';
 import 'package:client/http/api.dart';
 import 'package:client/pages/WidgetsBinding.dart';
+import 'package:client/pages/navigation.dart';
 import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
@@ -8,11 +8,12 @@ import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/contacts/contacts_page.dart';
-import 'package:client/pages/discover/discover_page.dart';
 import 'package:client/pages/home/home_page.dart';
 import 'package:client/pages/mine/mine_page.dart';
 import 'package:client/pages/root/root_tabbar.dart';
 import 'package:client/tools/library.dart';
+
+UcNavigation routeObserver = UcNavigation();
 
 final _log = Logger("RootPage");
 
@@ -21,7 +22,7 @@ class RootPage extends StatefulWidget {
   _RootPageState createState() => _RootPageState();
 }
 
-class _RootPageState extends State<RootPage> {
+class _RootPageState extends State<RootPage> with RouteAware {
   WidgetsBind bind = WidgetsBind();
 
   late StreamSubscription<int?> _popSub;
@@ -40,6 +41,11 @@ class _RootPageState extends State<RootPage> {
       chatPopSum = event ?? 0;
       if (mounted) setState(() {});
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   initChat() async {

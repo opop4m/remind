@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:client/pages/navigation.dart';
 import 'package:client/provider/model/chatBean.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/model/user.dart';
@@ -15,6 +16,7 @@ const actChat = "chat";
 const actChatRead = "chatRead";
 const actChatDelivered = "chatDelivered";
 const actChatPop = "chatPop";
+const actOnline = "online";
 
 class ImData {
   static ImData? _instance;
@@ -52,6 +54,9 @@ class ImData {
         break;
       case actChatPop:
         onChatPop(res);
+        break;
+      case actOnline:
+        Im.get().requestSystem(actOnline, {}, msgId: UcNavigation.curPage);
         break;
     }
   }
@@ -229,8 +234,6 @@ class ImData {
     ImDb.g().db.popsDao.delPop(fUid, t);
     Notice.send(UcActions.chatPop());
   }
-
-  void getChatPopSum() {}
 
   static TopicBean parserTopic(String topic) {
     var tb = TopicBean();

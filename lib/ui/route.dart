@@ -10,12 +10,11 @@ typedef VoidCallbackWithMap = void Function(Map item);
 final navGK = new GlobalKey<NavigatorState>();
 GlobalKey<ScaffoldState>? scaffoldGK;
 
-Future<dynamic> routePush(Widget widget) {
+Future<dynamic> routePush(Widget widget, {Object? arguments}) {
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
-    settings: new RouteSettings(
-      name: widget.toStringShort(),
-    ),
+    settings:
+        new RouteSettings(name: widget.toStringShort(), arguments: arguments),
   );
   return navGK.currentState!.push(route);
 }

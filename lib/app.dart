@@ -12,6 +12,8 @@ import 'package:client/provider/global_model.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+final _log = Logger("app");
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,12 +37,14 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       locale: model.currentLocale,
+      navigatorObservers: [routeObserver],
       routes: {
         '/': (context) {
           return Global.get().hasLogin ? new RootPage() : new LoginBeginPage();
           // return new LoginBeginPage();
         }
       },
+      // home: Global.get().hasLogin ? new RootPage() : new LoginBeginPage(),
     );
   }
 }

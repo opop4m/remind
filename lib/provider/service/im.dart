@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:client/pages/navigation.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
@@ -110,6 +111,7 @@ class Im {
     } else if (connectStatus.state == MqttConnectionState.connected) {
       reconnect = true;
       // MqttLib.get().subscribe("im/p2p/test");
+      Im.get().requestSystem(actOnline, {}, msgId: UcNavigation.curPage);
     } else if (connectStatus.state == MqttConnectionState.connecting) {
       onStateChange(ConnectState.connecting);
     } else if (connectStatus.state == MqttConnectionState.faulted) {
@@ -130,10 +132,14 @@ class Im {
     MqttLib.get().publish(topic, msg);
   }
 
-  void requestSystem(String act, Map<String, dynamic> params) {
+  void requestSystem(String act, Map<String, dynamic> params, {String? msgId}) {
     var fromId = Global.get().curUser.id;
     String topic = topicSystem + "/$fromId/$act";
+    if (msgId != null) {
+      topic += "/" + msgId;
+    }
     // String msg = jsonEncode({"act": act, "data": params});
+    _log.info("requestSystem topic: $topic");
     String msg = jsonEncode(params);
     MqttLib.get().publish(topic, msg);
   }
