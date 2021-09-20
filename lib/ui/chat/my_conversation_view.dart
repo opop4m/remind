@@ -64,10 +64,12 @@ class _MyConversationViewState extends State<MyConversationView> {
         children: [
           Badge(
             showBadge: widget.unread > 0,
-            badgeContent: Text(
-              widget.unread > 99 ? "99" : widget.unread.toString(),
-              style: TextStyle(color: Colors.white),
-            ),
+            badgeContent:
+                Text(widget.unread > 99 ? "99" : widget.unread.toString(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                    )),
             child: ImageView(
                 img: widget.imageUrl ?? defIcon,
                 height: 50.0,
