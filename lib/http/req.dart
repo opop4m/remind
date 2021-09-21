@@ -188,18 +188,23 @@ class Req {
       } else {
         res = await _client.post(
           url,
-          data: FormData.fromMap(data),
+          data: formData ?? FormData.fromMap(data),
           onSendProgress: progressCallBack,
           cancelToken: token,
         );
       }
       dynamic rsp = res.data;
-      if (rsp["code"] == 401) {
-        Notice.once(UcActions.logout());
+      if (rsp != null && rsp is Map) {
+        var code = rsp["code"];
+        if (code != null && code is int && code == 401) {
+          Notice.once(UcActions.logout());
+        }
       }
       return res;
-    } catch (e) {
+    } catch (e, s) {
       print(e);
+      print(s);
+
       _handError(errorCallBack, statusCode);
     }
     var op = new RequestOptions(path: url);

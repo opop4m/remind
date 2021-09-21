@@ -157,8 +157,4 @@ class Im {
     var newId = Im.get().selfId + "-" + peerId + "-" + t.toString();
     return newId;
   }
-
-  static int newMsgTime() {
-    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
-  }
 }

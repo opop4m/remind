@@ -42,7 +42,7 @@ class ContactView extends StatelessWidget {
               _contact.nameIndex == contacts[_contactIndex + 1].nameIndex;
           if (_contact.name != contacts[contacts.length - 1].name) {
             return new ContactItem(
-              avatar: _contact.avatar ?? defIcon,
+              avatar: getAvatarUrl(_contact.avatar),
               title: _contact.name,
               id: _contact.id,
               groupTitle: _isGroupTitle ? _contact.nameIndex : null,
@@ -60,7 +60,7 @@ class ContactView extends StatelessWidget {
           } else {
             return new Column(children: <Widget>[
               new ContactItem(
-                avatar: _contact.avatar ?? defIcon,
+                avatar: getAvatarUrl(_contact.avatar),
                 title: _contact.name,
                 id: _contact.id,
                 groupTitle: _isGroupTitle ? _contact.nameIndex : null,

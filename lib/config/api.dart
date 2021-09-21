@@ -14,12 +14,18 @@ class API {
     }
   }
 
+  static String fileHost = "";
+  static String uploadHost = "";
+
   static String appKey = "unicornKey";
   static String appClientSecret = "unicornSecret";
 
-  static String httpHost = "http://127.0.0.1:8082/";
+  static String httpHost = "http://my.t.com:8082/";
   static String userRegister = httpHost + "user/register";
   static String userLogin = httpHost + "user/login";
+  static String userInfo = httpHost + "user/info";
+  static String userUpdate = httpHost + "user/update";
+
   static String recentList = httpHost + "chat/recent_list"; //get
   static String getChatUser = httpHost + "chat/chat_user"; //post
   static String searchUser = httpHost + "chat/search_user"; //get

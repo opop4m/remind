@@ -31,7 +31,6 @@ class GlobalLogic {
   }
 
   void onLogin(LoginRsp rsp) {
-    _model.user = rsp.user;
     Global.get().curUser = rsp.user;
     Global.get().chatConf = rsp.chatConf;
     _model.saveInfo();
@@ -50,38 +49,71 @@ class GlobalLogic {
     return res;
   }
 
-  Future init() async {
+  Future userInfo() async {
+    var rsp = await Req.g().get(API.userInfo);
+    Rsp<LoginRsp> res = new Rsp<LoginRsp>();
+    if (rsp.data != null) {
+      res.fromJson(rsp.data, new LoginRsp());
+      if (res.data != null) {
+        onLogin(res.data!);
+      }
+    }
+  }
+
+  Future updateUser(params) async {
+    var rsp = await Req.g().post(API.userUpdate, params);
+    Rsp<LoginRsp> res = new Rsp<LoginRsp>();
+    if (rsp.data != null) {
+      res.fromJson(rsp.data, new LoginRsp());
+      if (res.data != null) {
+        onLogin(res.data!);
+      }
+    }
+  }
+
+  Future<bool> init() async {
+    bool hasLogin = true;
     _model.appName = await SharedUtil.instance.getString(Keys.appName);
-    Global.get().hasLogin =
-        await SharedUtil.instance.getBoolean(Keys.hasLogged);
+    // Global.get().hasLogin =
+    //     await SharedUtil.instance.getBoolean(Keys.hasLogged);
     var userStr = await SharedUtil.instance.getString(Keys.user);
     if (strNoEmpty(userStr)) {
-      _model.user = Global.get().curUser.fromJson(jsonDecode(userStr));
+      Global.get().curUser.fromJson(jsonDecode(userStr));
     } else {
-      Global.get().hasLogin = false;
+      hasLogin = false;
     }
     var chatConfStr = await SharedUtil.instance.getString(Keys.chatConf);
     if (strNoEmpty(chatConfStr)) {
       Global.get().chatConf.fromJson(jsonDecode(chatConfStr));
+    } else {
+      hasLogin = false;
     }
-
+    API.fileHost = Global.get().chatConf.fileHost;
+    API.uploadHost = Global.get().chatConf.uploadHost;
     var lcode = await SharedUtil.instance.getString(Keys.currentLanguageCode);
     if (lcode != "") {
       _model.currentLocale = Locale(lcode);
     }
+    if (hasLogin) {
+      userInfo();
+    }
     _log.info(
         "user: ${userStr} \n chatConf: ${chatConfStr} \n has login: ${Global.get().hasLogin}");
+    return hasLogin;
   }
 
   void saveInfo() async {
-    if (_model.user.id != "") {
-      String userStr = jsonEncode(_model.user);
+    if (Global.get().curUser.id != "") {
+      String userStr = jsonEncode(Global.get().curUser);
       String chatConfStr = jsonEncode(Global.get().chatConf);
       // _log.info("save user str: $userStr");
       SharedUtil.instance.saveString(Keys.chatConf, chatConfStr);
       SharedUtil.instance.saveString(Keys.user, userStr);
-      SharedUtil.instance.saveString(Keys.account, _model.user.id);
+      SharedUtil.instance.saveString(Keys.account, Global.get().curUser.id);
       SharedUtil.instance.saveBoolean(Keys.hasLogged, true);
+      SharedUtil.instance.saveInt(Keys.loggedTime, Utils.getTimestampSecond());
+      API.fileHost = Global.get().chatConf.fileHost;
+      API.uploadHost = Global.get().chatConf.uploadHost;
     }
   }
 }

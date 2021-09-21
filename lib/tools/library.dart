@@ -31,8 +31,11 @@ export 'package:client/tools/bus/event.dart';
 export 'package:client/l10n/l18n.dart';
 export 'package:logging/logging.dart';
 export 'package:client/provider/global_cache.dart';
+export 'package:client/tools/utils.dart';
 import 'dart:ui';
 
+import 'package:client/config/api.dart';
+import 'package:client/config/const.dart';
 import 'package:connectivity/connectivity.dart';
 // import 'package:dim/dim.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -49,3 +52,17 @@ const String defGroupAvatar =
     'http://www.flutterj.com/content/uploadfile/zidingyi/g.png';
 
 const Color mainBGColor = Color.fromRGBO(240, 240, 245, 1.0);
+
+String? getImgUrl(String? imgPath) {
+  if (imgPath == null) {
+    return null;
+  }
+  return API.fileHost + imgPath;
+}
+
+String getAvatarUrl(String? imgPath) {
+  if (imgPath == null) {
+    return defIcon;
+  }
+  return API.fileHost + imgPath;
+}

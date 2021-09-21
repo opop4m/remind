@@ -61,8 +61,8 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
           margin: EdgeInsets.only(right: 10.0),
           child: new ImageView(
             img: widget.model.fromId == my.id
-                ? my.avatar ?? defIcon
-                : widget.user.avatar ?? defIcon,
+                ? getAvatarUrl(my.avatar)
+                : getAvatarUrl(widget.user.avatar),
             height: 50,
             width: 50,
             fit: BoxFit.cover,

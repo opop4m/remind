@@ -3,7 +3,6 @@ import 'package:client/pages/chat/more_info_page.dart';
 import 'package:client/pages/chat/set_remark_page.dart';
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
 import 'package:client/provider/global_model.dart';
-import 'package:client/ui/dialog/friend_item_dialog.dart';
 import 'package:client/ui/item/contact_card.dart';
 import 'package:client/ui/orther/button_row.dart';
 import 'package:client/ui/orther/label_row.dart';
@@ -71,8 +70,7 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final globalModel = Provider.of<GlobalModel>(context);
-    bool isSelf = globalModel.user.account == widget.id;
+    bool isSelf = Global.get().curUser.account == widget.id;
 
     var rWidget = [
       new SizedBox(

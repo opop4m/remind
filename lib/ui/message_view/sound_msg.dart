@@ -178,7 +178,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
             ],
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          color: widget.user.id == globalModel.user.account
+          color: widget.user.id == Global.get().curUser.account
               ? Color(0xff98E165)
               : Colors.white,
           onPressed: () {

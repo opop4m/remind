@@ -54,12 +54,16 @@ class ChatConf extends FromJson {
   String port = "";
   String stun = "";
   String turn = "";
+  String fileHost = "";
+  String uploadHost = "";
   ChatConf();
   ChatConf fromJson(dynamic json) {
     host = json["host"];
     port = json["port"];
     stun = json["stun"];
     turn = json["turn"];
+    fileHost = json["fileHost"];
+    uploadHost = json["uploadHost"];
     return this;
   }
 
@@ -69,6 +73,8 @@ class ChatConf extends FromJson {
       "port": port,
       "stun": stun,
       "turn": turn,
+      "fileHost": fileHost,
+      "uploadHost": uploadHost,
     };
   }
 }

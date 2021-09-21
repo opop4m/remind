@@ -7,6 +7,7 @@ import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
+import 'package:client/tools/utils.dart';
 import 'package:client/ui/chat/chat_details_body.dart';
 import 'package:client/ui/chat/chat_details_row.dart';
 import 'package:client/ui/item/chat_more_icon.dart';
@@ -97,7 +98,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void readedMsg() {
     if (widget.type == typePerson)
-      ImData.get().readMsg(widget.id, Im.newMsgTime());
+      ImData.get().readMsg(widget.id, Utils.getTimestampSecond());
   }
 
   void insertText(String text) {
@@ -145,7 +146,7 @@ class _ChatPageState extends State<ChatPage> {
         tipsType: 0,
         content: content,
         status: msgStateSending,
-        createTime: Im.newMsgTime());
+        createTime: Utils.getTimestampSecond());
     return msg;
   }
 

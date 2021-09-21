@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage>
                 }
               },
               child: new MyConversationView(
-                imageUrl: u.avatar,
+                imageUrl: getAvatarUrl(u.avatar),
                 title: u.name,
                 msg: msg,
                 time: timeView(msg.createTime),

@@ -1,3 +1,4 @@
+import 'package:client/provider/global_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:client/provider/global_model.dart';
@@ -15,7 +16,7 @@ class QuitMessage extends StatelessWidget {
       alignment: Alignment.center,
       margin: EdgeInsets.symmetric(vertical: 5.0),
       child: new Text(
-        '${data['opGroupMemberInfo']['user'] == globalModel.user.nickName ? '你' : data['opGroupMemberInfo']['user']}' +
+        '${data['opGroupMemberInfo']['user'] == Global.get().curUser.nickName ? '你' : data['opGroupMemberInfo']['user']}' +
             ' 退出了群聊',
         style:
             TextStyle(color: Color.fromRGBO(108, 108, 108, 0.8), fontSize: 11),

@@ -1,7 +1,19 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:client/http/req.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/tools/mimeType.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
+
+final _log = Logger("API");
 
 /// 随机头像 [Random avatar]
 void postSuggestionWithAvatar(BuildContext context) async {
@@ -58,21 +70,36 @@ void updateApi(BuildContext context) async {
 }
 
 /// 上传头像 [uploadImg]
-uploadImgApi(BuildContext context, base64Img, Callback callback) async {
-  // Req.getInstance().post(
-  //   API.uploadImg,
-  //   (v) {
-  //     print('code::${v['code']}');
-  //     print('URL::${v['result']['URL']}');
-  //     if (v['code'] == 200) {
-  //       callback(v['result']['URL']);
-  //     } else {
-  //       callback(null);
-  //     }
-  //   },
-  //   errorCallBack: (String msg, int code) {
-  //     showToast(context, msg);
-  //   },
-  //   params: {"image_base_64": base64Img},
-  // );
+Future<String> uploadImgApi(
+  Uint8List avatarImgBytes,
+  String ext,
+  String scene,
+) async {
+  var path = "";
+  var avatarF = MultipartFile.fromBytes(
+    avatarImgBytes,
+    filename: "img.jpeg",
+    contentType: MediaType('application', 'image/jpeg'),
+  );
+  var digest = md5.convert(avatarImgBytes);
+  // 这里其实就是 digest.toString()
+  var md = hex.encode(digest.bytes);
+
+  var params = {
+    "scene": scene,
+    "filename": md + ext,
+    "output": "json2",
+    "auth_token": Global.get().curUser.accessToken,
+    "file": avatarF,
+  };
+  var url = API.uploadHost + "/group1/upload";
+  var rsp = await Req.g().post(url, params);
+  if (rsp.data != null) {
+    var json = jsonDecode(rsp.data!);
+    if (json["status"] == "ok") {
+      path = json["data"]["path"];
+    }
+    // _log.info("upload res: ${rsp.data}");
+  }
+  return path;
 }

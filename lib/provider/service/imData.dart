@@ -8,6 +8,7 @@ import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/provider/service/imApi.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/tools/utils.dart';
 
 final _log = Logger("ImData");
 
@@ -126,7 +127,7 @@ class ImData {
     if (msg.type == typePerson) {
       String pageKey = UcNavigation.chatPage + "-${typePerson}-" + msg.fromId;
       if (pageKey == UcNavigation.curPage) {
-        readMsg(msg.fromId, Im.newMsgTime());
+        readMsg(msg.fromId, Utils.getTimestampSecond());
       }
     }
 

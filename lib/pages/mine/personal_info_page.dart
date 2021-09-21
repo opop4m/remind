@@ -2,15 +2,20 @@ import 'dart:convert';
 
 import 'package:client/http/api.dart';
 import 'package:client/pages/mine/code_page.dart';
+import 'package:client/tools/adapter/imagePicker.dart';
 import 'package:client/tools/commom.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/tools/mimeType.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:client/pages/mine/change_name_page.dart';
 import 'package:client/provider/global_model.dart';
 
 import 'package:client/ui/orther/label_row.dart';
+
+final _log = Logger("PersonalInfoPage");
 
 class PersonalInfoPage extends StatefulWidget {
   @override
@@ -32,35 +37,52 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   _openGallery({type = ImageSource.gallery}) async {
-    final model = Provider.of<GlobalModel>(context, listen: false);
-    var ip = ImagePicker();
-    XFile? imageFile = await ip.pickImage(source: type);
-    if (imageFile == null) return;
-    List<int> imageBytes = await compressFile(File(imageFile.path));
-    if (imageFile != null) {
-      String base64Img = 'data:image/jpeg;base64,${base64Encode(imageBytes)}';
-      uploadImgApi(context, base64Img, (v) {
-        if (v == null) {
-          showToast(context, '上传头像失败,请换张图像再试');
-          return;
-        }
-
-        // setUsersProfileMethod(
-        //   context,
-        //   avatarStr: v,
-        //   nickNameStr: model.nickName,
-        //   callback: (data) {
-        //     if (data.toString().contains('ucc')) {
-        //       showToast(context, '设置头像成功');
-        //       model.avatar = v;
-        //       model.refresh();
-        //     } else {
-        //       showToast(context, '设置头像失败');
-        //     }
-        //   },
-        // );
-      });
+    var avatarImgBytes = await UcImagePicker.getImage();
+    if (avatarImgBytes == null) {
+      _log.info("did not choose any file");
+      return;
     }
+    var mime = lookupMimeType('', headerBytes: avatarImgBytes.sublist(0, 10));
+    if (mime == null) {
+      _log.info("unknow file type");
+      return;
+    }
+    var ext = findExtFromMime(mime);
+    _log.info("mime type: $mime, ext: $ext");
+    var avatarPath = await uploadImgApi(avatarImgBytes, ext, "avatar");
+    if (strNoEmpty(avatarPath)) {
+      await _model.logic.updateUser({"avatar": avatarPath});
+      if (mounted) setState(() {});
+    }
+    // final model = Provider.of<GlobalModel>(context, listen: false);
+    // var ip = ImagePicker();
+    // XFile? imageFile = await ip.pickImage(source: type);
+    // if (imageFile == null) return;
+    // List<int> imageBytes = await compressFile(File(imageFile.path));
+    // if (imageFile != null) {
+    //   String base64Img = 'data:image/jpeg;base64,${base64Encode(imageBytes)}';
+    //   uploadImgApi(context, base64Img, (v) {
+    //     if (v == null) {
+    //       showToast(context, '上传头像失败,请换张图像再试');
+    //       return;
+    //     }
+
+    //     setUsersProfileMethod(
+    //       context,
+    //       avatarStr: v,
+    //       nickNameStr: model.nickName,
+    //       callback: (data) {
+    //         if (data.toString().contains('ucc')) {
+    //           showToast(context, '设置头像成功');
+    //           model.avatar = v;
+    //           model.refresh();
+    //         } else {
+    //           showToast(context, '设置头像失败');
+    //         }
+    //       },
+    //     );
+    //   });
+    // }
   }
 
   Widget dynamicAvatar(avatar, {size}) {
@@ -79,7 +101,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Widget body(GlobalModel model) {
     List data = [
-      {'label': '微信号', 'value': model.user.account},
+      {'label': '微信号', 'value': Global.get().curUser.account},
       {'label': '二维码名片', 'value': ''},
       {'label': '更多', 'value': ''},
       {'label': '我的地址', 'value': ''},
@@ -95,8 +117,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           height: 55.0,
           child: new ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(5.0)),
-            child: strNoEmpty(model.user.avatar)
-                ? dynamicAvatar(model.user.avatar)
+            child: strNoEmpty(Global.get().curUser.avatar)
+                ? dynamicAvatar(getAvatarUrl(Global.get().curUser.avatar))
                 : new Image.asset(defIcon, fit: BoxFit.cover),
           ),
         ),
@@ -106,8 +128,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         label: '昵称',
         isLine: true,
         isRight: true,
-        rValue: model.user.nickName,
-        onPressed: () => routePush(new ChangeNamePage(model.user.nickName)),
+        rValue: Global.get().curUser.nickName,
+        onPressed: () =>
+            routePush(new ChangeNamePage(Global.get().curUser.nickName)),
       ),
       new Column(
         children: data.map((item) => buildContent(item, model)).toList(),
@@ -132,14 +155,16 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     );
   }
 
+  late GlobalModel _model;
+
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<GlobalModel>(context);
+    _model = Provider.of<GlobalModel>(context);
 
     return new Scaffold(
       backgroundColor: appBarColor,
       appBar: new ComMomBar(title: '个人信息'),
-      body: new SingleChildScrollView(child: body(model)),
+      body: new SingleChildScrollView(child: body(_model)),
     );
   }
 }

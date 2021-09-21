@@ -204,8 +204,8 @@ class _AddFriendPageState extends State<AddFriendPage> {
     if (rsp.code == 0) {
       var user = rsp.res!;
       print("AddFriendsDetails");
-      routePush(new AddFriendsDetails('search', user.id, user.avatar ?? defIcon,
-          user.name, user.gender ?? genderMale));
+      routePush(new AddFriendsDetails('search', user.id,
+          getAvatarUrl(user.avatar), user.name, user.gender ?? genderMale));
     } else {
       isResult = true;
     }

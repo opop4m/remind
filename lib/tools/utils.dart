@@ -66,6 +66,10 @@ class Utils {
     String timeStr = '$hour:$minute';
     return timeStr;
   }
+
+  static int getTimestampSecond() {
+    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  }
 }
 
 class PlatformUtils {

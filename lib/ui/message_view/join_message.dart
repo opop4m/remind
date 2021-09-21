@@ -1,3 +1,4 @@
+import 'package:client/provider/global_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:client/provider/global_model.dart';
@@ -18,7 +19,7 @@ class JoinMessage extends StatelessWidget {
         data['changedGroupMemberInfo'].toString().substring(
                     data['changedGroupMemberInfo'].toString().indexOf('{') + 1,
                     data['changedGroupMemberInfo'].toString().indexOf(':')) ==
-                globalModel.user.nickName
+                Global.get().curUser.nickName
             ? '你 加入了群聊'
             : data['changedGroupMemberInfo'].toString().substring(
                     data['changedGroupMemberInfo'].toString().indexOf('{') + 1,

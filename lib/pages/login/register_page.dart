@@ -1,12 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:client/pages/root/root_page.dart';
 import 'package:client/provider/global_model.dart';
+import 'package:client/tools/adapter/imagePicker.dart';
 import 'package:client/tools/utils.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:client/provider/login_model.dart';
-
+import 'package:http_parser/http_parser.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/view/edit_view.dart';
 
@@ -31,20 +35,13 @@ class _RegisterPageState extends State<RegisterPage> {
   FocusNode pWF = new FocusNode();
   TextEditingController pWC = new TextEditingController();
 
-  String localAvatarImgPath = '';
+  // String localAvatarImgPath = '';
+  Uint8List? avatarImgBytes;
   String registType = "email";
 
   _openGallery() async {
-    if (PlatformUtils.isMobile) {
-      final ImagePicker _picker = ImagePicker();
-      XFile? img = await _picker.pickImage(source: ImageSource.gallery);
-      if (img != null) {
-        localAvatarImgPath = img.path;
-        setState(() {});
-      } else {
-        return;
-      }
-    }
+    avatarImgBytes = await UcImagePicker.getImage();
+    if (mounted) setState(() {});
   }
 
   Widget bodyEmail(LoginModel model, GlobalModel gModel) {
@@ -88,12 +85,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
           new InkWell(
-            child: !strNoEmpty(localAvatarImgPath)
+            child: !listNoEmpty(avatarImgBytes)
                 ? new Image.asset('assets/images/login/select_avatar.webp',
                     width: 60.0, height: 60.0, fit: BoxFit.cover)
                 : new ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: new Image.file(File(localAvatarImgPath),
+                    child: new Image.memory(avatarImgBytes!,
                         width: 60.0, height: 60.0, fit: BoxFit.cover),
                   ),
             onTap: () => _openGallery(),
@@ -183,12 +180,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
           new InkWell(
-            child: !strNoEmpty(localAvatarImgPath)
+            child: !listNoEmpty(avatarImgBytes)
                 ? new Image.asset('assets/images/login/select_avatar.webp',
                     width: 60.0, height: 60.0, fit: BoxFit.cover)
                 : new ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: new Image.file(File(localAvatarImgPath),
+                    child: new Image.memory(avatarImgBytes!,
                         width: 60.0, height: 60.0, fit: BoxFit.cover),
                   ),
             onTap: () => _openGallery(),
@@ -345,12 +342,22 @@ class _RegisterPageState extends State<RegisterPage> {
         return;
       }
     }
+    MultipartFile? avatarF;
+    if (avatarImgBytes != null) {
+      avatarF = MultipartFile.fromBytes(
+        avatarImgBytes!,
+        filename: "img.jpeg",
+        contentType: MediaType('application', 'image/jpeg'),
+      );
+    }
     var params = {
       "nickName": nickC.text,
       "email": emailC.text,
       "passwd": pWC.text,
-      "type": registType
+      "type": registType,
+      "avatar": avatarF,
     };
+
     var u = await gModel.logic.register(params);
     if (u.code == 0) {
       showToast(context, '注册成功');

@@ -56,7 +56,7 @@ class _MinePageState extends State<MinePage> {
 
   Widget dynamicAvatar(avatar, {size}) {
     return new ImageView(
-        img: avatar,
+        img: API.fileHost + avatar,
         width: size ?? null,
         height: size ?? null,
         fit: BoxFit.fill);
@@ -78,8 +78,8 @@ class _MinePageState extends State<MinePage> {
         height: 60.0,
         child: new ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
-          child: strNoEmpty(model.user.avatar)
-              ? dynamicAvatar(model.user.avatar)
+          child: strNoEmpty(Global.get().curUser.avatar)
+              ? dynamicAvatar(Global.get().curUser.avatar)
               : new Image.asset(defIcon, fit: BoxFit.cover),
         ),
       ),
@@ -91,14 +91,14 @@ class _MinePageState extends State<MinePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             new Text(
-              model.user.nickName,
+              Global.get().curUser.nickName,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 20.0,
                   fontWeight: FontWeight.w500),
             ),
             new Text(
-              model.user.email,
+              Global.get().curUser.email,
               style: TextStyle(color: mainTextColor),
             ),
           ],

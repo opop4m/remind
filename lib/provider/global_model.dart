@@ -18,7 +18,7 @@ class GlobalModel extends ChangeNotifier {
   // String avatar = '';
   // int gender = 0;
 
-  User user = User();
+  // User user = User();
 
   ///当前语言
   // List<String> currentLanguageCode = ["zh", "CN"];
@@ -38,6 +38,7 @@ class GlobalModel extends ChangeNotifier {
       Future.wait([
         logic.init(),
       ]).then((value) {
+        Global.get().hasLogin = value[0];
         refresh();
       });
     }

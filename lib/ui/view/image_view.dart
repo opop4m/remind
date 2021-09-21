@@ -5,7 +5,7 @@ import 'package:client/tools/library.dart';
 
 class ImageView extends StatelessWidget {
   final String img;
-  final double width;
+  final double? width;
   final double? height;
   final BoxFit? fit;
   final bool isRadius;
@@ -51,7 +51,7 @@ class ImageView extends StatelessWidget {
                 Border.all(color: Colors.black.withOpacity(0.2), width: 0.3)),
         child: new Image.asset(
           defIcon,
-          width: width - 1,
+          width: width == null ? null : (width! - 1),
           height: height != null ? height! - 1 : 0,
           fit: width != null && height != null ? BoxFit.fill : fit,
         ),
