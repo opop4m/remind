@@ -59,7 +59,7 @@ class _ChatMorePageState extends State<ChatMorePage> {
             return;
           }
           var ext = findExtFromMime(mime);
-          var imgPath = await uploadImgApi(bytes, ext, "avatar");
+          var imgPath = await uploadImgApi(bytes, ext, "chat");
           if (strNoEmpty(imgPath)) {
             var msg = Im.newMsg(
                 widget.type ?? typePerson, msgTypeImage, widget.id!,
