@@ -64,6 +64,7 @@ class ImgMsg extends StatelessWidget {
                 },
                 onTapUp: (c, f, s) => Navigator.of(context).pop(),
                 maxScale: 3.0,
+                minScale: PhotoViewComputedScale.contained,
               ),
             );
           },

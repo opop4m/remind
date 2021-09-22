@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:client/http/api.dart';
 import 'package:client/pages/mine/code_page.dart';
-import 'package:client/tools/adapter/imagePicker.dart';
-import 'package:client/tools/commom.dart';
+import 'package:client/tools/adapter/imagePickerApi.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/tools/mimeType.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +34,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   _openGallery({type = ImageSource.gallery}) async {
-    var avatarImgBytes = await UcImagePicker.getImage();
+    var avatarImgBytes = await UcImagePicker.image();
     if (avatarImgBytes == null) {
       _log.info("did not choose any file");
       return;

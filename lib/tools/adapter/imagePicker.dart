@@ -1,65 +1,58 @@
 import 'dart:typed_data';
 
+import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_web/image_picker_web.dart';
-import 'dart:html' as html;
-import '../utils.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-class UcImagePicker {
-  static Future<List<Uint8List>> getMultiImages() async {
-    if (!PlatformUtils.isWeb) {
-      // final ImagePicker _picker = ImagePicker();
-      // XFile? img = await _picker.pickImage(source: ImageSource.gallery);
+final _log = Logger("imgPicker");
 
-      // if (img != null) {
-      //   imgBytes = await img.readAsBytes();
-      // }
-    } else {}
-    List<Uint8List> list =
-        await ImagePickerWeb.getMultiImages(outputType: ImageType.bytes)
-            as List<Uint8List>;
-    return list;
+Future<List<Uint8List>> getMultiImages(BuildContext ctx) async {
+  List<Uint8List> list = [];
+  List<AssetEntity> assets = <AssetEntity>[];
+  var result = await AssetPicker.pickAssets(
+    ctx,
+    maxAssets: 9,
+    pageSize: 320,
+    pathThumbSize: 80,
+    gridCount: 4,
+    selectedAssets: assets,
+    themeColor: Colors.green,
+    // textDelegate: DefaultAssetsPickerTextDelegate(),
+    routeCurve: Curves.easeIn,
+    routeDuration: const Duration(milliseconds: 500),
+  );
+  if (result == null) {
+    return [];
   }
-
-  static Future<Uint8List?> getImage() async {
-    Uint8List? imgBytes;
-    if (!PlatformUtils.isWeb) {
-      final ImagePicker _picker = ImagePicker();
-      XFile? img = await _picker.pickImage(source: ImageSource.gallery);
-      if (img != null) {
-        imgBytes = await img.readAsBytes();
-      }
-    } else {
-      Uint8List? _imgBytes =
-          await ImagePickerWeb.getImage(outputType: ImageType.bytes)
-              as Uint8List?;
-
-      if (_imgBytes != null) {
-        imgBytes = _imgBytes;
-      }
-    }
-    return imgBytes;
+  List<AssetEntity> _list = result;
+  _log.info("choose result : ${_list.length}");
+  for (var i = 0; i < _list.length; i++) {
+    var element = _list[i];
+    var f = await element.file;
+    var bytes = await f?.readAsBytes();
+    _log.info("get bytes: ${bytes?.length}");
+    if (bytes != null) list.add(bytes);
   }
-
-  static Future<String?> getImagePath() async {
-    String? imgPath;
-    if (!PlatformUtils.isWeb) {
-      final ImagePicker _picker = ImagePicker();
-      XFile? img = await _picker.pickImage(source: ImageSource.gallery);
-      if (img != null) {
-        imgPath = await img.path;
-      }
-    } else {
-      html.File? imageFile =
-          await ImagePickerWeb.getImage(outputType: ImageType.file)
-              as html.File?;
-      if (imageFile != null) {
-        imgPath = imageFile.relativePath;
-      }
-    }
-    return imgPath;
-  }
+  return list;
 }
 
-class UcImg {}
+Future<Uint8List?> getImage() async {
+  Uint8List? imgBytes;
+  final ImagePicker _picker = ImagePicker();
+  XFile? img = await _picker.pickImage(source: ImageSource.gallery);
+  if (img != null) {
+    imgBytes = await img.readAsBytes();
+  }
+  return imgBytes;
+}
+
+Future<String?> getImagePath() async {
+  String? imgPath;
+  final ImagePicker _picker = ImagePicker();
+  XFile? img = await _picker.pickImage(source: ImageSource.gallery);
+  if (img != null) {
+    imgPath = await img.path;
+  }
+  return imgPath;
+}

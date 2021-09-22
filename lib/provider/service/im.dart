@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:client/http/api.dart';
 import 'package:client/pages/navigation.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imData.dart';
@@ -7,6 +9,8 @@ import 'package:client/provider/service/imDb.dart';
 export 'package:client/provider/service/mqttLib.dart';
 import 'package:client/provider/service/mqttLib.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/tools/mimeType.dart';
+import 'package:mime/mime.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 typedef OnMsgListener(String topic, dynamic res);
@@ -43,14 +47,14 @@ class Im {
   init(
     String selfId,
     String uuid, {
-    String host = "ws://127.0.0.1/mqtt",
+    String host = "127.0.0.1",
     String port = "4083",
     String account = "",
     String passwd = "",
   }) async {
     ImDb.g().init(account);
     var mqttConf = MqttConf();
-    mqttConf.host = "ws://127.0.0.1/mqtt";
+    mqttConf.host = "ws://$host/mqtt";
     mqttConf.port = int.parse(port);
     mqttConf.clientId = uuid;
     mqttConf.account = account;
@@ -144,6 +148,23 @@ class Im {
     _log.info(msgStr);
     ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
     MqttLib.get().publish(topic, msgStr);
+  }
+
+  static sendMediaMsg(
+      int type, int msgType, String peerId, Uint8List bytes) async {
+    _log.info("sendMediaMsg bytes len: ${bytes.length}");
+    var mime = lookupMimeType('', headerBytes: bytes.sublist(0, 10));
+    if (mime == null) {
+      _log.info("unknow file type");
+      return;
+    }
+    var ext = findExtFromMime(mime);
+    var imgPath = await uploadImgApi(bytes, ext, "chat");
+    _log.info("imgPath: $imgPath");
+    if (strNoEmpty(imgPath)) {
+      var msg = Im.newMsg(type, msgTypeImage, peerId, ext: imgPath);
+      Im.get().sendChatMsg(msg);
+    }
   }
 
   static ChatMsg newMsg(int type, int msgType, String peerId,

@@ -2,11 +2,9 @@ import 'dart:typed_data';
 
 import 'package:client/pages/root/root_page.dart';
 import 'package:client/provider/global_model.dart';
-import 'package:client/tools/adapter/imagePicker.dart';
-import 'package:client/tools/utils.dart';
+import 'package:client/tools/adapter/imagePickerApi.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:client/provider/login_model.dart';
@@ -40,7 +38,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String registType = "email";
 
   _openGallery() async {
-    avatarImgBytes = await UcImagePicker.getImage();
+    avatarImgBytes = await UcImagePicker.image();
     if (mounted) setState(() {});
   }
 
