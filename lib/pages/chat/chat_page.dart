@@ -136,26 +136,11 @@ class _ChatPageState extends State<ChatPage> {
     _msgStreamSubs.cancel();
   }
 
-  ChatMsg newMsg(int msgType, String content) {
-    var msg = ChatMsg(
-        msgId: Im.newMsgId(widget.id),
-        peerId: widget.id,
-        fromId: Global.get().curUser.id,
-        type: widget.type,
-        msgType: msgType,
-        tipsType: 0,
-        content: content,
-        status: msgStateSending,
-        createTime: Utils.getTimestampSecond());
-    return msg;
-  }
-
   _handleSubmittedData(String text) async {
     _textController.clear();
 
-    var msg = newMsg(msgTypeText, text);
+    var msg = Im.newMsg(widget.type, msgTypeText, widget.id, content: text);
     Im.get().sendChatMsg(msg);
-    ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
   }
 
   onTapHandle(ButtonType type) {

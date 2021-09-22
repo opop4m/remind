@@ -84,16 +84,31 @@ Future<String> uploadImgApi(
   var digest = md5.convert(avatarImgBytes);
   // 这里其实就是 digest.toString()
   var md = hex.encode(digest.bytes);
+  var url = API.uploadHost + "/group1/upload";
+  var params = <String, dynamic>{
+    "md5": md,
+    "output": "json2",
+    "auth_token": Global.get().curUser.accessToken,
+  };
+  var rsp = await Req.g().get(url, params: params);
+  if (rsp.data != null) {
+    var json = jsonDecode(rsp.data!);
+    // _log.info("upload res: ${rsp.data}");
+    if (json["status"] == "ok") {
+      path = json["data"]["path"];
+      return path;
+    }
+  }
 
-  var params = {
+  params = {
     "scene": scene,
     "filename": md + ext,
     "output": "json2",
     "auth_token": Global.get().curUser.accessToken,
     "file": avatarF,
   };
-  var url = API.uploadHost + "/group1/upload";
-  var rsp = await Req.g().post(url, params);
+
+  rsp = await Req.g().post(url, params);
   if (rsp.data != null) {
     var json = jsonDecode(rsp.data!);
     if (json["status"] == "ok") {

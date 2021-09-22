@@ -15,7 +15,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
   final int type;
   final int msgType;
   final int? tipsType;
-  final String content;
+  final String? content;
   final int createTime;
   final String? ext;
   ChatRecent(
@@ -26,7 +26,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       required this.type,
       required this.msgType,
       this.tipsType,
-      required this.content,
+      this.content,
       required this.createTime,
       this.ext});
   factory ChatRecent.fromData(Map<String, dynamic> data, GeneratedDatabase db,
@@ -48,7 +48,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       tipsType: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}tips_type']),
       content: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}content'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}content']),
       createTime: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}create_time'])!,
       ext: const StringType()
@@ -67,7 +67,9 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
     if (!nullToAbsent || tipsType != null) {
       map['tips_type'] = Variable<int?>(tipsType);
     }
-    map['content'] = Variable<String>(content);
+    if (!nullToAbsent || content != null) {
+      map['content'] = Variable<String?>(content);
+    }
     map['create_time'] = Variable<int>(createTime);
     if (!nullToAbsent || ext != null) {
       map['ext'] = Variable<String?>(ext);
@@ -86,7 +88,9 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       tipsType: tipsType == null && nullToAbsent
           ? const Value.absent()
           : Value(tipsType),
-      content: Value(content),
+      content: content == null && nullToAbsent
+          ? const Value.absent()
+          : Value(content),
       createTime: Value(createTime),
       ext: ext == null && nullToAbsent ? const Value.absent() : Value(ext),
     );
@@ -103,7 +107,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       type: serializer.fromJson<int>(json['type']),
       msgType: serializer.fromJson<int>(json['msgType']),
       tipsType: serializer.fromJson<int?>(json['tipsType']),
-      content: serializer.fromJson<String>(json['content']),
+      content: serializer.fromJson<String?>(json['content']),
       createTime: serializer.fromJson<int>(json['createTime']),
       ext: serializer.fromJson<String?>(json['ext']),
     );
@@ -119,7 +123,7 @@ class ChatRecent extends DataClass implements Insertable<ChatRecent> {
       'type': serializer.toJson<int>(type),
       'msgType': serializer.toJson<int>(msgType),
       'tipsType': serializer.toJson<int?>(tipsType),
-      'content': serializer.toJson<String>(content),
+      'content': serializer.toJson<String?>(content),
       'createTime': serializer.toJson<int>(createTime),
       'ext': serializer.toJson<String?>(ext),
     };
@@ -208,7 +212,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
   final Value<int> type;
   final Value<int> msgType;
   final Value<int?> tipsType;
-  final Value<String> content;
+  final Value<String?> content;
   final Value<int> createTime;
   final Value<String?> ext;
   const ChatRecentsCompanion({
@@ -231,14 +235,13 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
     this.type = const Value.absent(),
     this.msgType = const Value.absent(),
     this.tipsType = const Value.absent(),
-    required String content,
+    this.content = const Value.absent(),
     this.createTime = const Value.absent(),
     this.ext = const Value.absent(),
   })  : msgId = Value(msgId),
         targetId = Value(targetId),
         peerId = Value(peerId),
-        fromId = Value(fromId),
-        content = Value(content);
+        fromId = Value(fromId);
   static Insertable<ChatRecent> custom({
     Expression<String>? msgId,
     Expression<String>? targetId,
@@ -247,7 +250,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
     Expression<int>? type,
     Expression<int>? msgType,
     Expression<int?>? tipsType,
-    Expression<String>? content,
+    Expression<String?>? content,
     Expression<int>? createTime,
     Expression<String?>? ext,
   }) {
@@ -273,7 +276,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
       Value<int>? type,
       Value<int>? msgType,
       Value<int?>? tipsType,
-      Value<String>? content,
+      Value<String?>? content,
       Value<int>? createTime,
       Value<String?>? ext}) {
     return ChatRecentsCompanion(
@@ -315,7 +318,7 @@ class ChatRecentsCompanion extends UpdateCompanion<ChatRecent> {
       map['tips_type'] = Variable<int?>(tipsType.value);
     }
     if (content.present) {
-      map['content'] = Variable<String>(content.value);
+      map['content'] = Variable<String?>(content.value);
     }
     if (createTime.present) {
       map['create_time'] = Variable<int>(createTime.value);
@@ -385,8 +388,8 @@ class $ChatRecentsTable extends ChatRecents
       defaultValue: const Constant(0));
   final VerificationMeta _contentMeta = const VerificationMeta('content');
   late final GeneratedColumn<String?> content = GeneratedColumn<String?>(
-      'content', aliasedName, false,
-      typeName: 'TEXT', requiredDuringInsert: true);
+      'content', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _createTimeMeta = const VerificationMeta('createTime');
   late final GeneratedColumn<int?> createTime = GeneratedColumn<int?>(
       'create_time', aliasedName, false,
@@ -458,8 +461,6 @@ class $ChatRecentsTable extends ChatRecents
     if (data.containsKey('content')) {
       context.handle(_contentMeta,
           content.isAcceptableOrUnknown(data['content']!, _contentMeta));
-    } else if (isInserting) {
-      context.missing(_contentMeta);
     }
     if (data.containsKey('create_time')) {
       context.handle(
@@ -737,7 +738,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
   final int type;
   final int msgType;
   final int? tipsType;
-  final String content;
+  final String? content;
   final int createTime;
   final String? ext;
   final int? status;
@@ -748,7 +749,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       required this.type,
       required this.msgType,
       this.tipsType,
-      required this.content,
+      this.content,
       required this.createTime,
       this.ext,
       this.status});
@@ -769,7 +770,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       tipsType: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}tips_type']),
       content: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}content'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}content']),
       createTime: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}create_time'])!,
       ext: const StringType()
@@ -789,7 +790,9 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
     if (!nullToAbsent || tipsType != null) {
       map['tips_type'] = Variable<int?>(tipsType);
     }
-    map['content'] = Variable<String>(content);
+    if (!nullToAbsent || content != null) {
+      map['content'] = Variable<String?>(content);
+    }
     map['create_time'] = Variable<int>(createTime);
     if (!nullToAbsent || ext != null) {
       map['ext'] = Variable<String?>(ext);
@@ -810,7 +813,9 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       tipsType: tipsType == null && nullToAbsent
           ? const Value.absent()
           : Value(tipsType),
-      content: Value(content),
+      content: content == null && nullToAbsent
+          ? const Value.absent()
+          : Value(content),
       createTime: Value(createTime),
       ext: ext == null && nullToAbsent ? const Value.absent() : Value(ext),
       status:
@@ -828,7 +833,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       type: serializer.fromJson<int>(json['type']),
       msgType: serializer.fromJson<int>(json['msgType']),
       tipsType: serializer.fromJson<int?>(json['tipsType']),
-      content: serializer.fromJson<String>(json['content']),
+      content: serializer.fromJson<String?>(json['content']),
       createTime: serializer.fromJson<int>(json['createTime']),
       ext: serializer.fromJson<String?>(json['ext']),
       status: serializer.fromJson<int?>(json['status']),
@@ -844,7 +849,7 @@ class ChatMsg extends DataClass implements Insertable<ChatMsg> {
       'type': serializer.toJson<int>(type),
       'msgType': serializer.toJson<int>(msgType),
       'tipsType': serializer.toJson<int?>(tipsType),
-      'content': serializer.toJson<String>(content),
+      'content': serializer.toJson<String?>(content),
       'createTime': serializer.toJson<int>(createTime),
       'ext': serializer.toJson<String?>(ext),
       'status': serializer.toJson<int?>(status),
@@ -931,7 +936,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
   final Value<int> type;
   final Value<int> msgType;
   final Value<int?> tipsType;
-  final Value<String> content;
+  final Value<String?> content;
   final Value<int> createTime;
   final Value<String?> ext;
   final Value<int?> status;
@@ -954,14 +959,13 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
     this.type = const Value.absent(),
     this.msgType = const Value.absent(),
     this.tipsType = const Value.absent(),
-    required String content,
+    this.content = const Value.absent(),
     this.createTime = const Value.absent(),
     this.ext = const Value.absent(),
     this.status = const Value.absent(),
   })  : msgId = Value(msgId),
         peerId = Value(peerId),
-        fromId = Value(fromId),
-        content = Value(content);
+        fromId = Value(fromId);
   static Insertable<ChatMsg> custom({
     Expression<String>? msgId,
     Expression<String>? peerId,
@@ -969,7 +973,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
     Expression<int>? type,
     Expression<int>? msgType,
     Expression<int?>? tipsType,
-    Expression<String>? content,
+    Expression<String?>? content,
     Expression<int>? createTime,
     Expression<String?>? ext,
     Expression<int?>? status,
@@ -995,7 +999,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
       Value<int>? type,
       Value<int>? msgType,
       Value<int?>? tipsType,
-      Value<String>? content,
+      Value<String?>? content,
       Value<int>? createTime,
       Value<String?>? ext,
       Value<int?>? status}) {
@@ -1035,7 +1039,7 @@ class ChatMsgsCompanion extends UpdateCompanion<ChatMsg> {
       map['tips_type'] = Variable<int?>(tipsType.value);
     }
     if (content.present) {
-      map['content'] = Variable<String>(content.value);
+      map['content'] = Variable<String?>(content.value);
     }
     if (createTime.present) {
       map['create_time'] = Variable<int>(createTime.value);
@@ -1103,8 +1107,8 @@ class $ChatMsgsTable extends ChatMsgs with TableInfo<$ChatMsgsTable, ChatMsg> {
       defaultValue: const Constant(0));
   final VerificationMeta _contentMeta = const VerificationMeta('content');
   late final GeneratedColumn<String?> content = GeneratedColumn<String?>(
-      'content', aliasedName, false,
-      typeName: 'TEXT', requiredDuringInsert: true);
+      'content', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _createTimeMeta = const VerificationMeta('createTime');
   late final GeneratedColumn<int?> createTime = GeneratedColumn<int?>(
       'create_time', aliasedName, false,
@@ -1176,8 +1180,6 @@ class $ChatMsgsTable extends ChatMsgs with TableInfo<$ChatMsgsTable, ChatMsg> {
     if (data.containsKey('content')) {
       context.handle(_contentMeta,
           content.isAcceptableOrUnknown(data['content']!, _contentMeta));
-    } else if (isInserting) {
-      context.missing(_contentMeta);
     }
     if (data.containsKey('create_time')) {
       context.handle(

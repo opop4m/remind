@@ -36,7 +36,7 @@ class _SendMessageViewState extends State<SendMessageView> {
     // var iosS = msgStr.contains('downloadFlag:') && msgStr.contains('second:');
     // bool iosSound = isI && iosS;
     if (_msg.msgType == msgTypeText) {
-      return new TextMsg(_msg.content, widget.model, widget.user);
+      return new TextMsg(_msg.content ?? "", widget.model, widget.user);
     } else if (_msg.msgType == msgTypeImage) {
       return new ImgMsg(_msg, widget.user);
     } else if (_msg.msgType == msgTypeVoice) {

@@ -9,7 +9,7 @@ class ChatRecents extends Table {
   IntColumn get msgType => integer().withDefault(const Constant(0))();
   IntColumn get tipsType =>
       integer().nullable().withDefault(const Constant(0))();
-  TextColumn get content => text()();
+  TextColumn get content => text().nullable()();
   IntColumn get createTime => integer().withDefault(const Constant(0))();
   TextColumn get ext => text().nullable()();
 
@@ -25,7 +25,7 @@ class ChatMsgs extends Table {
   IntColumn get msgType => integer().withDefault(const Constant(0))();
   IntColumn get tipsType =>
       integer().nullable().withDefault(const Constant(0))();
-  TextColumn get content => text()();
+  TextColumn get content => text().nullable()();
   IntColumn get createTime => integer().withDefault(const Constant(0))();
   TextColumn get ext => text().nullable()();
   IntColumn get status => integer().nullable().withDefault(const Constant(0))();

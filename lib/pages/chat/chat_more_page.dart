@@ -1,11 +1,17 @@
 import 'package:camera/camera.dart';
+import 'package:client/http/api.dart';
 // import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'package:client/pages/chat/shoot_page.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
+import 'package:client/tools/adapter/imagePicker.dart';
 // import 'package:client/tools/handle_util.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/tools/mimeType.dart';
 import 'package:client/ui/card/more_item_card.dart';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 // import 'package:photo_manager/photo_manager.dart';
 
@@ -44,27 +50,46 @@ class _ChatMorePageState extends State<ChatMorePage> {
 
   action(String name) async {
     if (name == '相册') {
-      AssetPicker.pickAssets(
-        context,
-        maxAssets: 9,
-        pageSize: 320,
-        pathThumbSize: 80,
-        gridCount: 4,
-        selectedAssets: assets,
-        themeColor: Colors.green,
-        // textDelegate: DefaultAssetsPickerTextDelegate(),
-        routeCurve: Curves.easeIn,
-        routeDuration: const Duration(milliseconds: 500),
-      ).then((List<AssetEntity>? result) {
-        result?.forEach((AssetEntity element) async {
-          // sendImageMsg(widget.id, widget.type, file: await element.file,
-          //     callback: (v) {
-          //   if (v == null) return;
-          //   Notice.send(WeChatActions.msg(), v ?? '');
-          // });
-          element.file;
+      if (PlatformUtils.isWeb) {
+        var list = await UcImagePicker.getMultiImages();
+        list.forEach((bytes) async {
+          var mime = lookupMimeType('', headerBytes: bytes.sublist(0, 10));
+          if (mime == null) {
+            _log.info("unknow file type");
+            return;
+          }
+          var ext = findExtFromMime(mime);
+          var imgPath = await uploadImgApi(bytes, ext, "avatar");
+          if (strNoEmpty(imgPath)) {
+            var msg = Im.newMsg(
+                widget.type ?? typePerson, msgTypeImage, widget.id!,
+                ext: imgPath);
+            Im.get().sendChatMsg(msg);
+          }
         });
-      });
+      } else {
+        AssetPicker.pickAssets(
+          context,
+          maxAssets: 9,
+          pageSize: 320,
+          pathThumbSize: 80,
+          gridCount: 4,
+          selectedAssets: assets,
+          themeColor: Colors.green,
+          // textDelegate: DefaultAssetsPickerTextDelegate(),
+          routeCurve: Curves.easeIn,
+          routeDuration: const Duration(milliseconds: 500),
+        ).then((List<AssetEntity>? result) {
+          result?.forEach((AssetEntity element) async {
+            // sendImageMsg(widget.id, widget.type, file: await element.file,
+            //     callback: (v) {
+            //   if (v == null) return;
+            //   Notice.send(WeChatActions.msg(), v ?? '');
+            // });
+            var f = await element.file;
+          });
+        });
+      }
     } else if (name == '拍摄') {
       try {
         List<CameraDescription> cameras;

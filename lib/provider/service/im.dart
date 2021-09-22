@@ -142,7 +142,24 @@ class Im {
     // var data = {"act": "chat", "data": msg};
     var msgStr = json.encode(msg);
     _log.info(msgStr);
+    ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
     MqttLib.get().publish(topic, msgStr);
+  }
+
+  static ChatMsg newMsg(int type, int msgType, String peerId,
+      {String content = "", String ext = ""}) {
+    var msg = ChatMsg(
+        msgId: newMsgId(peerId),
+        peerId: peerId,
+        fromId: Global.get().curUser.id,
+        type: type,
+        msgType: msgType,
+        tipsType: 0,
+        content: content,
+        status: msgStateSending,
+        ext: ext,
+        createTime: Utils.getTimestampSecond());
+    return msg;
   }
 
   void disConnect() {

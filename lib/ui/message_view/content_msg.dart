@@ -35,7 +35,7 @@ class _ContentMsgState extends State<ContentMsg> {
     // var iosS = msgStr.contains('downloadFlag:') && msgStr.contains('second:');
     // bool iosSound = isI && iosS;
     if (msg.msgType == msgTypeText) {
-      str = msg.content;
+      str = msg.content ?? "";
     } else if (msg.msgType == msgTypeImage) {
       str = '[图片]';
     } else if (msg.msgType == msgTypeVoice) {

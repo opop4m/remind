@@ -7,6 +7,21 @@ import 'dart:html' as html;
 import '../utils.dart';
 
 class UcImagePicker {
+  static Future<List<Uint8List>> getMultiImages() async {
+    if (!PlatformUtils.isWeb) {
+      // final ImagePicker _picker = ImagePicker();
+      // XFile? img = await _picker.pickImage(source: ImageSource.gallery);
+
+      // if (img != null) {
+      //   imgBytes = await img.readAsBytes();
+      // }
+    } else {}
+    List<Uint8List> list =
+        await ImagePickerWeb.getMultiImages(outputType: ImageType.bytes)
+            as List<Uint8List>;
+    return list;
+  }
+
   static Future<Uint8List?> getImage() async {
     Uint8List? imgBytes;
     if (!PlatformUtils.isWeb) {

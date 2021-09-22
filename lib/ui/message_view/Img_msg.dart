@@ -1,16 +1,12 @@
 import 'dart:convert';
 
 import 'package:client/provider/global_cache.dart';
-import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/message_view/msg_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:provider/provider.dart';
 import 'package:client/tools/library.dart';
-
-import '../../provider/global_model.dart';
 
 class ImgMsg extends StatelessWidget {
   // final msg;
@@ -22,32 +18,35 @@ class ImgMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (msg.status == msgStateSending) return Text('发送中');
+    // if (msg.status == msgStateSending) return Text('发送中');
     var my = Global.get().curUser;
-    List<MsgImg> list = jsonDecode(msg.ext!);
-    var msgInfo = list[1];
-    var _height = msgInfo.height;
-    var resultH = _height > 200.0 ? 200.0 : _height;
-    var url = msgInfo.url;
-    var isFile = File(url).existsSync();
-    final globalModel = Provider.of<GlobalModel>(context);
+    var url = getImgUrl(msg.ext)!;
+    var isFile = false;
+    if (!PlatformUtils.isWeb && url.startsWith("http")) {
+      isFile = File(url).existsSync();
+    }
+
+    // final globalModel = Provider.of<GlobalModel>(context);
     var body = [
       new MsgAvatar(model: msg, user: user),
       new Space(width: mainSpace),
       new Expanded(
         child: new GestureDetector(
-          child: new Container(
-            padding: EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            ),
-            child: new ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              child: isFile
-                  ? new Image.file(File(url))
-                  : new CachedNetworkImage(
-                      imageUrl: url, height: resultH, fit: BoxFit.cover),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 200, minHeight: 100),
+            child: new Container(
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              child: new ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                child: isFile
+                    ? new Image.file(File(url))
+                    : new CachedNetworkImage(
+                        imageUrl: url, height: null, fit: BoxFit.cover),
+              ),
             ),
           ),
           onTap: () {
@@ -60,10 +59,11 @@ class ImgMsg extends StatelessWidget {
             routePush(
               new PhotoView(
                 imageProvider: image,
-                // imageProvider: FileImage(File(url)),
+                loadingBuilder: (context, ImageChunkEvent? event) {
+                  return SizedBox();
+                },
                 onTapUp: (c, f, s) => Navigator.of(context).pop(),
                 maxScale: 3.0,
-                minScale: 1.0,
               ),
             );
           },
@@ -71,14 +71,17 @@ class ImgMsg extends StatelessWidget {
       ),
       new Spacer(),
     ];
-    if (user.id == my.id) {
+    if (msg.fromId == my.id) {
       body = body.reversed.toList();
     } else {
       body = body;
     }
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5.0),
-      child: new Row(children: body),
+      child: new Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: body,
+      ),
     );
   }
 }
