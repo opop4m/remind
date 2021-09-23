@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 // import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'package:client/pages/chat/shoot_page.dart';
+import 'package:client/pages/chat/videoCall.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/tools/adapter/imagePickerApi.dart';
@@ -30,11 +31,11 @@ class _ChatMorePageState extends State<ChatMorePage> {
   List data = [
     {"name": "相册", "icon": "assets/images/chat/ic_details_photo.webp"},
     {"name": "拍摄", "icon": "assets/images/chat/ic_details_camera.webp"},
+    {"name": "语音通话", "icon": "assets/images/chat/ic_details_voice.webp"},
     {"name": "视频通话", "icon": "assets/images/chat/ic_details_media.webp"},
     {"name": "位置", "icon": "assets/images/chat/ic_details_localtion.webp"},
     {"name": "红包", "icon": "assets/images/chat/ic_details_red.webp"},
     {"name": "转账", "icon": "assets/images/chat/ic_details_transfer.webp"},
-    {"name": "语音输入", "icon": "assets/images/chat/ic_chat_voice.webp"},
     {"name": "我的收藏", "icon": "assets/images/chat/ic_details_favorite.webp"},
   ];
 
@@ -67,6 +68,8 @@ class _ChatMorePageState extends State<ChatMorePage> {
       } on CameraException catch (e) {
         _log.info(e.code, e.description);
       }
+    } else if (name == '视频通话') {
+      routePush(VideoCallView(widget.id!));
     } else {
       showToast(context, '敬请期待$name');
     }

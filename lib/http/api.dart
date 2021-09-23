@@ -70,18 +70,18 @@ void updateApi(BuildContext context) async {
 }
 
 /// 上传头像 [uploadImg]
-Future<String> uploadImgApi(
-  Uint8List avatarImgBytes,
+Future<String> uploadMediaApi(
+  Uint8List mediaBytes,
   String ext,
   String scene,
 ) async {
   var path = "";
   var avatarF = MultipartFile.fromBytes(
-    avatarImgBytes,
+    mediaBytes,
     filename: "img.jpeg",
     contentType: MediaType('application', 'image/jpeg'),
   );
-  var digest = md5.convert(avatarImgBytes);
+  var digest = md5.convert(mediaBytes);
   // 这里其实就是 digest.toString()
   var md = hex.encode(digest.bytes);
   var url = API.uploadHost + "/group1/upload";

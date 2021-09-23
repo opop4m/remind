@@ -1,17 +1,22 @@
 import 'package:client/http/api.dart';
 import 'package:client/pages/WidgetsBinding.dart';
+import 'package:client/pages/chat/videoCall.dart';
 import 'package:client/pages/navigation.dart';
 import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
+import 'package:client/provider/service/webRtcCtr.dart';
+import 'package:client/ui/dialog/confirm_alert.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/contacts/contacts_page.dart';
 import 'package:client/pages/home/home_page.dart';
 import 'package:client/pages/mine/mine_page.dart';
 import 'package:client/pages/root/root_tabbar.dart';
 import 'package:client/tools/library.dart';
+import 'package:path/path.dart';
 
 UcNavigation routeObserver = UcNavigation();
 
@@ -36,7 +41,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     WidgetsBinding.instance?.addObserver(bind);
     // ifBrokenNetwork();
     initChat();
-    updateApi(context);
+    // checkupdate();
     _popSub = ImDb.g().db.popsDao.queryChatPopSum().listen((event) {
       _log.info("imdb update pop: $event");
       chatPopSum = event ?? 0;
@@ -67,12 +72,15 @@ class _RootPageState extends State<RootPage> with RouteAware {
         logout();
       }
     });
-
+    initWebRtc();
     Im.get().connect();
   }
 
+  BuildContext? _context;
+
   @override
   Widget build(BuildContext context) {
+    _context = context;
     List<TabBarModel> pages = <TabBarModel>[
       new TabBarModel(
         title: S.of(context).message,
@@ -113,7 +121,20 @@ class _RootPageState extends State<RootPage> with RouteAware {
     _log.info("dispose");
     _popSub.cancel();
     _connectSub.cancel();
+    WebRtcCtr.get().onReceiveOffer = null;
     WidgetsBinding.instance?.removeObserver(bind); //添加观察者
+  }
+
+  void initWebRtc() {
+    WebRtcCtr.get().init();
+    WebRtcCtr.get().onReceiveOffer = (session) {
+      confirmAlert(_context!, (act) {
+        if (act) {
+          print("rrrr go ");
+          routePush(new VideoCallView(session.peerId, session: session));
+        } else {}
+      }, title: "是否接受电话？");
+    };
   }
 }
 

@@ -46,7 +46,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     }
     var ext = findExtFromMime(mime);
     _log.info("mime type: $mime, ext: $ext");
-    var avatarPath = await uploadImgApi(avatarImgBytes, ext, "avatar");
+    var avatarPath = await uploadMediaApi(avatarImgBytes, ext, "avatar");
     if (strNoEmpty(avatarPath)) {
       await _model.logic.updateUser({"avatar": avatarPath});
       if (mounted) setState(() {});

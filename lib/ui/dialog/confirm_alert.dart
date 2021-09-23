@@ -24,15 +24,15 @@ void confirmAlert<T>(
       CupertinoButton(
           child: Text(cancelBtn ?? 'Cancel'),
           onPressed: () {
-            callBack(false);
             Navigator.of(context).pop();
+            callBack(false);
           }),
       CupertinoButton(
         child: Text(okBtn ?? 'I agree'),
         onPressed: () {
+          Navigator.of(context).pop();
           callBack(true);
           // Then close the dialog
-          Navigator.of(context).pop();
         },
       )
     ],

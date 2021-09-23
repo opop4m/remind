@@ -1,4 +1,6 @@
 import 'package:client/config/contacts.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
 // import 'package:client/im/message_handle.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/item/chat_voice.dart';
@@ -27,23 +29,23 @@ class ChatDetailsRow extends StatefulWidget {
 }
 
 class ChatDetailsRowState extends State<ChatDetailsRow> {
-  String? path;
+  // String? path;
 
   @override
   void initState() {
     super.initState();
 
-    Notice.addListener(UcActions.voiceImg(), (v) {
-      if (!v) return;
-      if (!strNoEmpty(path)) return;
-      // sendSoundMessages(
-      //   widget.id,
-      //   path,
-      //   2,
-      //   widget.type,
-      //   (value) => Notice.send(WeChatActions.msg(), v ?? ''),
-      // );
-    });
+    // Notice.addListener(UcActions.voiceImg(), (v) {
+    //   if (!v) return;
+    //   if (!strNoEmpty(path)) return;
+    //   sendSoundMessages(
+    //     widget.id,
+    //     path,
+    //     2,
+    //     widget.type,
+    //     (value) => Notice.send(WeChatActions.msg(), v ?? ''),
+    //   );
+    // });
   }
 
   @override
@@ -63,8 +65,10 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             new InkWell(
-              child: new Image.asset('assets/images/chat/ic_voice.webp',
-                  width: 25, color: mainTextColor),
+              child: PlatformUtils.isWeb
+                  ? SizedBox()
+                  : Image.asset('assets/images/chat/ic_voice.webp',
+                      width: 25, color: mainTextColor),
               onTap: () {
                 if (widget.voiceOnTap != null) {
                   widget.voiceOnTap?.call();
@@ -80,8 +84,8 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
                     borderRadius: BorderRadius.circular(5.0)),
                 child: widget.isVoice
                     ? new ChatVoice(
-                        voiceFile: (path) {
-                          setState(() => this.path = path);
+                        voiceFile: (path, timeLen) {
+                          setState(() => sendVoice(path, timeLen));
                         },
                       )
                     : new LayoutBuilder(builder: widget.edit!),
@@ -100,5 +104,11 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
       ),
       onTap: () {},
     );
+  }
+
+  void sendVoice(String path, int timeLen) {
+    var msg = Im.newMsg(widget.type, msgTypeVoice, widget.id!,
+        ext: path + "," + timeLen.toString());
+    Im.get().sendChatMsg(msg);
   }
 }

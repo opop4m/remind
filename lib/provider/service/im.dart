@@ -159,7 +159,7 @@ class Im {
       return;
     }
     var ext = findExtFromMime(mime);
-    var imgPath = await uploadImgApi(bytes, ext, "chat");
+    var imgPath = await uploadMediaApi(bytes, ext, "chat");
     _log.info("imgPath: $imgPath");
     if (strNoEmpty(imgPath)) {
       var msg = Im.newMsg(type, msgTypeImage, peerId, ext: imgPath);

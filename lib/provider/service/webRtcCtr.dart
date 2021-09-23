@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:client/provider/service/webrtc.dart';
 import 'package:client/provider/service/mqttLib.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger("ChatCtr");
+final _log = Logger("WebRtcCtr");
 
 const String actOffer = "offer";
 const String actCandidate = "candidate";
@@ -20,7 +21,9 @@ class WebRtcCtr {
   static WebRtcCtr? _instance;
 
   /// 内部构造方法，可避免外部暴露构造函数，进行实例化
-  WebRtcCtr._internal();
+  WebRtcCtr._internal() {
+    _rtc = Webrtc(_selfId, iceService);
+  }
   factory WebRtcCtr.get() => _getInstance();
   static _getInstance() {
     // 只能有一个实例
@@ -37,7 +40,7 @@ class WebRtcCtr {
 
   late MqttLib mqtt;
   String _selfId = Global.get().curUser.id;
-  late Webrtc _rtc = Webrtc(_selfId, iceService);
+  late Webrtc _rtc;
   // Map<String, RtcSession> _sessions = {};
   //被呼叫时触发
   OnOffer? onReceiveOffer;
@@ -45,7 +48,7 @@ class WebRtcCtr {
   init() {
     MqttLib.get().messageStream.listen((mqMsg) {
       var res = jsonDecode(mqMsg.pt);
-      onMessageFromSocket(mqMsg.topic, res);
+      if (res is Map) onMessageFromSocket(mqMsg.topic, res);
     });
   }
 
@@ -139,20 +142,20 @@ class WebRtcCtr {
     Im.get().sendMsg(targetId, act, msg);
   }
 
-  _onCandidate(Map<String, dynamic> data) async {
+  _onCandidate(Map data) async {
     var peerId = data['from'];
     var candidateMap = data['candidate'];
     var sessionId = data['session_id'];
-    _rtc.receiveCandidate(peerId, candidateMap, sessionId);
+    _rtc.receiveCandidate(peerId, candidateMap, sessionId, intoQueue: true);
   }
 
-  _onAnswer(Map<String, dynamic> data) async {
+  _onAnswer(Map data) async {
     var description = data['description'];
     var sessionId = data['session_id'];
     _rtc.receiveAnswer(sessionId, description);
   }
 
-  _onOffer(Map<String, dynamic> data) async {
+  _onOffer(Map data) async {
     var peerId = data['from'];
     var description = data['description'];
     var type = data['type'];
@@ -181,22 +184,23 @@ class WebRtcCtr {
     }
   }
 
-  onMessageFromSocket(String topic, Map<String, dynamic> res) {
-    Map<String, dynamic> data = res['data'];
-    _log.info("on msg arrive: ${res['act']}");
-    switch (res["act"]) {
+  onMessageFromSocket(String topic, Map res) {
+    // Map<String, dynamic> data = res['data'];
+    var tb = ImData.parserTopic(topic);
+    _log.info("webrtc act: ${tb.act}");
+    switch (tb.act) {
       case actOffer:
         _log.warning("actOffer");
-        _onOffer(data);
+        _onOffer(res);
         break;
       case actCandidate:
-        _onCandidate(data);
+        _onCandidate(res);
         break;
       case actAnswer:
-        _onAnswer(data);
+        _onAnswer(res);
         break;
       case actBye:
-        RtcSession? session = _rtc.findSession(data['to']);
+        RtcSession? session = _rtc.findSession(res['to']);
         if (session != null)
           onCallStateChange?.call(session, CallState.CallStateBye);
         break;

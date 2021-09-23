@@ -20,7 +20,7 @@ class ImgMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     // if (msg.status == msgStateSending) return Text('发送中');
     var my = Global.get().curUser;
-    var url = getImgUrl(msg.ext)!;
+    var url = getMediaUrl(msg.ext)!;
     var isFile = false;
     if (!PlatformUtils.isWeb && url.startsWith("http")) {
       isFile = File(url).existsSync();

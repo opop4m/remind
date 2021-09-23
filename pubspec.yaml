@@ -56,7 +56,7 @@ dependencies:
   package_info: ^2.0.2
   #音频处理
   # flutter_sound: ^1.9.0
-  # flutter_sound: ^8.3.9
+  # flutter_sound: ^8.3.12
   flutter_sound: 
     path: plugin/flutter_sound-8.3.9
   #权限处理
@@ -78,7 +78,7 @@ dependencies:
   #特殊列表滑动
   azlistview: ^2.0.0-nullsafety.0
   mqtt_client: ^9.6.0
-  flutter_webrtc: ^0.6.5
+  flutter_webrtc: ^0.6.7
   convert: ^3.0.1
   logging: ^1.0.1
   wechat_assets_picker: ^6.0.5
@@ -153,6 +153,7 @@ flutter:
     - assets/images/chat/ic_details_file.webp
     - assets/images/chat/ic_details_localtion.webp
     - assets/images/chat/ic_details_media.webp
+    - assets/images/chat/ic_details_voice.webp
     - assets/images/chat/ic_details_photo.webp
     - assets/images/chat/ic_details_red.webp
     - assets/images/chat/ic_details_transfer.webp

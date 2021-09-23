@@ -53,7 +53,7 @@ const String defGroupAvatar =
 
 const Color mainBGColor = Color.fromRGBO(240, 240, 245, 1.0);
 
-String? getImgUrl(String? imgPath) {
+String? getMediaUrl(String? imgPath) {
   if (imgPath == null) {
     return null;
   }

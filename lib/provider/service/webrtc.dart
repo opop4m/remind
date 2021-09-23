@@ -49,6 +49,7 @@ class Webrtc {
       ...{'sdpSemantics': sdpSemantics}
     }, _config);
     rtcSession.pc = pc;
+
     _cacheSessions[sid] = rtcSession;
 
     pc.onIceCandidate = (candidate) {
@@ -81,27 +82,44 @@ class Webrtc {
     var res = _createAnswer(session, session.type);
     List<RTCIceCandidate>? remoteInfo =
         _cacheRemoteCandidate[session.sessionId];
-    remoteInfo?.forEach((candidate) async {
-      await session.pc!.addCandidate(candidate);
-    });
+    for (var i = 0; i < (remoteInfo?.length ?? 0); i++) {
+      var candidate = remoteInfo![i];
+      try {
+        await session.pc!.addCandidate(candidate);
+      } catch (e, s) {
+        print(e.toString());
+        print(s);
+      }
+    }
     remoteInfo?.clear();
     remoteInfo != null ? _cacheRemoteCandidate.remove(session.sessionId) : '';
     return res;
   }
 
-  receiveCandidate(String peerId, Map<String, dynamic> candidateMap,
-      String sessionId) async {
+  receiveCandidate(
+      String peerId, Map<String, dynamic> candidateMap, String sessionId,
+      {bool intoQueue = false}) async {
     RTCIceCandidate candidate = RTCIceCandidate(candidateMap['candidate'],
         candidateMap['sdpMid'], candidateMap['sdpMLineIndex']);
     RtcSession? session = _cacheSessions[sessionId];
-    if (session != null && session.pc != null) {
-      await session.pc!.addCandidate(candidate);
+    if (!intoQueue &&
+        session != null &&
+        session.pc != null &&
+        (await session.pc!.getRemoteDescription())?.type != null) {
+      _log.info("receiveCandidate already call add");
+      try {
+        await session.pc!.addCandidate(candidate);
+      } catch (e, s) {
+        print(e.toString());
+        print(s);
+      }
     } else {
       List<RTCIceCandidate>? list = _cacheRemoteCandidate[sessionId];
       if (list == null) {
-        list = List.empty();
+        list = List.empty(growable: true);
       }
       _cacheRemoteCandidate[sessionId] = list..add(candidate);
+      _log.info("receiveCandidate put it in queue.");
     }
   }
 
@@ -239,6 +257,7 @@ class RtcSession {
         this.pc!.onTrack = (event) {
           if (event.track.kind == 'video') {
             _log.info("onAddStream");
+
             onAddRemoteStream?.call(this, event.streams[0]);
           }
         };

@@ -1,20 +1,18 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:client/provider/entity/i_sound_msg_entity.dart';
-import 'package:client/provider/entity/sound_msg_entity.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
-import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/service/imDb.dart';
-import 'package:client/tools/utils.dart';
+import 'package:client/tools/adapter/voice.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/message_view/msg_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+final _log = Logger("SoundMsg");
 
 class SoundMsg extends StatefulWidget {
   final ChatMsg msg;
@@ -32,7 +30,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
 
   late AnimationController controller;
   late Animation animation;
-  late FlutterSound flutterSound;
+  UcSoundPlayer _myPlayer = new UcSoundPlayer();
   AudioPlayer audioPlayer = AudioPlayer();
 
   StreamSubscription? _positionSubscription;
@@ -45,7 +43,9 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    flutterSound = new FlutterSound();
+    _myPlayer.openAudioSession().then((value) {
+      _log.info("Player.openAudioSession finish");
+    });
     // flutterSound.setSubscriptionDuration(0.01);
     // flutterSound.setDbPeakLevelUpdate(0.8);
     // flutterSound.setDbLevelEnabled(true);
@@ -86,38 +86,45 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
 //    });
   }
 
-  void start(String path) async {
-    try {
-      controller.forward();
-      // await flutterSound.startPlayer(path);
-      // await flutterSound.setVolume(1.0);
-      debugPrint('startPlayer: $path');
+  // void start(String path) async {
+  //   try {
+  //     controller.forward();
+  //     // await flutterSound.startPlayer(path);
+  //     // await flutterSound.setVolume(1.0);
+  //     debugPrint('startPlayer: $path');
 
-      // _playerSubscription = flutterSound.onPlayerStateChanged.listen((e) {
-      //   if (e != null) {
-      //     sliderCurrentPosition = e.currentPosition;
-      //     maxDuration = e.duration;
+  //     // _playerSubscription = flutterSound.onPlayerStateChanged.listen((e) {
+  //     //   if (e != null) {
+  //     //     sliderCurrentPosition = e.currentPosition;
+  //     //     maxDuration = e.duration;
 
-      //     DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-      //         e.currentPosition.toInt(),
-      //         isUtc: true);
-      //     String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
+  //     //     DateTime date = new DateTime.fromMillisecondsSinceEpoch(
+  //     //         e.currentPosition.toInt(),
+  //     //         isUtc: true);
+  //     //     String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
 
-      //     print(txt.substring(0, 8).toString());
-      //   }
-      // });
-    } catch (err) {
-      print('error: $err');
-    }
-  }
+  //     //     print(txt.substring(0, 8).toString());
+  //     //   }
+  //     // });
+  //   } catch (err) {
+  //     print('error: $err');
+  //   }
+  // }
 
   playNew(url) async {
-    int result = await audioPlayer.play(url);
-    if (result == 1) {
-      showToast(context, '播放中');
-    } else {
-      showToast(context, '播放出问题了');
-    }
+    // int result = await audioPlayer.play(url);
+    // if (result == 1) {
+    //   showToast(context, '播放中');
+    // } else {
+    //   showToast(context, '播放出问题了');
+    // }
+    await _myPlayer.startPlayer(
+        fromURI: getMediaUrl(url),
+        codec: Codec.aacADTS,
+        whenFinished: () {
+          setState(() {});
+        });
+    setState(() {});
   }
 
   @override
@@ -144,13 +151,17 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     } else {
       soundImg = leftSoundNames;
     }
-    var json = jsonDecode(widget.msg.ext!);
-    SoundMsgEntity model = SoundMsgEntity.fromJson(json);
-    ISoundMsgEntity iModel = ISoundMsgEntity.fromJson(json);
-    bool isIos = PlatformUtils.isIOS;
-    if (!listNoEmpty(isIos ? iModel.soundUrls : model.urls)) return Container();
+    // var json = jsonDecode(widget.msg.ext!);
+    // SoundMsgEntity model = SoundMsgEntity.fromJson(json);
+    // ISoundMsgEntity iModel = ISoundMsgEntity.fromJson(json);
+    // bool isIos = PlatformUtils.isIOS;
+    // if (!listNoEmpty(isIos ? iModel.soundUrls : model.urls)) return Container();
 
-    var urls = isIos ? iModel.soundUrls![0] : model.urls![0];
+    // var urls = isIos ? iModel.soundUrls![0] : model.urls![0];
+    var arr = widget.msg.ext!.split(",");
+    var urls = arr[0];
+    int timeLen = int.parse(arr[1]) ~/ 1000;
+
     var body = [
       new MsgAvatar(
         model: widget.msg,
@@ -165,7 +176,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
             mainAxisAlignment:
                 isSelf ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              new Text("0\"", textAlign: TextAlign.start, maxLines: 1),
+              new Text("$timeLen\"", textAlign: TextAlign.start, maxLines: 1),
               new Space(width: mainSpace / 2),
               new Image.asset(
                   animation != null
@@ -215,6 +226,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
       _playerSubscription?.cancel();
     }
     controller.dispose();
+    _myPlayer.closeAudioSession();
     super.dispose();
   }
 }
