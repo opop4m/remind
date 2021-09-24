@@ -1,4 +1,3 @@
-import 'package:client/http/api.dart';
 import 'package:client/pages/WidgetsBinding.dart';
 import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/chat/videoCall.dart';
@@ -20,7 +19,7 @@ import 'package:client/pages/mine/mine_page.dart';
 import 'package:client/pages/root/root_tabbar.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:path/path.dart';
+import 'dart:js' as js;
 
 UcNavigation routeObserver = UcNavigation();
 
@@ -87,6 +86,10 @@ class _RootPageState extends State<RootPage> with RouteAware {
   }
 
   Future<void> setupInteractedMessage() async {
+    // if (PlatformUtils.isWeb) {
+    //   _log.info("init onFCMbackground");
+    //   js.context["onFCMbackground"] = onFCMbackground; //can not work in web workers
+    // }
     _log.info("setupInteractedMessage");
     // Get any messages which caused the application to open from
     // a terminated state.
@@ -98,10 +101,17 @@ class _RootPageState extends State<RootPage> with RouteAware {
     if (initialMessage != null) {
       _handleMessage(initialMessage);
     }
-
+    FirebaseMessaging.onBackgroundMessage((message) async {
+      _log.info("_handle onBackgroundMessage ${message.data}");
+    });
     // Also handle any interaction when the app is in the background via a
     // Stream listener
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void onFCMbackground(message) {
+    _log.info("onFCMbackground");
+    _log.info(message);
   }
 
   void _handleMessage(RemoteMessage message) async {

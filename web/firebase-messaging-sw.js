@@ -9,11 +9,15 @@ firebase.initializeApp({
   messagingSenderId: "58000072263",
   appId: "1:58000072263:web:720863e69a91e04f251b62",
   measurementId: "G-S183JTE02J",
+  databaseURL: "https://unicorn-46da5.firebaseio.com",
 });
 
 const messaging = firebase.messaging();
 
-// Optional:
+console.log("messaging init..");
+
+
+//Optional:
 messaging.onBackgroundMessage((message) => {
   console.log("onBackgroundMessage", message);
 });

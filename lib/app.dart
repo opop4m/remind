@@ -131,7 +131,15 @@ class _MyApp extends State<MyApp> {
       // return;
     }
 
-    var token = await messaging.getToken();
+    String? token;
+    if (PlatformUtils.isWeb) {
+      token = await messaging.getToken(
+          vapidKey:
+              "BLONUu4jonlIhc1DoEFWgj9qtxEUrzG81Yspd_YuQaZpBUtyMFvQQ-wAQmziVjP_G9YJ8_xdKPYFUVqvmjzms28");
+      // _log.info("push web token: $token");
+    } else {
+      token = await messaging.getToken();
+    }
     _log.info("push token: $token");
     if (strNoEmpty(token)) {
       ImApi.appStart(token!);
