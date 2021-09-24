@@ -130,4 +130,8 @@ class ImApi {
     }
     return res;
   }
+
+  static Future appStart(String token) async {
+    return await Req.g().get(API.appStart, params: {"token": token});
+  }
 }

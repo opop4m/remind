@@ -6,13 +6,19 @@ class API {
   static const update = 'http://www.flutterj.com/api/update.json';
   static const uploadImg = 'http://www.flutterj.com/upload/avatar';
 
-  static init(String env) {
+  static init(String _env) {
+    env = _env;
     //dev,prod,release
-    switch (env) {
+    switch (_env) {
       case "dev":
+        debug = true;
         break;
     }
   }
+
+  static bool debug = false;
+
+  static String env = "dev";
 
   static String fileHost = "";
   static String uploadHost = "";
@@ -25,6 +31,7 @@ class API {
   static String userLogin = httpHost + "user/login";
   static String userInfo = httpHost + "user/info";
   static String userUpdate = httpHost + "user/update";
+  static String appStart = httpHost + "user/start";
 
   static String recentList = httpHost + "chat/recent_list"; //get
   static String getChatUser = httpHost + "chat/chat_user"; //post

@@ -73,6 +73,21 @@ class Utils {
 }
 
 class PlatformUtils {
+  static String userAgent = "";
+  static bool isH5android = false;
+  static bool isH5ios = false;
+
+  static initWebPlatform() {
+    if (userAgent.indexOf("Android") > -1 || userAgent.indexOf("Linux") > -1) {
+      isH5android = true;
+    } else {
+      RegExp exp = new RegExp(r"\(i[^;]+;( U;)? CPU.+Mac OS X");
+      if (exp.hasMatch(userAgent)) {
+        isH5ios = true;
+      }
+    }
+  }
+
   static bool _isWeb() {
     return kIsWeb == true;
   }
@@ -105,12 +120,18 @@ class PlatformUtils {
     return _isWeb() ? false : (Platform.isAndroid || Platform.isIOS);
   }
 
-  // static String h5 = "h5";
+  static String h5_android = "h5_android";
+  static String h5_ios = "h5_ios";
   static const android = "android";
   static const ios = "ios";
   static const web = "web";
   static String platform() {
     if (_isWeb()) {
+      if (isH5android) {
+        return h5_android;
+      } else if (isH5ios) {
+        return h5_ios;
+      }
       return web;
     } else if (Platform.isAndroid) {
       return android;

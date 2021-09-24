@@ -1,3 +1,6 @@
+import 'package:client/pages/navigation.dart';
+import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:flutter/material.dart';
 
 class WidgetsBind with WidgetsBindingObserver {
@@ -15,11 +18,13 @@ class WidgetsBind with WidgetsBindingObserver {
       case AppLifecycleState.paused:
 //      应用程序处于不可见状态
         print('YM----->AppLifecycleState.paused');
+        Im.get().requestSystem(actOnline, {}, msgId: "paused");
         break;
       case AppLifecycleState.resumed:
         //    进入应用时候不会触发该状态
         //  应用程序处于可见状态，并且可以响应用户的输入事件。它相当于 Android 中Activity的onResume。
         print('YM----->AppLifecycleState.resumed');
+        Im.get().requestSystem(actOnline, {}, msgId: UcNavigation.curPage);
         break;
       case AppLifecycleState.detached:
         //当前页面即将退出

@@ -27,7 +27,7 @@ class UnicornHttp {
       "appKey": API.appKey,
       "platform": PlatformUtils.platform(),
       "channel": Global.get().getChannel(),
-      "uuid": Global.get().getUuid(),
+      "uuid": Global.get().uuid,
       "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
       "n": rng.nextInt(intMaxValue),
     };

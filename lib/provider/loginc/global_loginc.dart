@@ -94,6 +94,7 @@ class GlobalLogic {
     if (lcode != "") {
       _model.currentLocale = Locale(lcode);
     }
+    await Global.get().init();
     if (hasLogin) {
       userInfo();
     }

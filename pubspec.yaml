@@ -89,7 +89,18 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.0
   path: ^1.8.0
   badges: ^2.0.1
+  #根据bytes 分析文件类型
   mime: ^1.0.0
+  #原生通讯plugin
+  pgnative:
+    path: plugin/pgnative
+  firebase_core: ^1.6.0
+  firebase_analytics: ^8.3.2
+  firebase_crashlytics: ^2.2.1
+  firebase_messaging: ^10.0.7
+  flutter_app_badger: ^1.3.0
+  flutter_local_notifications: ^8.2.0
+  
 
 dependency_overrides:
   # provider: ^6.0.0

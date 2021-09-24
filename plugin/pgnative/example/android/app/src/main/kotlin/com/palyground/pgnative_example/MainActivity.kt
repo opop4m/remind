@@ -1,4 +1,4 @@
-package com.johnson.chat.client
+package com.palyground.pgnative_example
 
 import io.flutter.embedding.android.FlutterActivity
 

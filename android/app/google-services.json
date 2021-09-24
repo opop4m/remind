@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "58000072263",
+    "project_id": "unicorn-46da5",
+    "storage_bucket": "unicorn-46da5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58000072263:android:783a02976f434d6a251b62",
+        "android_client_info": {
+          "package_name": "com.unicorn.chat.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58000072263-gh9gfr18e155ql0du7ln5cnfh5alip2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCP6wu3yP67Rz1WUDqYLEJY31qflguNFx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58000072263-gh9gfr18e155ql0du7ln5cnfh5alip2u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "58000072263-s90bcafoifcmd2idspc05ku58ipu52uo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.unicorn.chat.client"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

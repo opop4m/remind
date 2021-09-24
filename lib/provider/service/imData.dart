@@ -216,6 +216,20 @@ class ImData {
     return res;
   }
 
+  Future<ChatUser> getChatUser(String uid, {bool update = false}) async {
+    ChatUser res = ChatUser(id: uid, name: "loading...");
+    List<ChatUser> list = await ImDb.g().db.chatUserDao.getChatUsers([uid]);
+    if (list.length == 0) {
+      var rsp = await ImApi.getChatUser([uid]);
+      if (rsp.code == 0) {
+        res = rsp.res![0];
+      }
+    } else {
+      res = list[0];
+    }
+    return res;
+  }
+
   Future<RspDb<ChatUser>> searchUser(String search) async {
     return await ImApi.searchUser(search);
   }
