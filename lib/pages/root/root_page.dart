@@ -19,7 +19,7 @@ import 'package:client/pages/mine/mine_page.dart';
 import 'package:client/pages/root/root_tabbar.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'dart:js' as js;
+// import 'dart:js' as js;
 
 UcNavigation routeObserver = UcNavigation();
 
@@ -79,9 +79,9 @@ class _RootPageState extends State<RootPage> with RouteAware {
         logout();
       } else if (state == ConnectState.connected) {
         setupInteractedMessage();
+        initWebRtc();
       }
     });
-    initWebRtc();
     Im.get().connect();
   }
 
@@ -182,7 +182,6 @@ class _RootPageState extends State<RootPage> with RouteAware {
     WebRtcCtr.get().onReceiveOffer = (session) {
       confirmAlert(_context!, (act) {
         if (act) {
-          print("rrrr go ");
           routePush(new VideoCallView(session.peerId, session: session));
         } else {}
       }, title: "是否接受电话？");

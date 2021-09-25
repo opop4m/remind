@@ -22,7 +22,7 @@ class WebRtcCtr {
 
   /// 内部构造方法，可避免外部暴露构造函数，进行实例化
   WebRtcCtr._internal() {
-    _rtc = Webrtc(_selfId, iceService);
+    _rtc = Webrtc();
   }
   factory WebRtcCtr.get() => _getInstance();
   static _getInstance() {
@@ -46,25 +46,27 @@ class WebRtcCtr {
   OnOffer? onReceiveOffer;
 
   init() {
+    Map<String, dynamic> iceService = {
+      'iceServers': [
+        {'url': 'stun:stun.l.google.com:19302'},
+        {'url': Global.get().chatConf.stun},
+        /*
+       * turn server configuration example.
+        */
+        {
+          'url': Global.get().chatConf.stun,
+          'username': _selfId,
+          'credential': Global.get().curUser.accessToken
+        },
+      ]
+    };
+    _log.info("cur iceServers: $iceService");
+    _rtc.setInfo(_selfId, iceService);
     MqttLib.get().messageStream.listen((mqMsg) {
       var res = jsonDecode(mqMsg.pt);
       if (res is Map) onMessageFromSocket(mqMsg.topic, res);
     });
   }
-
-  Map<String, dynamic> iceService = {
-    'iceServers': [
-      {'url': 'stun:stun.l.google.com:19302'},
-      /*
-       * turn server configuration example.
-        */
-      {
-        'url': 'turn:18.162.124.212:3478',
-        'username': 'username',
-        'credential': 'password'
-      },
-    ]
-  };
 
   Future<RtcSession> inviteTarget(
       String targetId, String type, DataChannelCallback? cb) async {

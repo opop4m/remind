@@ -52,7 +52,7 @@ class _LoginBeginPageState extends State<LoginBeginPage> {
         ),
         new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: buttons,
+          children: model.logic.initializing ? [] : buttons,
         )
       ],
     );

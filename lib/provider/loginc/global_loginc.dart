@@ -71,7 +71,9 @@ class GlobalLogic {
     }
   }
 
+  bool initializing = false;
   Future<bool> init() async {
+    initializing = true;
     bool hasLogin = true;
     _model.appName = await SharedUtil.instance.getString(Keys.appName);
     // Global.get().hasLogin =
@@ -98,20 +100,22 @@ class GlobalLogic {
     if (hasLogin) {
       userInfo();
     }
+    initializing = false;
     _log.info(
-        "user: ${userStr} \n chatConf: ${chatConfStr} \n has login: ${Global.get().hasLogin}");
+        "cache user: ${userStr} \n chatConf: ${chatConfStr} \n has login: ${Global.get().hasLogin}");
     return hasLogin;
   }
 
   void saveInfo() async {
     if (Global.get().curUser.id != "") {
+      await SharedUtil.instance
+          .saveString(Keys.account, Global.get().curUser.id);
       String userStr = jsonEncode(Global.get().curUser);
       String chatConfStr = jsonEncode(Global.get().chatConf);
-      // _log.info("save user str: $userStr");
+      _log.info("save user str: $userStr");
       SharedUtil.instance.saveString(Keys.chatConf, chatConfStr);
       SharedUtil.instance.saveString(Keys.user, userStr);
-      SharedUtil.instance.saveString(Keys.account, Global.get().curUser.id);
-      SharedUtil.instance.saveBoolean(Keys.hasLogged, true);
+      // SharedUtil.instance.saveBoolean(Keys.hasLogged, true);
       SharedUtil.instance.saveInt(Keys.loggedTime, Utils.getTimestampSecond());
       API.fileHost = Global.get().chatConf.fileHost;
       API.uploadHost = Global.get().chatConf.uploadHost;
@@ -122,11 +126,12 @@ class GlobalLogic {
 void logout() async {
   Global.get().hasLogin = false;
   try {
-    await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
+    // await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
+    await SharedUtil.instance.saveString(Keys.user, "");
     Im.get().disConnect();
     await routePushAndRemove(new LoginBeginPage());
   } on PlatformException {
-    await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
+    // await SharedUtil.instance.saveBoolean(Keys.hasLogged, false);
     await routePushAndRemove(new LoginBeginPage());
   }
 }

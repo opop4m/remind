@@ -35,9 +35,14 @@ class Webrtc {
       {'DtlsSrtpKeyAgreement': true},
     ]
   };
-  Webrtc(this._selfId, this._iceServers);
-  Map<String, dynamic> _iceServers;
-  String _selfId;
+  Webrtc();
+  late Map<String, dynamic> _iceServers;
+  late String _selfId;
+
+  void setInfo(String selfId, Map<String, dynamic> iceServers) {
+    _selfId = selfId;
+    _iceServers = iceServers;
+  }
 
   Future<RtcSession> createSession(
       String peerId, String type, String? sessionId) async {
