@@ -42,12 +42,6 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getChatData() async {
-    // final str = await ChatListData().chatListData();
-    // List<ChatList> listChat = str;
-    // if (!listNoEmpty(listChat)) return;
-    // _chatData.clear();
-    // _chatData..addAll(listChat.reversed);
-    // if (mounted) setState(() {});
     _chatData = await ImData.get().getRecentList(update: true);
     _pop = await ImData.get().getUnread();
     Notice.addListener(UcActions.recentList(), (data) {
@@ -58,34 +52,18 @@ class _HomePageState extends State<HomePage>
       });
     });
     Notice.addListener(UcActions.chatUser(), (data) async {
-      _log.info("notice chatUser");
+      // _log.info("notice chatUser");
       _chatData = await ImData.get().getRecentList();
       if (mounted) setState(() {});
     });
     Notice.addListener(UcActions.chatPop(), (data) async {
       _pop = await ImData.get().getUnread();
-      _log.info("chatPop: $_pop");
+      // _log.info("chatPop: $_pop");
       if (mounted) setState(() {});
     });
     // await initChatUsers(_chatData);
     if (mounted) setState(() {});
   }
-
-  // initChatUsers(List<ChatRecent> _chatData, {bool update = false}) async {
-  //   if (_chatData.length > 0) {
-  //     List<String> reqList = [];
-  //     _chatData.forEach((recent) {
-  //       // addUnique2list(reqList, recent.fromId);
-  //       addUnique2list(reqList, recent.peerId);
-  //     });
-  //     _chatUsers = await ImData.get().getChatUsers(reqList, update: update);
-  //     //  = rspUser.res!;
-  //     Notice.addListener(UcActions.chatUser(), (data) async {
-  //       _chatUsers = await ImData.get().getChatUsers(reqList);
-  //       if (mounted) setState(() {});
-  //     });
-  //   }
-  // }
 
   _showMenu(BuildContext context, Offset tapPos, int type, String id) {
     final RenderBox overlay =
@@ -159,7 +137,7 @@ class _HomePageState extends State<HomePage>
     String timeStr = '$hour:$minute';
 
     return new SizedBox(
-      width: 35.0,
+      // width: 35.0,
       child: new Text(
         timeStr,
         maxLines: 1,

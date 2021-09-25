@@ -21,7 +21,7 @@ class TextMsg extends StatelessWidget {
 
     var body = [
       new MsgAvatar(model: model, user: user),
-      new TextItemContainer(
+      new TextItemContainer2(
         text: text,
         action: '',
         isMyself: isSelf,
@@ -37,7 +37,12 @@ class TextMsg extends StatelessWidget {
     }
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5.0),
-      child: new Row(children: body),
+      child: new Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: body,
+      ),
     );
   }
 }

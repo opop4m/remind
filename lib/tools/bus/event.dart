@@ -1,7 +1,7 @@
 class UcActions {
   static String groupName() => 'groupName';
 
-  static String voiceImg() => 'voiceImg';
+  // static String voiceImg() => 'voiceImg';
 
   static String user() => 'user';
 
@@ -15,6 +15,7 @@ class UcActions {
   // static String friendList() => 'friendList';
   static String chatRead() => 'chatRead';
   static String chatPop() => 'chatPop';
+  static String routePop() => 'routePop';
 }
 
 // class Data {

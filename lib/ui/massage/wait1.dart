@@ -11,39 +11,21 @@ import 'package:client/ui/message_view/quit_message.dart';
 import 'package:client/ui/message_view/sound_msg.dart';
 import 'package:client/ui/message_view/text_msg.dart';
 
-class SendMessageView extends StatefulWidget {
+class SendMessageView2 extends StatelessWidget {
   final ChatMsg model;
   final ChatUser user;
 
-  SendMessageView(this.model, this.user);
+  SendMessageView2(this.model, this.user);
 
-  @override
-  _SendMessageViewState createState() => _SendMessageViewState();
-}
-
-class _SendMessageViewState extends State<SendMessageView> {
   @override
   Widget build(BuildContext context) {
-    // Map msg = widget.model.msg;
-    // String msgType = msg['type'];
-    // String msgStr = msg.toString();
-
-    var _msg = widget.model;
-
-    // bool isI = PlatformUtils.isIOS;
-    // bool iosText = isI && msgStr.contains('text:');
-    // bool iosImg = isI && msgStr.contains('imageList:');
-    // var iosS = msgStr.contains('downloadFlag:') && msgStr.contains('second:');
-    // bool iosSound = isI && iosS;
+    var _msg = model;
     if (_msg.msgType == msgTypeText) {
-      return new TextMsg(_msg.content ?? "", widget.model, widget.user);
+      return new TextMsg(_msg.content ?? "", model, user);
     } else if (_msg.msgType == msgTypeImage) {
-      return new ImgMsg(_msg, widget.user);
+      return new ImgMsg(_msg, user);
     } else if (_msg.msgType == msgTypeVoice) {
-      return new SoundMsg(_msg, widget.user);
-//    } else if (msg.toString().contains('snapshotPath') &&
-//        msg.toString().contains('videoPath')) {
-//      return VideoMessage(msg, msgType, widget.data);
+      return new SoundMsg(_msg, user);
     } else if (_msg.tipsType == tipsTypeJoin) {
       return JoinMessage(_msg);
     } else if (_msg.tipsType == tipsTypeQuit) {

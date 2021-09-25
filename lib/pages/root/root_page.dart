@@ -41,6 +41,11 @@ class _RootPageState extends State<RootPage> with RouteAware {
   @override
   void initState() {
     super.initState();
+    Notice.addListener(UcActions.routePop(), (data) {
+      if (data == "RootPage" && mounted) {
+        setState(() {});
+      }
+    });
     WidgetsBinding.instance?.addObserver(bind);
     // ifBrokenNetwork();
     initChat().then((value) {

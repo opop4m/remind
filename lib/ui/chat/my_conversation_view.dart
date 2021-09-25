@@ -31,22 +31,28 @@ class _MyConversationViewState extends State<MyConversationView> {
   @override
   Widget build(BuildContext context) {
     var row = new Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        new Space(width: mainSpace),
+        // new Space(width: mainSpace),
         new Expanded(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Text(
-                widget.title ?? '',
-                style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.normal),
-              ),
-              new SizedBox(height: 2.0),
-              new ContentMsg(widget.msg!),
-            ],
+          child: Container(
+            padding: EdgeInsets.only(left: mainSpace, right: mainSpace),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(
+                  widget.title ?? '',
+                  style:
+                      TextStyle(fontSize: 17.0, fontWeight: FontWeight.normal),
+                ),
+                new SizedBox(height: 2.0),
+                new ContentMsg(widget.msg!),
+              ],
+            ),
           ),
+          flex: 1,
         ),
-        new Space(width: mainSpace),
+        // new Space(width: mainSpace),
         new Column(
           children: [
             widget.time ?? Container(),

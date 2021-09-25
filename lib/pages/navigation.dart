@@ -18,15 +18,19 @@ class UcNavigation extends NavigatorObserver {
     if (!Global.get().hasLogin) {
       return;
     }
-    var name = pre?.settings.name ?? "/";
+    if (pre?.settings.name == null) {
+      return;
+    }
+    var name = pre!.settings.name!;
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
     }
     if (name == chatPage) {
-      name += "-" + (pre?.settings.arguments.toString() ?? "");
+      name += "-" + (pre.settings.arguments.toString());
     }
     curPage = name;
     Im.get().requestSystem(actOnline, {}, msgId: name);
+    Notice.send(UcActions.routePop(), name);
   }
 
   @override
@@ -37,7 +41,10 @@ class UcNavigation extends NavigatorObserver {
     if (!Global.get().hasLogin) {
       return;
     }
-    var name = route.settings.name ?? "/";
+    if (route.settings.name == null) {
+      return;
+    }
+    var name = route.settings.name!;
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
     }

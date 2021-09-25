@@ -54,6 +54,7 @@ class _WPopupMenuState extends State<MagicPop> {
             _PopupMenuRoute(context, widget.actions, widget.pageMaxChildCount,
                 widget.backgroundColor, widget.menuWidth, widget.menuHeight))
         .then((index) {
+      if (index == null) return index;
       widget.onValueChanged(index);
       return index;
     });

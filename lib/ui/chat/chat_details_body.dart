@@ -2,6 +2,7 @@
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/massage/wait1.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,26 @@ class ChatDetailsBody extends StatelessWidget {
           reverse: true,
           itemBuilder: (context, int index) {
             ChatMsg model = chatData[index];
-            return new SendMessageView(model, user);
+            return new SendMessageView2(model, user);
+            // return Container(
+            //     child: Row(
+            //   mainAxisAlignment: MainAxisAlignment.start,
+            //   crossAxisAlignment: CrossAxisAlignment.end,
+            //   children: [
+            //     Text("avatar....."),
+            //     Expanded(
+            //       child: ExtendedText(
+            //         model.content == "" ? '文字为空' : model.content!,
+            //         maxLines: 99,
+            //         overflow: TextOverflow.visible,
+            //         // specialTextSpanBuilder: _spanBuilder,
+            //         style: TextStyle(fontSize: 15),
+            //         textWidthBasis: TextWidthBasis.longestLine,
+            //       ),
+            //     ),
+            //     Text("..time"),
+            //   ],
+            // ));
           },
           itemCount: chatData.length,
           dragStartBehavior: DragStartBehavior.down,
