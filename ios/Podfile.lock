@@ -110,9 +110,6 @@ PODS:
     - Flutter
     - GoogleWebRTC (= 1.1.31999)
     - Libyuv (= 1703)
-  - fluttertoast (0.0.2):
-    - Flutter
-    - Toast
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -220,7 +217,6 @@ PODS:
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
   - tau_core (8.3.9)
-  - Toast (4.0.0)
   - UICKeyChainStore (2.1.2)
   - url_launcher (0.0.1):
     - Flutter
@@ -244,7 +240,6 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
-  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - open_file (from `.symlinks/plugins/open_file/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
@@ -285,7 +280,6 @@ SPEC REPOS:
     - SDWebImageWebPCoder
     - sqlite3
     - tau_core
-    - Toast
     - UICKeyChainStore
 
 EXTERNAL SOURCES:
@@ -318,8 +312,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_sound/ios"
   flutter_webrtc:
     :path: ".symlinks/plugins/flutter_webrtc/ios"
-  fluttertoast:
-    :path: ".symlinks/plugins/fluttertoast/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
   open_file:
@@ -375,7 +367,6 @@ SPEC CHECKSUMS:
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_sound: 91c069f33d811a4c98b9aa7cec9cd1dbfd1786d9
   flutter_webrtc: 39898454258b54ba51996850d5da8d5d53bf1524
-  fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAppMeasurement: 2c0c6e2a7ab3fe730ade6379f732bdefb46f50b0
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
@@ -402,7 +393,6 @@ SPEC CHECKSUMS:
   sqlite3: 75da32fd4e3574f6c38566a9f0114cfe792c8db5
   sqlite3_flutter_libs: aedb7b6ba191f9a052dcef77691cf5d37437431c
   tau_core: f7bbd1c6a632f52c2fa7c14feea385ab966b1e45
-  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   UICKeyChainStore: 85db518bb1d294366d15ec9b92a416c4e670518f
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e

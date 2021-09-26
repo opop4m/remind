@@ -4,6 +4,7 @@ import 'package:client/provider/service/im.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 final _log = Logger("Test");
 
@@ -72,6 +73,11 @@ class _test extends State<Test> {
         }
         break;
       case "showLoading":
+        EasyLoading.show(
+            status: 'loading...', maskType: EasyLoadingMaskType.black);
+        Future.delayed(Duration(seconds: 3), () {
+          EasyLoading.dismiss();
+        });
         break;
       case "dismissLoading":
         break;

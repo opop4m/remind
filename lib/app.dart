@@ -7,6 +7,7 @@ import 'package:client/provider/service/imApi.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 // import 'package:client/config/storage_manager.dart';
@@ -77,6 +78,7 @@ class _MyApp extends State<MyApp> {
   void initState() {
     initializeFlutterFire();
     super.initState();
+    EasyLoading.instance.userInteractions = false;
   }
 
   @override
@@ -115,6 +117,7 @@ class _MyApp extends State<MyApp> {
           // return new LoginBeginPage();
         }
       },
+      builder: EasyLoading.init(),
       // home: Global.get().hasLogin ? new RootPage() : new LoginBeginPage(),
     );
   }

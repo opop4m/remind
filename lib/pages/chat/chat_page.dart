@@ -84,9 +84,9 @@ class _ChatPageState extends State<ChatPage> {
         ImData.get().getChatList(widget.id, widget.type, 0).listen((event) {
       chatData = event;
       if (chatData.length > 0) {
-        var msg = chatData[chatData.length - 1];
+        var msg = chatData[0];
         var msgStr = jsonEncode(msg);
-        _log.info("init msg: $msgStr");
+        _log.info("last msg: $msgStr");
       }
       if (mounted) setState(() {});
     });

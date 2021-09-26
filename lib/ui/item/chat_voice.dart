@@ -38,14 +38,31 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   ///默认隐藏状态
   bool voiceState = true;
   OverlayEntry? overlayEntry;
+  // VoiceDialog? voiceDialog;
   UcVoice _myRecorder = UcVoice();
   late String _path;
+  int decibel = 0;
+  GlobalKey<VoiceDialogState> _voiceKey = GlobalKey<VoiceDialogState>();
 
   @override
   void initState() {
     super.initState();
     _myRecorder.openAudioSession().then((value) {
-      _log.info("openAudioSession finish.");
+      _log.info("openAudioSession finish2.");
+      _myRecorder.setSubscriptionDuration(Duration(milliseconds: 100));
+      _myRecorder.onProgress?.listen((event) {
+        _log.info("onProgress event: $event");
+        var d = event.duration.inSeconds;
+        decibel = event.decibels?.toInt() ?? 0;
+        if (d > 59) {
+          showToast(context, "语音最长 60s");
+          hideVoiceView();
+        } else {
+          _voiceKey.currentState?.update(decibel);
+        }
+
+        // if (mounted) setState(() {});
+      });
     });
     getTemporaryDirectory().then((value) {
       var tempDir = value;
@@ -61,8 +78,12 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   int startTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
   void start() async {
+    if (!_myRecorder.isStopped) {
+      return;
+    }
     print('开始拉。当前路径');
     startTimeMillis = DateTime.now().millisecondsSinceEpoch;
+
     try {
       await _myRecorder.startRecorder(codec: Codec.aacADTS, toFile: _path);
       // String path = await flutterSound
@@ -78,24 +99,11 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   }
 
   Future stop() async {
+    if (_myRecorder.isStopped) {
+      return;
+    }
     try {
       await _myRecorder.stopRecorder();
-      File f = File(_path);
-      if (!isUp) {
-        int timeLen = DateTime.now().millisecondsSinceEpoch - startTimeMillis;
-        if (timeLen < 1000) {
-          showToast(context, '时间太短了');
-        }
-
-        var recordBuff = await f.readAsBytes();
-        var voicePath = await uploadMediaApi(recordBuff, ".aac", "voice");
-        _log.info("-------success   voicePath: $voicePath, timeLen:$timeLen");
-        widget.voiceFile(voicePath, timeLen);
-      }
-
-      // String result = await flutterSound.stopRecorder();
-      // print('stopRecorder: $result');
-      f.delete();
     } catch (err, s) {
       print(err);
       print(s);
@@ -134,7 +142,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     start();
 
     if (overlayEntry == null) {
-      overlayEntry = showVoiceDialog(context, index: index);
+      overlayEntry = showVoiceDialog(context, _voiceKey);
+      // voiceDialog = vd.voiceDialog;
     }
   }
 
@@ -147,16 +156,31 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     if (overlayEntry != null) {
       overlayEntry?.remove();
       overlayEntry = null;
+      // voiceDialog = null;
+    }
+    if (_myRecorder.isStopped) {
+      return;
     }
     //loading...
     await stop();
+    File f = File(_path);
 
     if (isUp) {
       print("取消发送");
     } else {
       print("进行发送");
-      // Notice.send(UcActions.voiceImg(), true);
+      int timeLen = DateTime.now().millisecondsSinceEpoch - startTimeMillis;
+      if (timeLen < 1000) {
+        showToast(context, '时间太短了');
+        return;
+      }
+
+      var recordBuff = await f.readAsBytes();
+      var voicePath = await uploadMediaApi(recordBuff, ".aac", "voice");
+      _log.info("-------success   voicePath: $voicePath, timeLen:$timeLen");
+      widget.voiceFile(voicePath, timeLen);
     }
+    f.delete();
   }
 
   moveVoiceView() {
