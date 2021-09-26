@@ -21,6 +21,15 @@ class SoundMsg extends StatefulWidget {
   _SoundMsgState createState() => _SoundMsgState();
 }
 
+UcSoundPlayer? _myPlayer;
+List<_Cache> _cachePlaying = [];
+
+class _Cache {
+  _SoundMsgState state;
+  List<AnimationController> playing;
+  _Cache(this.state, this.playing);
+}
+
 class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   // Duration duration;
   // Duration position;
@@ -29,7 +38,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   late Animation animation;
   late AnimationController playProcessC;
   late Animation playProcessAnima;
-  UcSoundPlayer _myPlayer = new UcSoundPlayer();
+  // UcSoundPlayer _myPlayer = new UcSoundPlayer();
   AudioPlayer audioPlayer = AudioPlayer();
 
   StreamSubscription? _positionSubscription;
@@ -44,9 +53,13 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _myPlayer.openAudioSession().then((value) {
-      _log.info("Player.openAudioSession finish");
-    });
+    if (_myPlayer == null) {
+      _myPlayer = new UcSoundPlayer();
+      _myPlayer!.openAudioSession().then((value) {
+        _log.info("Player.openAudioSession finish");
+      });
+    }
+
     var arr = widget.msg.ext!.split(",");
     urls = arr[0];
     timeLen = int.parse(arr[1]) ~/ 1000;
@@ -79,14 +92,26 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     playProcessAnima = IntTween(begin: 0, end: timeLen).animate(playProcessC);
   }
 
+  cleanCachePlaying() {
+    _cachePlaying.forEach((cache) {
+      cache.playing.forEach((ctl) {
+        ctl.stop();
+      });
+      cache.state.setState(() {});
+    });
+    _cachePlaying.clear();
+  }
+
   playNew(url) async {
     if (controller.isAnimating) {
       stopPlay();
       return;
     }
+    cleanCachePlaying();
     controller.forward();
     playProcessC.forward(from: 0.0);
-    await _myPlayer.startPlayer(
+    _cachePlaying.add(_Cache(this, [controller, playProcessC]));
+    await _myPlayer!.startPlayer(
         fromURI: getMediaUrl(url),
         codec: Codec.aacADTS,
         whenFinished: () {
@@ -99,7 +124,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   }
 
   stopPlay() async {
-    _myPlayer.stopPlayer();
+    _myPlayer!.stopPlayer();
     controller.stop();
     playProcessC.stop();
     setState(() {});
@@ -206,7 +231,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     }
     playProcessC.dispose();
     controller.dispose();
-    _myPlayer.closeAudioSession();
+    // _myPlayer.closeAudioSession();
     super.dispose();
   }
 }
