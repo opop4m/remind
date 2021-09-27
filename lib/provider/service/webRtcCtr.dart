@@ -167,18 +167,18 @@ class WebRtcCtr {
     session.onSelfCandidate =
         (session, candidate) => _sendCandidate(session, candidate);
     session.cacheRemoteDescription = description;
-    onReceiveOffer?.call(session);
-  }
-
-  agreeAndSendAnswer(RtcSession session) async {
     if (session.type != typeData) {
-      session.onCallStateChange = (session, state) {
+      session.onSessionStateChange = (session, state) {
         onCallStateChange?.call(session, state);
         if (state == CallState.CallStateBye) {
           _sendBye(session);
         }
       };
     }
+    onReceiveOffer?.call(session);
+  }
+
+  agreeAndSendAnswer(RtcSession session) async {
     RTCSessionDescription? sd =
         await _rtc.getAnswer(session, session.cacheRemoteDescription!);
     if (sd != null) {
@@ -213,10 +213,12 @@ class WebRtcCtr {
     _rtc.cleanAllSessions();
   }
 
-  Future<MediaStream> createStream(bool userScreen) async {
+  Future<MediaStream> createStream(bool userScreen, bool useVideo) async {
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
-      'video': {
+    };
+    if (useVideo) {
+      mediaConstraints['video'] = {
         'mandatory': {
           'minWidth':
               '640', // Provide your own width, height and frame rate here
@@ -225,8 +227,8 @@ class WebRtcCtr {
         },
         'facingMode': 'user',
         'optional': [],
-      }
-    };
+      };
+    }
 
     MediaStream stream = userScreen
         ? await navigator.mediaDevices.getDisplayMedia(mediaConstraints)
@@ -241,7 +243,8 @@ class WebRtcCtr {
     session.onSelfCandidate = (session, candidate) {
       _sendCandidate(session, candidate);
     };
-    session.onCallStateChange = (session, state) {
+    session.onSessionStateChange = (session, state) {
+      //session close
       if (state == CallState.CallStateBye) {
         _sendBye(session);
       }

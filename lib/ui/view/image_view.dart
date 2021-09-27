@@ -68,3 +68,34 @@ class ImageView extends StatelessWidget {
     return image;
   }
 }
+
+Widget getImageWidget(String img,
+    {double? width, double? height, BoxFit? fit}) {
+  Widget image;
+  if (isNetWorkImg(img)) {
+    image = new CachedNetworkImage(
+      imageUrl: img,
+      width: width,
+      height: height,
+      fit: fit,
+      cacheManager: cacheManager,
+    );
+  } else if (isAssetsImg(img)) {
+    image = new Image.asset(
+      img,
+      width: width,
+      height: height,
+      fit: width != null && height != null ? BoxFit.fill : fit,
+    );
+  } else {
+    // } else if (!PlatformUtils.isWeb && File(img).existsSync()) {
+    image = new Image.file(
+      File(img),
+      width: width,
+      height: height,
+      fit: fit,
+    );
+  }
+
+  return image;
+}

@@ -8,26 +8,31 @@ import 'package:client/ui/message_view/text_item_container.dart';
 
 class TextMsg extends StatelessWidget {
   final String text;
-  final ChatMsg model;
+  final ChatMsg msg;
   final ChatUser user;
 
-  TextMsg(this.text, this.model, this.user);
+  TextMsg(this.text, this.msg, this.user);
 
   @override
   Widget build(BuildContext context) {
     // final globalModel = Provider.of<GlobalModel>(context);
     var my = Global.get().curUser;
-    bool isSelf = model.fromId == my.id;
+    bool isSelf = msg.fromId == my.id;
+
+    Widget content;
+    // if (msg.msgType == msgTypeVideoCall || msg.msgType == msgTypeVoiceCall) {
+    //   content = Text("data");
+    // } else {
+    content = TextItemContainer2(
+      text: text,
+      isMyself: isSelf,
+      msg: msg,
+    );
+    // }
 
     var body = [
-      new MsgAvatar(model: model, user: user),
-      new TextItemContainer2(
-        text: text,
-        action: '',
-        isMyself: isSelf,
-        timeStr: Utils.formatTimeHM(model.createTime),
-        status: model.type == typeGroup || !isSelf ? -2 : model.status ?? 0,
-      ),
+      new MsgAvatar(model: msg, user: user),
+      content,
       new Spacer(),
     ];
     if (isSelf) {

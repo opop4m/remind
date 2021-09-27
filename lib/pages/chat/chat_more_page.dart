@@ -2,9 +2,10 @@ import 'package:camera/camera.dart';
 // import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'package:client/pages/chat/shoot_page.dart';
-import 'package:client/pages/chat/videoCall.dart';
+import 'package:client/pages/chat/videoCall2.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:client/tools/adapter/imagePickerApi.dart';
 // import 'package:client/tools/handle_util.dart';
 import 'package:client/tools/library.dart';
@@ -68,8 +69,18 @@ class _ChatMorePageState extends State<ChatMorePage> {
       } on CameraException catch (e) {
         _log.info(e.code, e.description);
       }
+    } else if (name == '语音通话') {
+      var user = await ImData.get().getChatUser(widget.id!);
+      routePush(VideoCallView(
+        user,
+        callType: msgTypeVoiceCall,
+      ));
     } else if (name == '视频通话') {
-      routePush(VideoCallView(widget.id!));
+      var user = await ImData.get().getChatUser(widget.id!);
+      routePush(VideoCallView(
+        user,
+        callType: msgTypeVideoCall,
+      ));
     } else {
       showToast(context, '敬请期待$name');
     }

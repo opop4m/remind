@@ -20,7 +20,9 @@ class SendMessageView2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var _msg = model;
-    if (_msg.msgType == msgTypeText) {
+    if (_msg.msgType == msgTypeText ||
+        _msg.msgType == msgTypeVoiceCall ||
+        _msg.msgType == msgTypeVideoCall) {
       return new TextMsg(_msg.content ?? "", model, user);
     } else if (_msg.msgType == msgTypeImage) {
       return new ImgMsg(_msg, user);

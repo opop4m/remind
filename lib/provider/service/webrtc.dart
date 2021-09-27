@@ -64,6 +64,7 @@ class Webrtc {
 
     pc.onIceConnectionState = (state) {
       print("onIceConnectionState:" + state.toString());
+      rtcSession.onIceConnectionState?.call(state);
     };
 
     pc.onRemoveStream = (stream) {
@@ -190,17 +191,18 @@ class RtcSession {
   StreamStateCallback? onAddRemoteStream;
   StreamStateCallback? onRemoveRemoteStream;
   Map<String, dynamic>? cacheRemoteDescription;
+  IceConnectionStateCallback? onIceConnectionState;
   OnSelfCandidate? onSelfCandidate;
-  CallStateCallback? onCallStateChange;
+  CallStateCallback? onSessionStateChange;
 
   clearListenr() {
     dc?.onDataChannelState = null;
     dc?.onMessage = null;
-    this.onCallStateChange = null;
+    this.onSessionStateChange = null;
   }
 
   Future<void> closeSession() async {
-    this.onCallStateChange?.call(this, CallState.CallStateBye);
+    this.onSessionStateChange?.call(this, CallState.CallStateBye);
     this.clearListenr();
     await this.pc?.close();
     await this.dc?.close();

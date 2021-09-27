@@ -38,7 +38,7 @@ class _VideoCall extends State<VideoCallView> {
       }
     };
     initRenderers().then((value) {
-      chat.createStream(false).then((steam) {
+      chat.createStream(false, true).then((steam) {
         _log.info("createStream");
 
         _localRenderer.srcObject = steam;

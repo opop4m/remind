@@ -1,6 +1,6 @@
 import 'package:client/pages/WidgetsBinding.dart';
 import 'package:client/pages/chat/chat_page.dart';
-import 'package:client/pages/chat/videoCall.dart';
+import 'package:client/pages/chat/videoCall2.dart';
 import 'package:client/pages/navigation.dart';
 import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
@@ -184,12 +184,14 @@ class _RootPageState extends State<RootPage> with RouteAware {
 
   void initWebRtc() {
     WebRtcCtr.get().init();
-    WebRtcCtr.get().onReceiveOffer = (session) {
-      confirmAlert(_context!, (act) {
-        if (act) {
-          routePush(new VideoCallView(session.peerId, session: session));
-        } else {}
-      }, title: "是否接受电话？");
+    WebRtcCtr.get().onReceiveOffer = (session) async {
+      // confirmAlert(_context!, (act) {
+      //   if (act) {
+      //     routePush(new VideoCallView(session.peerId, session: session));
+      //   } else {}
+      // }, title: "是否接受电话？");
+      var user = await ImData.get().getChatUser(session.peerId);
+      routePush(new VideoCallView(user, session: session));
     };
   }
 }
