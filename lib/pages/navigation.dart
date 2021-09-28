@@ -1,5 +1,6 @@
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
+import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class UcNavigation extends NavigatorObserver {
   static String curPage = "RootPage";
 
   static final String chatPage = "ChatPage";
+  static final String callPage = "VideoCallView";
 
   @override
   void didPop(Route route, Route? pre) {
@@ -31,6 +33,7 @@ class UcNavigation extends NavigatorObserver {
     curPage = name;
     Im.get().requestSystem(actOnline, {}, msgId: name);
     Notice.send(UcActions.routePop(), name);
+    UcNotice.send(UcActions.routePop(), name);
   }
 
   @override
@@ -48,7 +51,7 @@ class UcNavigation extends NavigatorObserver {
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
     }
-    if (name == chatPage) {
+    if (name == chatPage || name == callPage) {
       name += "-" + route.settings.arguments.toString();
     }
     curPage = name;

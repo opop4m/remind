@@ -3,6 +3,7 @@ import 'package:client/pages/chat/more_info_page.dart';
 import 'package:client/pages/chat/set_remark_page.dart';
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
 import 'package:client/provider/global_model.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/ui/item/contact_card.dart';
 import 'package:client/ui/orther/button_row.dart';
 import 'package:client/ui/orther/label_row.dart';
@@ -55,8 +56,11 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         margin: EdgeInsets.only(top: 10.0),
         text: '发消息',
         isBorder: true,
-        onPressed: () => routePushReplace(
-            new ChatPage(id: widget.id, title: widget.title, type: 1)),
+        onPressed: () {
+          String key = "$typePerson-" + widget.id;
+          routePushReplace(new ChatPage(
+              id: widget.id, title: widget.title, type: typePerson));
+        },
       ),
       new Visibility(
         visible: !isSelf,

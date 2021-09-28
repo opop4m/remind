@@ -10,6 +10,8 @@ import 'dart:core';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import 'package:logging/logging.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
+import 'package:flutter_audio_manager/flutter_audio_manager.dart';
 
 final _log = Logger("VideoCallView");
 
@@ -43,8 +45,6 @@ class _VideoCall extends State<VideoCallView> {
   bool isWasCall = false;
   bool isPeerHandup = false;
   int startSecond = 0;
-  //是否被呼叫， 是否通话中
-  // Map<String, double?> _localVideoWH = Map();
 
   RtcSession? session;
 
@@ -57,6 +57,9 @@ class _VideoCall extends State<VideoCallView> {
     } else {
       curCallStatus = callStatusWasCalling;
       isWasCall = true;
+    }
+    if (PlatformUtils.isMobile) {
+      FlutterAudioManager.changeToSpeaker();
     }
     _target = widget.peerInfo.id;
     chat.onCallStateChange = (session, state) {
@@ -74,8 +77,21 @@ class _VideoCall extends State<VideoCallView> {
       bool useVideo = true;
       if (widget.callType == msgTypeVoiceCall) {
         useVideo = false;
+        _subProximity = ProximitySensor.events.listen((event) {
+          bool _isNear = (event > 0) ? true : false;
+          if (_isNear) {
+            FlutterAudioManager.changeToReceiver();
+          } else {
+            FlutterAudioManager.changeToSpeaker();
+          }
+        });
       }
-      chat.createStream(false, useVideo).then((steam) {
+      if (widget.session != null &&
+          widget.session!.type == WebRtcCtr.typeVoice) {
+        useVideo = false;
+      }
+      _log.info(widget.session?.type);
+      chat.createStream(false, useVideo).then((steam) async {
         _log.info("createStream");
 
         _localRenderer.onResize = () {
@@ -85,20 +101,18 @@ class _VideoCall extends State<VideoCallView> {
         };
         _localStream = steam;
         if (widget.session != null) {
-          //TODO
           widget.session!.onIceConnectionState = onIceConnectionState;
         } else {
           curCallStatus = callStatusDoCalling;
-          _localRenderer.srcObject = steam;
-          chat.callTarget(_target, steam, (session, remoteSteam) {
+
+          String type = WebRtcCtr.typeVoice;
+          if (widget.callType == msgTypeVideoCall) {
+            type = WebRtcCtr.typeVedio;
+            _localRenderer.srcObject = steam;
+          }
+          var session = await chat.callTarget(_target, type, steam,
+              (session, remoteSteam) {
             _log.info("onAddRemoteStream callTarget");
-            if (widget.callType == msgTypeVideoCall) {
-              curCallStatus = callStatusInVideoCalling;
-            } else {
-              curCallStatus = callStatusInVoiceCalling;
-            }
-            session.onIceConnectionState = onIceConnectionState;
-            startTimer();
             try {
               _remoteRenderer.srcObject = remoteSteam;
             } catch (e, s) {
@@ -107,16 +121,26 @@ class _VideoCall extends State<VideoCallView> {
             }
             setState(() {});
           });
+          session.onIceConnectionState = onIceConnectionState;
         }
         setState(() {});
       });
     });
   }
 
+  StreamSubscription<int>? _subProximity;
   void onIceConnectionState(RTCIceConnectionState state) {
-    if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+    if (state == RTCIceConnectionState.RTCIceConnectionStateFailed && mounted) {
       showToast(context, "Connection State Failed");
       _hangUp();
+    } else if (state == RTCIceConnectionState.RTCIceConnectionStateConnected &&
+        mounted) {
+      if (widget.callType == msgTypeVideoCall) {
+        curCallStatus = callStatusInVideoCalling;
+      } else {
+        curCallStatus = callStatusInVoiceCalling;
+      }
+      startTimer();
     }
   }
 
@@ -134,13 +158,11 @@ class _VideoCall extends State<VideoCallView> {
     };
     widget.session!.addMediaSteam(_localStream!);
     chat.agreeAndSendAnswer(widget.session!);
-    if (widget.session!.type == WebRtcCtr.typeVedio) {
-      curCallStatus = callStatusInVideoCalling;
-    } else {
-      curCallStatus = callStatusInVoiceCalling;
-    }
-    // startSecond = Utils.getTimestampSecond();
-    startTimer();
+    // if (widget.session!.type == WebRtcCtr.typeVedio) {
+    //   curCallStatus = callStatusInVideoCalling;
+    // } else {
+    //   curCallStatus = callStatusInVoiceCalling;
+    // }
     if (mounted) setState(() {});
   }
 
@@ -167,6 +189,7 @@ class _VideoCall extends State<VideoCallView> {
     await _localStream?.dispose();
     _localStream = null;
     timer?.cancel();
+    _subProximity?.cancel();
   }
 
   @override
@@ -184,6 +207,7 @@ class _VideoCall extends State<VideoCallView> {
         break;
       default:
         body = bodyDoCall();
+      // body = bodyInVideoCall();
     }
     return body;
   }
@@ -251,16 +275,18 @@ class _VideoCall extends State<VideoCallView> {
               child: Icon(Icons.call_end),
               backgroundColor: Colors.pink,
             ),
-            FloatingActionButton(
-              heroTag: UniqueKey(),
-              onPressed: _switchSpeaker,
-              tooltip: 'MuteMic',
-              child: Icon(
-                Icons.volume_up,
-                color: isSpeaker ? Colors.black : Colors.white,
-              ),
-              backgroundColor: isSpeaker ? Colors.white : Colors.black,
-            ),
+            PlatformUtils.isMobile
+                ? FloatingActionButton(
+                    heroTag: UniqueKey(),
+                    onPressed: _switchSpeaker,
+                    tooltip: 'MuteMic',
+                    child: Icon(
+                      Icons.volume_up,
+                      color: isSpeaker ? Colors.black : Colors.white,
+                    ),
+                    backgroundColor: isSpeaker ? Colors.white : Colors.black,
+                  )
+                : Space(),
           ],
         ),
       );
@@ -450,11 +476,17 @@ class _VideoCall extends State<VideoCallView> {
 
   void sendCallMsg() {
     //cancel, busy,
+    int? status;
+    if (curCallStatus == callStatusInVideoCalling ||
+        curCallStatus == callStatusInVoiceCalling) {
+      status = msgStateReaded;
+    }
     var msg = Im.newMsg(
       typePerson,
       widget.callType,
       widget.peerInfo.id,
       ext: "$startSecond,$curCallStatus",
+      status: status,
     );
     Im.get().sendChatMsg(msg);
   }

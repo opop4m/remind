@@ -42,6 +42,10 @@ class _ContentMsgState extends State<ContentMsg> {
       str = '[语音消息]';
     } else if (msg.msgType == msgTypeVideo) {
       str = '[视频]';
+    } else if (msg.msgType == msgTypeVideoCall) {
+      str = '[视频电话]';
+    } else if (msg.msgType == msgTypeVoiceCall) {
+      str = '[语音电话]';
     } else if (msg.tipsType == tipsTypeJoin) {
       str = '[系统消息] 新人入群';
     } else if (msg.tipsType == tipsTypeQuit) {

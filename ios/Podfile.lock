@@ -1,6 +1,4 @@
 PODS:
-  - audioplayers (0.0.1):
-    - Flutter
   - camera (0.0.1):
     - Flutter
   - connectivity (0.0.1):
@@ -95,6 +93,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_app_badger (0.0.1):
     - Flutter
+  - flutter_audio_manager (0.0.1):
+    - Flutter
   - flutter_image_compress (0.0.1):
     - Flutter
     - Mantle
@@ -186,6 +186,8 @@ PODS:
     - Flutter
     - FlutterMacOS
   - PromisesObjC (2.0.0)
+  - proximity_sensor (0.0.1):
+    - Flutter
   - Reachability (3.2)
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
@@ -226,7 +228,6 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
@@ -236,6 +237,7 @@ DEPENDENCIES:
   - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `8.6.0`)
   - Flutter (from `Flutter`)
   - flutter_app_badger (from `.symlinks/plugins/flutter_app_badger/ios`)
+  - flutter_audio_manager (from `.symlinks/plugins/flutter_audio_manager/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
@@ -247,6 +249,7 @@ DEPENDENCIES:
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - pgnative (from `.symlinks/plugins/pgnative/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
+  - proximity_sensor (from `.symlinks/plugins/proximity_sensor/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
@@ -283,8 +286,6 @@ SPEC REPOS:
     - UICKeyChainStore
 
 EXTERNAL SOURCES:
-  audioplayers:
-    :path: ".symlinks/plugins/audioplayers/ios"
   camera:
     :path: ".symlinks/plugins/camera/ios"
   connectivity:
@@ -304,6 +305,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_app_badger:
     :path: ".symlinks/plugins/flutter_app_badger/ios"
+  flutter_audio_manager:
+    :path: ".symlinks/plugins/flutter_audio_manager/ios"
   flutter_image_compress:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
   flutter_local_notifications:
@@ -326,6 +329,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/pgnative/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
+  proximity_sensor:
+    :path: ".symlinks/plugins/proximity_sensor/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sqflite:
@@ -345,7 +350,6 @@ CHECKOUT OPTIONS:
     :tag: 8.6.0
 
 SPEC CHECKSUMS:
-  audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   camera: 3164201dc344383e62282964016528c4f5a9ad50
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   FCUUID: bb054fc90cd7cd99320f9f6ff8e130fe607fba05
@@ -363,6 +367,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: ce0a5ee974f7bfe83b6cc5acce88c2d969e37c41
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_app_badger: 65de4d6f0c34a891df49e6cfb8a1c0496426fa68
+  flutter_audio_manager: 5945fdba99ff5e6c54d7e9b78d35b3a3bd574a9b
   flutter_image_compress: fd2b476345226e1a10ea352fa306af95704642c1
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_sound: 91c069f33d811a4c98b9aa7cec9cd1dbfd1786d9
@@ -385,6 +390,7 @@ SPEC CHECKSUMS:
   pgnative: 7400bdb932023f6dcb96f115e3c478779c096226
   photo_manager: 84fa94fbeb82e607333ea9a13c43b58e0903a463
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  proximity_sensor: 87bc974f9d94b03b4b5911ff1f93a61e561e6183
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815

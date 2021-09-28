@@ -5,6 +5,7 @@ import 'package:client/pages/navigation.dart';
 import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
@@ -128,8 +129,14 @@ class _RootPageState extends State<RootPage> with RouteAware {
       String peerId = message.data['peer'];
       int type = int.parse(message.data['type']);
       var peerInfo = await ImData.get().getChatUser(peerId);
-      routePush(new ChatPage(id: peerInfo.id, title: peerInfo.name, type: type),
-          arguments: peerInfo.id);
+      String key = "$type-" + peerId;
+      var chatPage =
+          ChatPage(id: peerInfo.id, title: peerInfo.name, type: type);
+      if (UcNavigation.curPage.startsWith(UcNavigation.chatPage)) {
+        routePushReplace(chatPage, arguments: key);
+      } else {
+        routePush(chatPage, arguments: key);
+      }
     }
   }
 
@@ -190,8 +197,25 @@ class _RootPageState extends State<RootPage> with RouteAware {
       //     routePush(new VideoCallView(session.peerId, session: session));
       //   } else {}
       // }, title: "是否接受电话？");
+      if (VideoCallView.inCalling) {
+        _log.info("inCalling busying.");
+        return;
+      }
+      VideoCallView.inCalling = true;
       var user = await ImData.get().getChatUser(session.peerId);
-      routePush(new VideoCallView(user, session: session));
+      var type = msgTypeVideoCall;
+      if (session.type == WebRtcCtr.typeVoice) {
+        type = msgTypeVoiceCall;
+      }
+      String key = "$typePerson-" + user.id;
+
+      routePush(
+          new VideoCallView(
+            user,
+            session: session,
+            callType: type,
+          ),
+          arguments: key);
     };
   }
 }

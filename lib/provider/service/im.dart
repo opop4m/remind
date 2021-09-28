@@ -168,18 +168,19 @@ class Im {
   }
 
   static ChatMsg newMsg(int type, int msgType, String peerId,
-      {String content = "", String ext = ""}) {
+      {String content = "", String ext = "", int? status}) {
     var msg = ChatMsg(
-        msgId: newMsgId(peerId),
-        peerId: peerId,
-        fromId: Global.get().curUser.id,
-        type: type,
-        msgType: msgType,
-        tipsType: 0,
-        content: content,
-        status: msgStateSending,
-        ext: ext,
-        createTime: Utils.getTimestampSecond());
+      msgId: newMsgId(peerId),
+      peerId: peerId,
+      fromId: Global.get().curUser.id,
+      type: type,
+      msgType: msgType,
+      tipsType: 0,
+      content: content,
+      status: status ?? msgStateSending,
+      ext: ext,
+      createTime: Utils.getTimestampSecond(),
+    );
     return msg;
   }
 

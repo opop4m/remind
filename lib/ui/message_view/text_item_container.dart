@@ -32,7 +32,7 @@ class TextItemContainer2 extends StatelessWidget {
 
     if (msg.msgType == msgTypeVideoCall || msg.msgType == msgTypeVoiceCall) {
       IconData id;
-
+      status = -2;
       if (msg.msgType == msgTypeVideoCall) {
         id = Icons.video_call;
       } else {

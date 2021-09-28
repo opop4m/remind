@@ -71,16 +71,22 @@ class _ChatMorePageState extends State<ChatMorePage> {
       }
     } else if (name == '语音通话') {
       var user = await ImData.get().getChatUser(widget.id!);
-      routePush(VideoCallView(
-        user,
-        callType: msgTypeVoiceCall,
-      ));
+      String key = "$typePerson-" + user.id;
+      routePush(
+          VideoCallView(
+            user,
+            callType: msgTypeVoiceCall,
+          ),
+          arguments: key);
     } else if (name == '视频通话') {
       var user = await ImData.get().getChatUser(widget.id!);
-      routePush(VideoCallView(
-        user,
-        callType: msgTypeVideoCall,
-      ));
+      String key = "$typePerson-" + user.id;
+      routePush(
+          VideoCallView(
+            user,
+            callType: msgTypeVideoCall,
+          ),
+          arguments: key);
     } else {
       showToast(context, '敬请期待$name');
     }

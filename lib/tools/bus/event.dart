@@ -1,4 +1,6 @@
 class UcActions {
+  UcActions._();
+
   static String groupName() => 'groupName';
 
   // static String voiceImg() => 'voiceImg';

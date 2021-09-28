@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:client/pages/chat/chat_more_page.dart';
 import 'package:client/pages/group/group_details_page.dart';
-import 'package:client/provider/global_cache.dart';
+import 'package:client/pages/navigation.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
+import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/utils.dart';
 import 'package:client/ui/chat/chat_details_body.dart';
 import 'package:client/ui/chat/chat_details_row.dart';
@@ -48,6 +49,7 @@ class _ChatPageState extends State<ChatPage> {
   FocusNode _focusNode = new FocusNode();
   ScrollController _sC = ScrollController();
   PageController pageC = new PageController();
+  Stream? _route;
 
   late ChatUser peer;
 
@@ -56,7 +58,14 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     getChatMsgData();
     readedMsg();
-
+    // _route = UcNotice.addListener(UcActions.routePop());
+    // _route!.listen((page) {
+    //   String _page = page;
+    //   if (_page.startsWith(UcNavigation.chatPage) &&
+    //       _page.endsWith(widget.id)) {
+    //     readedMsg();
+    //   }
+    // });
     _sC.addListener(() => FocusScope.of(context).requestFocus(new FocusNode()));
     // Notice.addListener(UcActions.msg(), (v) => getChatMsgData());
     if (widget.type == typeGroup) {
@@ -306,6 +315,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     super.dispose();
+    readedMsg();
     canCelListener();
     // Notice.removeListenerByEvent(UcActions.msg());
     // Notice.removeListenerByEvent(UcActions.newMsg());

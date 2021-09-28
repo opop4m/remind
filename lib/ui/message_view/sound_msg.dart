@@ -1,6 +1,6 @@
 // import 'dart:convert';
 
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:audioplayers/audioplayers.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/adapter/voice.dart';
@@ -9,6 +9,8 @@ import 'package:client/ui/message_view/msg_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
+import 'package:flutter_audio_manager/flutter_audio_manager.dart';
 
 final _log = Logger("SoundMsg");
 
@@ -39,7 +41,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   late AnimationController playProcessC;
   late Animation playProcessAnima;
   // UcSoundPlayer _myPlayer = new UcSoundPlayer();
-  AudioPlayer audioPlayer = AudioPlayer();
+  // AudioPlayer audioPlayer = AudioPlayer();
 
   StreamSubscription? _positionSubscription;
   StreamSubscription? _audioPlayerStateSubscription;
@@ -65,6 +67,9 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     timeLen = int.parse(arr[1]) ~/ 1000;
     initializeDateFormatting();
     initAudioPlayer();
+    if (PlatformUtils.isMobile) {
+      FlutterAudioManager.changeToReceiver();
+    }
   }
 
   void initAudioPlayer() {
@@ -95,9 +100,9 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   cleanCachePlaying() {
     _cachePlaying.forEach((cache) {
       cache.playing.forEach((ctl) {
-        ctl.stop();
+        if (ctl.isAnimating) ctl.stop();
       });
-      cache.state.setState(() {});
+      if (cache.state.mounted) cache.state.setState(() {});
     });
     _cachePlaying.clear();
   }
@@ -110,23 +115,44 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     cleanCachePlaying();
     controller.forward();
     playProcessC.forward(from: 0.0);
-    _cachePlaying.add(_Cache(this, [controller, playProcessC]));
+
     await _myPlayer!.startPlayer(
         fromURI: getMediaUrl(url),
         codec: Codec.aacADTS,
         whenFinished: () {
           controller.stop();
           playProcessC.stop();
+          _subProximity?.cancel();
+          _subProximity = null;
           setState(() {});
         });
-
+    _cachePlaying.add(_Cache(this, [controller, playProcessC]));
+    if (_subProximity == null)
+      _subProximity = ProximitySensor.events.listen((event) {
+        bool _isNear = (event > 0) ? true : false;
+        // if (_isNear) {
+        //   _myPlayer!.setAudioFocus(device: AudioDevice.earPiece);
+        // } else {
+        //   _myPlayer!.setAudioFocus();
+        // }
+        _log.info("ProximitySensor is $_isNear");
+        if (_isNear) {
+          FlutterAudioManager.changeToReceiver();
+        } else {
+          FlutterAudioManager.changeToSpeaker();
+        }
+      });
     setState(() {});
   }
+
+  StreamSubscription<int>? _subProximity;
 
   stopPlay() async {
     _myPlayer!.stopPlayer();
     controller.stop();
     playProcessC.stop();
+    _subProximity?.cancel();
+    _subProximity = null;
     setState(() {});
   }
 

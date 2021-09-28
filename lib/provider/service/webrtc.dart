@@ -47,7 +47,7 @@ class Webrtc {
   Future<RtcSession> createSession(
       String peerId, String type, String? sessionId) async {
     var sid = sessionId == null ? _selfId + "_" + peerId : sessionId;
-    _log.info("create session id $sid");
+    _log.info("create session id $sid ,type: $type");
     var rtcSession = RtcSession(peerId: peerId, sessionId: sid, type: type);
     RTCPeerConnection pc = await createPeerConnection({
       ..._iceServers,
@@ -108,18 +108,25 @@ class Webrtc {
     RTCIceCandidate candidate = RTCIceCandidate(candidateMap['candidate'],
         candidateMap['sdpMid'], candidateMap['sdpMLineIndex']);
     RtcSession? session = _cacheSessions[sessionId];
-    if (!intoQueue &&
-        session != null &&
-        session.pc != null &&
-        (await session.pc!.getRemoteDescription())?.type != null) {
-      _log.info("receiveCandidate already call add");
-      try {
+
+    try {
+      if ( //!intoQueue &&
+          session != null &&
+              session.pc != null &&
+              (await session.pc!.getRemoteDescription())?.type != null) {
+        _log.info("receiveCandidate already call add");
         await session.pc!.addCandidate(candidate);
-      } catch (e, s) {
-        print(e.toString());
-        print(s);
+      } else {
+        List<RTCIceCandidate>? list = _cacheRemoteCandidate[sessionId];
+        if (list == null) {
+          list = List.empty(growable: true);
+        }
+        _cacheRemoteCandidate[sessionId] = list..add(candidate);
+        _log.info("receiveCandidate put it in queue.");
       }
-    } else {
+    } catch (e, s) {
+      print(e.toString());
+      print(s);
       List<RTCIceCandidate>? list = _cacheRemoteCandidate[sessionId];
       if (list == null) {
         list = List.empty(growable: true);
@@ -205,6 +212,7 @@ class RtcSession {
     this.onSessionStateChange?.call(this, CallState.CallStateBye);
     this.clearListenr();
     await this.pc?.close();
+    await this.pc?.dispose();
     await this.dc?.close();
   }
 

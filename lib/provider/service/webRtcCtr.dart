@@ -63,6 +63,7 @@ class WebRtcCtr {
     _log.info("cur iceServers: $iceService");
     _rtc.setInfo(_selfId, iceService);
     MqttLib.get().messageStream.listen((mqMsg) {
+      // _log.info("msg: ${mqMsg.pt}");
       var res = jsonDecode(mqMsg.pt);
       if (res is Map) onMessageFromSocket(mqMsg.topic, res);
     });
@@ -140,7 +141,7 @@ class WebRtcCtr {
     // send["act"] = act;
     // send["data"] = data;
     String msg = json.encode(data);
-    _log.info("send msg: $act");
+    // _log.info("send msg: $act");
     Im.get().sendMsg(targetId, act, msg);
   }
 
@@ -190,6 +191,7 @@ class WebRtcCtr {
     // Map<String, dynamic> data = res['data'];
     var tb = ImData.parserTopic(topic);
     _log.info("webrtc act: ${tb.act}");
+
     switch (tb.act) {
       case actOffer:
         _log.warning("actOffer");
@@ -214,8 +216,10 @@ class WebRtcCtr {
   }
 
   Future<MediaStream> createStream(bool userScreen, bool useVideo) async {
+    _log.info("userScreen: $userScreen, useVideo:$useVideo");
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
+      'video': false,
     };
     if (useVideo) {
       mediaConstraints['video'] = {
@@ -236,10 +240,13 @@ class WebRtcCtr {
     return stream;
   }
 
-  void callTarget(String target, MediaStream localStream,
+  Future<RtcSession> callTarget(
+      String target,
+      String type,
+      MediaStream localStream,
       void Function(RtcSession, MediaStream) onAddRemoteStream) async {
     // String sid = _selfId + "_" + target;
-    var session = await _rtc.createSession(target, typeVedio, null);
+    var session = await _rtc.createSession(target, type, null);
     session.onSelfCandidate = (session, candidate) {
       _sendCandidate(session, candidate);
     };
@@ -253,6 +260,7 @@ class WebRtcCtr {
     await session.addMediaSteam(localStream);
     var offer = await session.createOffer();
     _sendOffer(session, offer);
+    return session;
   }
 
   late RtcSession session;

@@ -13,17 +13,20 @@ GlobalKey<ScaffoldState>? scaffoldGK;
 Future<dynamic> routePush(Widget widget, {Object? arguments}) {
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
-    settings:
-        new RouteSettings(name: widget.toStringShort(), arguments: arguments),
+    settings: new RouteSettings(
+      name: widget.toStringShort(),
+      arguments: arguments,
+    ),
   );
   return navGK.currentState!.push(route);
 }
 
-Future<dynamic> routePushReplace(Widget widget) {
+Future<dynamic> routePushReplace(Widget widget, {Object? arguments}) {
   final route = new CupertinoPageRoute(
     builder: (BuildContext context) => widget,
     settings: new RouteSettings(
       name: widget.toStringShort(),
+      arguments: arguments,
     ),
   );
   return navGK.currentState!.pushReplacement(route);

@@ -125,8 +125,8 @@ class ImData {
     ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
     onNewRecent(msg);
     if (msg.type == typePerson) {
-      String pageKey = UcNavigation.chatPage + "-${typePerson}-" + msg.fromId;
-      if (pageKey == UcNavigation.curPage) {
+      String pageKey = "${typePerson}-" + msg.fromId;
+      if (UcNavigation.curPage.endsWith(pageKey)) {
         readMsg(msg.fromId, Utils.getTimestampSecond());
       }
     }

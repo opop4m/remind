@@ -87,6 +87,7 @@ class Utils {
 }
 
 class PlatformUtils {
+  PlatformUtils._();
   static String userAgent = "";
   static bool isH5android = false;
   static bool isH5ios = false;
