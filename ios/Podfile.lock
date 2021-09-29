@@ -1,4 +1,6 @@
 PODS:
+  - audioplayers (0.0.1):
+    - Flutter
   - camera (0.0.1):
     - Flutter
   - connectivity (0.0.1):
@@ -228,6 +230,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
@@ -286,6 +289,8 @@ SPEC REPOS:
     - UICKeyChainStore
 
 EXTERNAL SOURCES:
+  audioplayers:
+    :path: ".symlinks/plugins/audioplayers/ios"
   camera:
     :path: ".symlinks/plugins/camera/ios"
   connectivity:
@@ -350,6 +355,7 @@ CHECKOUT OPTIONS:
     :tag: 8.6.0
 
 SPEC CHECKSUMS:
+  audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   camera: 3164201dc344383e62282964016528c4f5a9ad50
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   FCUUID: bb054fc90cd7cd99320f9f6ff8e130fe607fba05

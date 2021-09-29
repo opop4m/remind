@@ -14,6 +14,7 @@ import 'package:proximity_sensor/proximity_sensor.dart';
 import 'package:flutter_audio_manager/flutter_audio_manager.dart';
 
 final _log = Logger("VideoCallView");
+bool _isNear = false;
 
 class VideoCallView extends StatefulWidget {
   VideoCallView(this.peerInfo,
@@ -58,9 +59,7 @@ class _VideoCall extends State<VideoCallView> {
       curCallStatus = callStatusWasCalling;
       isWasCall = true;
     }
-    if (PlatformUtils.isMobile) {
-      FlutterAudioManager.changeToSpeaker();
-    }
+
     _target = widget.peerInfo.id;
     chat.onCallStateChange = (session, state) {
       if (state == CallState.CallStateBye) {
@@ -78,12 +77,10 @@ class _VideoCall extends State<VideoCallView> {
       if (widget.callType == msgTypeVoiceCall) {
         useVideo = false;
         _subProximity = ProximitySensor.events.listen((event) {
-          bool _isNear = (event > 0) ? true : false;
-          if (_isNear) {
-            FlutterAudioManager.changeToReceiver();
-          } else {
-            FlutterAudioManager.changeToSpeaker();
-          }
+          bool isNear = (event > 0) ? true : false;
+          if (isNear == _isNear) return;
+          _isNear = isNear;
+          if (!mounted) return;
         });
       }
       if (widget.session != null &&
@@ -137,8 +134,14 @@ class _VideoCall extends State<VideoCallView> {
         mounted) {
       if (widget.callType == msgTypeVideoCall) {
         curCallStatus = callStatusInVideoCalling;
+        if (PlatformUtils.isMobile) {
+          FlutterAudioManager.changeToSpeaker();
+        }
       } else {
         curCallStatus = callStatusInVoiceCalling;
+        if (PlatformUtils.isMobile) {
+          FlutterAudioManager.changeToReceiver();
+        }
       }
       startTimer();
     }
@@ -441,6 +444,11 @@ class _VideoCall extends State<VideoCallView> {
 
   _switchSpeaker() {
     isSpeaker = !isSpeaker;
+    if (isSpeaker) {
+      FlutterAudioManager.changeToSpeaker();
+    } else {
+      FlutterAudioManager.changeToReceiver();
+    }
     setState(() {});
   }
 

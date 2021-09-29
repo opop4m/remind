@@ -8,3 +8,7 @@ build:
 .PHONY: native
 native:
 	flutter run --release -d $(d)
+
+.PHONY: web
+web:
+	flutter run -d web-server --web-renderer html

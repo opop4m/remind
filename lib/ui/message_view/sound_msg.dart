@@ -1,18 +1,18 @@
 // import 'dart:convert';
 
-// import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/service/imDb.dart';
-import 'package:client/tools/adapter/voice.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/message_view/msg_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
+// import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:proximity_sensor/proximity_sensor.dart';
 import 'package:flutter_audio_manager/flutter_audio_manager.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
+import 'package:logging/logging.dart' as log;
 
-final _log = Logger("SoundMsg");
+final _log = log.Logger("SoundMsg");
 
 class SoundMsg extends StatefulWidget {
   final ChatMsg msg;
@@ -23,7 +23,9 @@ class SoundMsg extends StatefulWidget {
   _SoundMsgState createState() => _SoundMsgState();
 }
 
-UcSoundPlayer? _myPlayer;
+// UcSoundPlayer? _myPlayer;
+bool _isNear = false;
+StreamSubscription? _subProximity;
 List<_Cache> _cachePlaying = [];
 
 class _Cache {
@@ -32,14 +34,19 @@ class _Cache {
   _Cache(this.state, this.playing);
 }
 
+// AudioCache audioCache = AudioCache();
+// AudioPlayer advancedPlayer = AudioPlayer();
+
 class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   // Duration duration;
   // Duration position;
 
   late AnimationController controller;
   late Animation animation;
-  late AnimationController playProcessC;
-  late Animation playProcessAnima;
+  // late AnimationController playProcessC;
+  // late Animation playProcessAnima;
+  Duration playProcess = Duration();
+  PlayerState curStatus = PlayerState.STOPPED;
   // UcSoundPlayer _myPlayer = new UcSoundPlayer();
   // AudioPlayer audioPlayer = AudioPlayer();
 
@@ -50,26 +57,36 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
 
+  AudioPlayer _audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  PlayingRoute _playingRouteState = PlayingRoute.SPEAKERS;
+  bool get _isPlayingThroughEarpiece =>
+      _playingRouteState == PlayingRoute.EARPIECE;
   late String urls;
   late int timeLen;
+
   @override
   void initState() {
     super.initState();
-    if (_myPlayer == null) {
-      _myPlayer = new UcSoundPlayer();
-      _myPlayer!.openAudioSession().then((value) {
-        _log.info("Player.openAudioSession finish");
-      });
-    }
+    // if (_myPlayer == null) {
+    //   _myPlayer = new UcSoundPlayer();
+    //   _myPlayer!
+    //       .openAudioSession(mode: SessionMode.modeVoiceChat)
+    //       .then((value) {
+    //     _log.info("Player.openAudioSession finish");
+    //   });
+    // }
 
     var arr = widget.msg.ext!.split(",");
-    urls = arr[0];
-    timeLen = int.parse(arr[1]) ~/ 1000;
+    urls = getMediaUrl(arr[0])!;
+    timeLen = int.parse(arr[1]);
     initializeDateFormatting();
     initAudioPlayer();
     if (PlatformUtils.isMobile) {
-      FlutterAudioManager.changeToReceiver();
+      // FlutterAudioManager.changeToReceiver();
     }
+    // if (Platform.isIOS) {
+    //   audioCache.fixedPlayer?.notificationService.startHeadlessService();
+    // }
   }
 
   void initAudioPlayer() {
@@ -92,9 +109,33 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
           controller.forward();
         }
       });
-    playProcessC =
-        AnimationController(duration: Duration(seconds: timeLen), vsync: this);
-    playProcessAnima = IntTween(begin: 0, end: timeLen).animate(playProcessC);
+    // playProcessC =
+    //     AnimationController(duration: Duration(seconds: timeLen), vsync: this);
+    // playProcessAnima = IntTween(begin: 0, end: timeLen).animate(playProcessC);
+    // _log.info(
+    //     "_audioPlayer.onDurationChanged : ${_audioPlayer.onDurationChanged.isBroadcast}");
+    _positionSubscription =
+        _audioPlayer.onAudioPositionChanged.listen((duration) {
+      // _log.info("playProcess : $playProcess");
+      playProcess = duration;
+      if (PlatformUtils.isWeb) {
+        int cur = playProcess.inMilliseconds;
+        if (cur > timeLen - 500) {
+          // end.
+          stopPlay();
+          if (mounted) setState(() => {});
+        }
+      }
+    });
+    _audioPlayerStateSubscription =
+        _audioPlayer.onPlayerStateChanged.listen((event) {
+      _log.info("onPlayerStateChanged : $event");
+      curStatus = event;
+      if (event == PlayerState.COMPLETED) {
+        stopPlay();
+        if (mounted) setState(() {});
+      }
+    });
   }
 
   cleanCachePlaying() {
@@ -107,53 +148,75 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     _cachePlaying.clear();
   }
 
+  // StreamSubscription<int>? _subProximity;
+
   playNew(url) async {
-    if (controller.isAnimating) {
-      stopPlay();
+    if (curStatus != PlayerState.STOPPED) {
+      await stopPlay();
+      if (mounted) setState(() {});
       return;
     }
     cleanCachePlaying();
     controller.forward();
-    playProcessC.forward(from: 0.0);
-
-    await _myPlayer!.startPlayer(
-        fromURI: getMediaUrl(url),
-        codec: Codec.aacADTS,
-        whenFinished: () {
-          controller.stop();
-          playProcessC.stop();
-          _subProximity?.cancel();
-          _subProximity = null;
-          setState(() {});
-        });
-    _cachePlaying.add(_Cache(this, [controller, playProcessC]));
-    if (_subProximity == null)
+    // await _myPlayer!.startPlayer(
+    //     fromURI: getMediaUrl(url),
+    //     codec: Codec.aacADTS,
+    //     whenFinished: () {
+    //       stopPlay();
+    //       if (mounted) setState(() {});
+    //     });
+    await _audioPlayer.play(url);
+    _cachePlaying.add(_Cache(this, [controller]));
+    if (_subProximity == null && PlatformUtils.isMobile)
       _subProximity = ProximitySensor.events.listen((event) {
-        bool _isNear = (event > 0) ? true : false;
-        // if (_isNear) {
-        //   _myPlayer!.setAudioFocus(device: AudioDevice.earPiece);
+        bool isNear = (event > 0) ? true : false;
+        if (isNear == _isNear) return;
+        _isNear = isNear;
+        if (!mounted) return;
+        // if (isNear) {
+        //   _myPlayer!.setAudioFocus(
+        //       device: AudioDevice.earPiece,
+        //       mode: SessionMode.modeVoiceChat,
+        //       audioFlags: allowBlueTooth |
+        //           allowBlueToothA2DP |
+        //           allowEarPiece |
+        //           allowHeadset);
         // } else {
         //   _myPlayer!.setAudioFocus();
         // }
         _log.info("ProximitySensor is $_isNear");
         if (_isNear) {
-          FlutterAudioManager.changeToReceiver();
+          _earpieceOrSpeakersToggle();
+          // FlutterAudioManager.changeToReceiver();
         } else {
-          FlutterAudioManager.changeToSpeaker();
+          // FlutterAudioManager.changeToSpeaker();
+          _earpieceOrSpeakersToggle();
         }
       });
-    setState(() {});
+    _subProximity?.resume();
+    if (mounted) setState(() {});
   }
 
-  StreamSubscription<int>? _subProximity;
+  Future<int> _earpieceOrSpeakersToggle() async {
+    final result = await _audioPlayer.earpieceOrSpeakersToggle();
+    if (result == 1) {
+      _playingRouteState = _playingRouteState.toggle();
+    }
+    return result;
+  }
 
   stopPlay() async {
-    _myPlayer!.stopPlayer();
     controller.stop();
-    playProcessC.stop();
+    if (curStatus != PlayerState.STOPPED) await _audioPlayer.stop();
+
+    // playProcessC.stop();
+
     _subProximity?.cancel();
     _subProximity = null;
-    setState(() {});
+    if (_isPlayingThroughEarpiece && PlatformUtils.isMobile) {
+      _earpieceOrSpeakersToggle();
+    }
+    // if (PlatformUtils.isMobile) FlutterAudioManager.changeToSpeaker();
   }
 
   @override
@@ -186,14 +249,14 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     // if (!listNoEmpty(isIos ? iModel.soundUrls : model.urls)) return Container();
 
     // var urls = isIos ? iModel.soundUrls![0] : model.urls![0];
-
+    int len = timeLen ~/ 1000;
     var body = [
       new MsgAvatar(
         model: widget.msg,
         user: widget.user,
       ),
       new Container(
-        width: 90.0 + (timeLen - 1) * 3,
+        width: 90.0 + (len - 1) * 3,
         padding: EdgeInsets.only(right: 10.0),
         child: new FlatButton(
           padding: EdgeInsets.only(left: 18.0, right: 4.0),
@@ -203,8 +266,8 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
             children: [
               new Text(
                   controller.isAnimating
-                      ? "${playProcessAnima.value}\""
-                      : "$timeLen\"",
+                      ? "${playProcess.inSeconds}\""
+                      : "$len\"",
                   textAlign: TextAlign.start,
                   maxLines: 1),
               new Space(width: mainSpace / 2),
@@ -246,6 +309,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    stopPlay();
     if (_positionSubscription != null) {
       _positionSubscription?.cancel();
     }
@@ -255,8 +319,11 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     if (_playerSubscription != null) {
       _playerSubscription?.cancel();
     }
-    playProcessC.dispose();
+    _log.info("dispose");
+    // playProcessC.dispose();
     controller.dispose();
+    _subProximity?.cancel();
+    _subProximity = null;
     // _myPlayer.closeAudioSession();
     super.dispose();
   }

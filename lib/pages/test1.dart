@@ -5,7 +5,7 @@ import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:proximity_sensor/proximity_sensor.dart';
+// import 'package:proximity_sensor/proximity_sensor.dart';
 // import 'package:wakelock/wakelock.dart';
 
 final _log = Logger("Test");
@@ -39,11 +39,11 @@ class _test extends State<Test> {
         FlutterError.dumpErrorToConsole(details);
       }
     };
-    _streamSubscription = ProximitySensor.events.listen((int event) {
-      _isNear = (event > 0) ? true : false;
-      _log.info("_isNear: $_isNear");
-      setState(() {});
-    });
+    // _streamSubscription = ProximitySensor.events.listen((int event) {
+    //   _isNear = (event > 0) ? true : false;
+    //   _log.info("_isNear: $_isNear");
+    //   setState(() {});
+    // });
     return _streamSubscription;
   }
 

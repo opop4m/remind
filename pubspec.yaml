@@ -19,7 +19,6 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
@@ -63,8 +62,7 @@ dependencies:
   #权限处理
   permission_handler: ^8.1.4+2
   #音频处理
-  #  audioplayers: 0.13.3 #1.22.5版本Flutter用这个
-  # audioplayers: ^0.18.3 #Flutter2用这个
+  audioplayers: ^0.20.1 
   #调用相机
   # camera: # 0.5.7+1
   #   path: plugin/camera
@@ -106,7 +104,6 @@ dependencies:
   proximity_sensor: ^1.0.2
   flutter_audio_manager:
     path: plugin/flutter_audio_manager
-
   
 
 dependency_overrides:
