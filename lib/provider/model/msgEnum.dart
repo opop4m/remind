@@ -28,3 +28,6 @@ const int PopTypeP2P = 1;
 const int PopTypeGroup = 2;
 const int PopTypeNewFriend = 3;
 const int PopTypePosts = 4;
+
+const int statusAgree = 1;
+const int statusRefuse = 2;

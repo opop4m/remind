@@ -1,11 +1,14 @@
-import 'dart:convert';
-
 import 'package:client/pages/more/add_friend_page.dart';
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
+import 'package:client/provider/service/imDb.dart';
+import 'package:client/tools/bus/notice2.dart';
 import 'package:client/ui/orther/label_row.dart';
+import 'package:client/ui/view/friend_request_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:client/pages/more/add_friend_details.dart';
 
 import 'package:client/tools/library.dart';
 import 'package:client/ui/view/list_tile_view.dart';
@@ -17,10 +20,16 @@ class NewFriendPage extends StatefulWidget {
   _NewFriendPageState createState() => new _NewFriendPageState();
 }
 
+final _log = Logger("NewFriendPage");
+
 class _NewFriendPageState extends State<NewFriendPage> {
   bool isSearch = false;
   bool showBtn = false;
   bool isResult = false;
+  List<FriendReqeust> _list = [];
+  Map<String, ChatUser> _users = {};
+  late StreamSubscription _subData;
+  late StreamSubscription _subUsers;
 
   late String currentUser;
 
@@ -38,27 +47,36 @@ class _NewFriendPageState extends State<NewFriendPage> {
   }
 
   Widget body() {
-    var content = [
-      new SearchMainView(
-        text: '微信号/手机号',
-        isBorder: true,
-        onTap: () {
-          isSearch = true;
-          setState(() {});
-          searchF.requestFocus();
+    List<Widget> content = [];
+    for (var i = 0; i < _list.length; i++) {
+      var fr = _list[i];
+      var user = _users[fr.requestUid]!;
+      var item = FriendRequestItemView(
+        border: i == 0
+            ? null
+            : Border(top: BorderSide(color: lineColor, width: 0.2)),
+        title: user.name,
+        label: fr.msg,
+        icon: getAvatarUrl(user.avatar),
+        fit: BoxFit.cover,
+        id: user.id,
+        onPressedA: (id) {
+          _act(statusAgree, id);
         },
-      ),
-      new LabelRow(
-        headW: new Padding(
-          padding: EdgeInsets.only(right: 15.0),
-          child: new Image.asset('assets/images/contact/ic_voice.png',
-              width: 25, fit: BoxFit.cover),
-        ),
-        label: '添加手机联系人',
-      )
-    ];
-
+        onPressedB: (id) {
+          _act(statusRefuse, id);
+        },
+        status: fr.status,
+      );
+      content.add(item);
+    }
     return new Column(children: content);
+  }
+
+  void _act(int agreeStatus, String id) {
+    ImData.get().replyFriendRequest(id, agreeStatus).then((value) {
+      if (mounted) setState(() {});
+    });
   }
 
   List<Widget> searchBody() {
@@ -103,6 +121,34 @@ class _NewFriendPageState extends State<NewFriendPage> {
   void initState() {
     super.initState();
     getUser();
+    getNewFriendList();
+  }
+
+  getNewFriendList() async {
+    _subUsers = UcNotice.addListener(UcActions.chatUsersMap()).listen((event) {
+      _users = event;
+      _log.info("UcActions.chatUsersMap");
+      if (mounted) setState(() {});
+    });
+    _subData = ImDb.g().db.friendReqeustsDao.queryAll().listen((data) async {
+      _list = data;
+      List<String> uids = [];
+      for (var i = 0; i < _list.length; i++) {
+        var u = _list[i];
+        uids.add(u.requestUid);
+      }
+      _users = await ImData.get().getChatUsers(uids);
+      // _log.info("getNewFriendList: $_list");
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _log.info("dispose");
+    super.dispose();
+    _subData.cancel();
+    _subUsers.cancel();
   }
 
   getUser() async {
@@ -183,7 +229,10 @@ class _NewFriendPageState extends State<NewFriendPage> {
               child: new Column(children: searchBody()),
               onTap: () => unFocusMethod(),
             )
-          : body(),
+          : Container(
+              child: body(),
+              color: Colors.white,
+            ),
     );
 
     var rWidget = new FlatButton(

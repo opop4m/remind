@@ -93,11 +93,17 @@ class Im {
 
   void onStateListenerForLib(ConnectState state) {
     onStateChange(state);
-    if (state != ConnectState.notAuthorized && reconnect) {
+    if (state != ConnectState.notAuthorized &&
+        reconnect &&
+        Global.get().hasLogin) {
       int time = 5;
       _log.info("reconnect afet $time s");
       Future.delayed(Duration(seconds: time), () {
-        Im.get().connect();
+        if (state != ConnectState.notAuthorized &&
+            reconnect &&
+            Global.get().hasLogin) {
+          Im.get().connect();
+        }
       });
     }
   }
@@ -125,7 +131,8 @@ class Im {
     MqttLib.get().publish(topic, msg);
   }
 
-  void requestSystem(String act, Map<String, dynamic> params, {String? msgId}) {
+  Future requestSystem(String act, Map<String, dynamic> params,
+      {String? msgId}) {
     var fromId = Global.get().curUser.id;
     String topic = topicSystem + "/$fromId/$act";
     if (msgId != null) {
@@ -134,7 +141,7 @@ class Im {
     // String msg = jsonEncode({"act": act, "data": params});
     _log.info("requestSystem topic: $topic");
     String msg = jsonEncode(params);
-    MqttLib.get().publish(topic, msg);
+    return MqttLib.get().publish(topic, msg);
   }
 
   void sendChatMsg(ChatMsg msg) {

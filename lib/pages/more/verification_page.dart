@@ -1,4 +1,6 @@
+import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imApi.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:flutter/material.dart';
 
 import 'package:client/tools/library.dart';
@@ -83,7 +85,8 @@ class _VerificationPageState extends State<VerificationPage> {
       "alias": remarksC.text,
       "postAuth": switcher,
     };
-    ImApi.requestAddFriend(params);
+    // ImApi.requestAddFriend(params);
+    Im.get().requestSystem(actFriendRequest, params);
     navGK.currentState!.pop();
   }
 }

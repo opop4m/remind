@@ -7,6 +7,7 @@ import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/provider/service/imApi.dart';
+import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/tools/utils.dart';
 
@@ -18,6 +19,9 @@ const actChatRead = "chatRead";
 const actChatDelivered = "chatDelivered";
 const actChatPop = "chatPop";
 const actOnline = "online";
+const actFriendRequest = "friendReqeust";
+const actALlriendRequest = "alllFriendReqeust";
+const actReplyFriendRequest = "replyFriendRequest";
 
 class ImData {
   static ImData? _instance;
@@ -75,7 +79,36 @@ class ImData {
       case actOnline:
         Im.get().requestSystem(actOnline, {}, msgId: UcNavigation.curPage);
         break;
+      case actFriendRequest:
+        onFriendRequest(tb, res);
+        break;
+      case actALlriendRequest:
+        onALlriendRequest(tb, res);
+        break;
     }
+  }
+
+  void onALlriendRequest(TopicBean tb, res) async {
+    await ImDb.g().db.friendReqeustsDao.delAll();
+    onFriendRequest(tb, res);
+  }
+
+  void onFriendRequest(TopicBean tb, res) async {
+    List list = res;
+    for (var i = 0; i < list.length; i++) {
+      FriendReqeust fr = FriendReqeust.fromJson(list[i]);
+      ImDb.g().db.friendReqeustsDao.insertFriendRequest(fr.toCompanion(true));
+    }
+  }
+
+  Future replyFriendRequest(String requestUid, int status) async {
+    var params = <String, dynamic>{
+      "status": status,
+      "requestUid": requestUid,
+    };
+    await Im.get().requestSystem(actReplyFriendRequest, params);
+    await ImDb.g().db.friendReqeustsDao.updateStatus(requestUid, status);
+    return;
   }
 
   void onChatPop(data) {
@@ -191,28 +224,30 @@ class ImData {
       {bool update = false}) async {
     List<ChatUser> list = await ImDb.g().db.chatUserDao.getChatUsers(uids);
     var res = Map<String, ChatUser>();
+    res = _converCharUsers(list);
+    bool needUpdate = false;
+    for (var i = 0; i < uids.length; i++) {
+      var uid = uids[i];
+      if (res[uid] == null) {
+        needUpdate = true;
+        res[uid] = ChatUser(id: uid, name: "loading...");
+      }
+    }
+    if (update || needUpdate)
+      ImApi.getChatUser(uids).then((value) {
+        Notice.send(UcActions.chatUser());
+        UcNotice.send(UcActions.chatUsersMap(), _converCharUsers(value));
+      });
+    return res;
+  }
+
+  Map<String, ChatUser> _converCharUsers(List<ChatUser> list) {
+    var res = Map<String, ChatUser>();
     for (var i = 0; i < list.length; i++) {
       var u = list[i];
       res[u.id] = u;
     }
-    for (var i = 0; i < uids.length; i++) {
-      var uid = uids[i];
-      if (res[uid] == null) {
-        res[uid] = ChatUser(id: uid, name: "loading...");
-        if (!update) {
-          _log.info("not found userInfo uid: $uid");
 
-          // List<ChatUser> debug =
-          //     await ImDb.g().db.chatUserDao.getChatUsers(uids);
-          // String str = jsonEncode(debug);
-          // _log.info("all chat user: $str");
-        }
-      }
-    }
-
-    if (update)
-      ImApi.getChatUser(uids)
-          .then((value) => Notice.send(UcActions.chatUser()));
     return res;
   }
 
@@ -221,8 +256,8 @@ class ImData {
     List<ChatUser> list = await ImDb.g().db.chatUserDao.getChatUsers([uid]);
     if (list.length == 0) {
       var rsp = await ImApi.getChatUser([uid]);
-      if (rsp.code == 0) {
-        res = rsp.res![0];
+      if (rsp.length != 0) {
+        res = rsp[0];
       }
     } else {
       res = list[0];

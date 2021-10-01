@@ -11,6 +11,7 @@ class UcActions {
   static String recentList() => 'recentList';
 
   static String chatUser() => 'chatUser';
+  static String chatUsersMap() => 'chatUsersMap';
   static String logout() => 'logout';
   // static String newMsg() => 'chat';
   // static String msg() => 'msg'; //msg delivered

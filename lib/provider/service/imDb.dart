@@ -6,8 +6,6 @@ import 'package:client/tools/adapter/moor.dart'
 
 part 'imDb.g.dart';
 
-Map<String, UcDatabase> _cache = Map();
-
 class ImDb {
   static ImDb? _instance;
 
@@ -23,22 +21,32 @@ class ImDb {
   UcDatabase? _db;
   ImDb._internal() {}
 
-  void init(String account) {
-    if (_cache[account] != null) {
-      _db = _cache[account];
-      return;
+  void init(String account) async {
+    if (_db != null) {
+      await _db!.close();
     }
     _db = UcDatabase(account);
-    _cache[account] = _db!;
   }
 
   // UcDatabase getDb() => _db;
   UcDatabase get db => _db!;
 }
 
-@UseMoor(
-    tables: [ChatRecents, ChatUsers, ChatMsgs, Friends, Pops],
-    daos: [ChatMsgDao, ChatRecentDao, ChatUserDao, FriendDao, PopsDao])
+@UseMoor(tables: [
+  ChatRecents,
+  ChatUsers,
+  ChatMsgs,
+  Friends,
+  Pops,
+  FriendReqeusts,
+], daos: [
+  ChatMsgDao,
+  ChatRecentDao,
+  ChatUserDao,
+  FriendDao,
+  PopsDao,
+  FriendReqeustsDao,
+])
 class UcDatabase extends _$UcDatabase {
   // we tell the database where to store the data with this constructor
   UcDatabase(String account)
@@ -202,5 +210,32 @@ class PopsDao extends DatabaseAccessor<UcDatabase> with _$PopsDaoMixin {
     q.addColumns([sum]);
     q.where(pops.type.equals(PopTypeGroup) | pops.type.equals(PopTypeP2P));
     return q.map((row) => row.read(sum)).watchSingle();
+  }
+}
+
+@UseDao(tables: [FriendReqeusts])
+class FriendReqeustsDao extends DatabaseAccessor<UcDatabase>
+    with _$FriendReqeustsDaoMixin {
+  FriendReqeustsDao(UcDatabase attachedDatabase) : super(attachedDatabase);
+
+  Future insertFriendRequest(FriendReqeustsCompanion fr) =>
+      into(friendReqeusts).insertOnConflictUpdate(fr);
+
+  Stream<List<FriendReqeust>> queryAll() {
+    var q = select(friendReqeusts);
+    q.orderBy([
+      (tb) => OrderingTerm(expression: tb.updateTime, mode: OrderingMode.desc),
+    ]);
+    return q.watch();
+  }
+
+  Future delAll() => delete(friendReqeusts).go();
+
+  Future updateStatus(String requestUid, int status) {
+    var q = update(friendReqeusts);
+    q.where((tbl) => tbl.requestUid.equals(requestUid));
+    return q.write(FriendReqeustsCompanion(
+      status: Value(status),
+    ));
   }
 }

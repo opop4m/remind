@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:client/provider/service/im.dart';
+import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
 // import 'package:proximity_sensor/proximity_sensor.dart';
 // import 'package:wakelock/wakelock.dart';
 
@@ -19,7 +21,7 @@ class _test extends State<Test> {
   TextEditingController inputC = TextEditingController();
 
   bool _isNear = false;
-  late StreamSubscription<int> _streamSubscription;
+  StreamSubscription<int>? _streamSubscription;
 
   @override
   void initState() {
@@ -39,12 +41,12 @@ class _test extends State<Test> {
         FlutterError.dumpErrorToConsole(details);
       }
     };
-    // _streamSubscription = ProximitySensor.events.listen((int event) {
-    //   _isNear = (event > 0) ? true : false;
-    //   _log.info("_isNear: $_isNear");
-    //   setState(() {});
-    // });
-    return _streamSubscription;
+    _streamSubscription = ProximitySensor.events.listen((int event) {
+      _isNear = (event > 0) ? true : false;
+      _log.info("_isNear: $_isNear");
+      setState(() {});
+    });
+    return _streamSubscription!;
   }
 
   @override
@@ -98,6 +100,22 @@ class _test extends State<Test> {
             ),
           ],
         ),
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: () => event("sub"),
+              child: Text("sub"),
+            ),
+            ElevatedButton(
+              onPressed: () => event("subCancel"),
+              child: Text("subCancel"),
+            ),
+            ElevatedButton(
+              onPressed: () => event("send"),
+              child: Text("send"),
+            ),
+          ],
+        )
       ],
     );
   }
@@ -109,7 +127,7 @@ class _test extends State<Test> {
         listenSensor();
         break;
       case 'end':
-        _streamSubscription.cancel();
+        _streamSubscription?.cancel();
         break;
       case "test":
         Im.get().requestSystem(API.actChatUser, {
@@ -132,6 +150,21 @@ class _test extends State<Test> {
         break;
       case "dismissLoading":
         break;
+      case "sub":
+        _sub = UcNotice.addListener(UcActions.chatPop()).listen((event) {
+          _log.info("UcActions.chatPop: $event");
+        });
+        break;
+      case "subCancel":
+        _sub?.cancel();
+        break;
+      case "send":
+        UcNotice.send(UcActions.chatPop(), tt++);
+        break;
     }
   }
+
+  int tt = 0;
+
+  StreamSubscription? _sub;
 }

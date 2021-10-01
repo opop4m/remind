@@ -1816,6 +1816,257 @@ class $PopsTable extends Pops with TableInfo<$PopsTable, Pop> {
   }
 }
 
+class FriendReqeust extends DataClass implements Insertable<FriendReqeust> {
+  final String requestUid;
+  final String msg;
+  final int status;
+  final int updateTime;
+  FriendReqeust(
+      {required this.requestUid,
+      required this.msg,
+      required this.status,
+      required this.updateTime});
+  factory FriendReqeust.fromData(
+      Map<String, dynamic> data, GeneratedDatabase db,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return FriendReqeust(
+      requestUid: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}request_uid'])!,
+      msg: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}msg'])!,
+      status: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}status'])!,
+      updateTime: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}update_time'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['request_uid'] = Variable<String>(requestUid);
+    map['msg'] = Variable<String>(msg);
+    map['status'] = Variable<int>(status);
+    map['update_time'] = Variable<int>(updateTime);
+    return map;
+  }
+
+  FriendReqeustsCompanion toCompanion(bool nullToAbsent) {
+    return FriendReqeustsCompanion(
+      requestUid: Value(requestUid),
+      msg: Value(msg),
+      status: Value(status),
+      updateTime: Value(updateTime),
+    );
+  }
+
+  factory FriendReqeust.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return FriendReqeust(
+      requestUid: serializer.fromJson<String>(json['requestUid']),
+      msg: serializer.fromJson<String>(json['msg']),
+      status: serializer.fromJson<int>(json['status']),
+      updateTime: serializer.fromJson<int>(json['updateTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'requestUid': serializer.toJson<String>(requestUid),
+      'msg': serializer.toJson<String>(msg),
+      'status': serializer.toJson<int>(status),
+      'updateTime': serializer.toJson<int>(updateTime),
+    };
+  }
+
+  FriendReqeust copyWith(
+          {String? requestUid, String? msg, int? status, int? updateTime}) =>
+      FriendReqeust(
+        requestUid: requestUid ?? this.requestUid,
+        msg: msg ?? this.msg,
+        status: status ?? this.status,
+        updateTime: updateTime ?? this.updateTime,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('FriendReqeust(')
+          ..write('requestUid: $requestUid, ')
+          ..write('msg: $msg, ')
+          ..write('status: $status, ')
+          ..write('updateTime: $updateTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(requestUid.hashCode,
+      $mrjc(msg.hashCode, $mrjc(status.hashCode, updateTime.hashCode))));
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FriendReqeust &&
+          other.requestUid == this.requestUid &&
+          other.msg == this.msg &&
+          other.status == this.status &&
+          other.updateTime == this.updateTime);
+}
+
+class FriendReqeustsCompanion extends UpdateCompanion<FriendReqeust> {
+  final Value<String> requestUid;
+  final Value<String> msg;
+  final Value<int> status;
+  final Value<int> updateTime;
+  const FriendReqeustsCompanion({
+    this.requestUid = const Value.absent(),
+    this.msg = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updateTime = const Value.absent(),
+  });
+  FriendReqeustsCompanion.insert({
+    required String requestUid,
+    required String msg,
+    required int status,
+    required int updateTime,
+  })  : requestUid = Value(requestUid),
+        msg = Value(msg),
+        status = Value(status),
+        updateTime = Value(updateTime);
+  static Insertable<FriendReqeust> custom({
+    Expression<String>? requestUid,
+    Expression<String>? msg,
+    Expression<int>? status,
+    Expression<int>? updateTime,
+  }) {
+    return RawValuesInsertable({
+      if (requestUid != null) 'request_uid': requestUid,
+      if (msg != null) 'msg': msg,
+      if (status != null) 'status': status,
+      if (updateTime != null) 'update_time': updateTime,
+    });
+  }
+
+  FriendReqeustsCompanion copyWith(
+      {Value<String>? requestUid,
+      Value<String>? msg,
+      Value<int>? status,
+      Value<int>? updateTime}) {
+    return FriendReqeustsCompanion(
+      requestUid: requestUid ?? this.requestUid,
+      msg: msg ?? this.msg,
+      status: status ?? this.status,
+      updateTime: updateTime ?? this.updateTime,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (requestUid.present) {
+      map['request_uid'] = Variable<String>(requestUid.value);
+    }
+    if (msg.present) {
+      map['msg'] = Variable<String>(msg.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (updateTime.present) {
+      map['update_time'] = Variable<int>(updateTime.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FriendReqeustsCompanion(')
+          ..write('requestUid: $requestUid, ')
+          ..write('msg: $msg, ')
+          ..write('status: $status, ')
+          ..write('updateTime: $updateTime')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FriendReqeustsTable extends FriendReqeusts
+    with TableInfo<$FriendReqeustsTable, FriendReqeust> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $FriendReqeustsTable(this._db, [this._alias]);
+  final VerificationMeta _requestUidMeta = const VerificationMeta('requestUid');
+  late final GeneratedColumn<String?> requestUid = GeneratedColumn<String?>(
+      'request_uid', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _msgMeta = const VerificationMeta('msg');
+  late final GeneratedColumn<String?> msg = GeneratedColumn<String?>(
+      'msg', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _statusMeta = const VerificationMeta('status');
+  late final GeneratedColumn<int?> status = GeneratedColumn<int?>(
+      'status', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  final VerificationMeta _updateTimeMeta = const VerificationMeta('updateTime');
+  late final GeneratedColumn<int?> updateTime = GeneratedColumn<int?>(
+      'update_time', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [requestUid, msg, status, updateTime];
+  @override
+  String get aliasedName => _alias ?? 'friend_reqeusts';
+  @override
+  String get actualTableName => 'friend_reqeusts';
+  @override
+  VerificationContext validateIntegrity(Insertable<FriendReqeust> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('request_uid')) {
+      context.handle(
+          _requestUidMeta,
+          requestUid.isAcceptableOrUnknown(
+              data['request_uid']!, _requestUidMeta));
+    } else if (isInserting) {
+      context.missing(_requestUidMeta);
+    }
+    if (data.containsKey('msg')) {
+      context.handle(
+          _msgMeta, msg.isAcceptableOrUnknown(data['msg']!, _msgMeta));
+    } else if (isInserting) {
+      context.missing(_msgMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('update_time')) {
+      context.handle(
+          _updateTimeMeta,
+          updateTime.isAcceptableOrUnknown(
+              data['update_time']!, _updateTimeMeta));
+    } else if (isInserting) {
+      context.missing(_updateTimeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {requestUid};
+  @override
+  FriendReqeust map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return FriendReqeust.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $FriendReqeustsTable createAlias(String alias) {
+    return $FriendReqeustsTable(_db, alias);
+  }
+}
+
 abstract class _$UcDatabase extends GeneratedDatabase {
   _$UcDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $ChatRecentsTable chatRecents = $ChatRecentsTable(this);
@@ -1823,16 +2074,19 @@ abstract class _$UcDatabase extends GeneratedDatabase {
   late final $ChatMsgsTable chatMsgs = $ChatMsgsTable(this);
   late final $FriendsTable friends = $FriendsTable(this);
   late final $PopsTable pops = $PopsTable(this);
+  late final $FriendReqeustsTable friendReqeusts = $FriendReqeustsTable(this);
   late final ChatMsgDao chatMsgDao = ChatMsgDao(this as UcDatabase);
   late final ChatRecentDao chatRecentDao = ChatRecentDao(this as UcDatabase);
   late final ChatUserDao chatUserDao = ChatUserDao(this as UcDatabase);
   late final FriendDao friendDao = FriendDao(this as UcDatabase);
   late final PopsDao popsDao = PopsDao(this as UcDatabase);
+  late final FriendReqeustsDao friendReqeustsDao =
+      FriendReqeustsDao(this as UcDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [chatRecents, chatUsers, chatMsgs, friends, pops];
+      [chatRecents, chatUsers, chatMsgs, friends, pops, friendReqeusts];
 }
 
 // **************************************************************************
@@ -1853,4 +2107,7 @@ mixin _$ChatUserDaoMixin on DatabaseAccessor<UcDatabase> {
 }
 mixin _$PopsDaoMixin on DatabaseAccessor<UcDatabase> {
   $PopsTable get pops => attachedDatabase.pops;
+}
+mixin _$FriendReqeustsDaoMixin on DatabaseAccessor<UcDatabase> {
+  $FriendReqeustsTable get friendReqeusts => attachedDatabase.friendReqeusts;
 }

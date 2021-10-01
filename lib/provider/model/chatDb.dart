@@ -67,3 +67,13 @@ class Pops extends Table {
   @override
   Set<Column> get primaryKey => {targetId, type};
 }
+
+class FriendReqeusts extends Table {
+  TextColumn get requestUid => text()();
+  TextColumn get msg => text()();
+  IntColumn get status => integer()();
+  IntColumn get updateTime => integer()();
+
+  @override
+  Set<Column> get primaryKey => {requestUid};
+}

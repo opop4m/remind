@@ -48,6 +48,8 @@ class MqttLib {
   bool hasInit = false;
   OnStateListener? mqLibState;
   late MqttClient client;
+  StreamSubscription<MqttPublishMessage>? _sub;
+  Map<int, Completer> _cachePulishd = {};
   init(MqttConf conf) {
     hasInit = true;
     client = MqttClientImpl.withPort(conf.host, conf.clientId, conf.port);
@@ -72,7 +74,8 @@ class MqttLib {
     client.connectionMessage = connMessage;
   }
 
-  Stream<MqttPublishMessage>? get published => client.published;
+  Stream<MqttPublishMessage>? get published =>
+      client.published!.asBroadcastStream();
 
   bool isConnect() {
     return hasInit &&
@@ -150,7 +153,8 @@ class MqttLib {
     client.subscribe(topic, MqttQos.atLeastOnce);
   }
 
-  void publish(String topic, String msg) {
+  Future publish(String topic, String msg) {
+    var completer = new Completer();
     Uint8Buffer uint8buffer = Uint8Buffer();
     var utf8 = new Utf8Encoder();
     var byte = utf8.convert(msg);
@@ -159,18 +163,29 @@ class MqttLib {
     // var codeUnits = msg.codeUnits;
     //uint8buffer.add()
     uint8buffer.addAll(byte);
-    client.publishMessage(topic, MqttQos.atLeastOnce, uint8buffer);
+    var msgId = client.publishMessage(topic, MqttQos.atLeastOnce, uint8buffer);
+    _cachePulishd[msgId] = completer;
+    return completer.future;
   }
 
   // connection succeeded
   void onConnected() {
     _log.info('Connected');
     mqLibState?.call(ConnectState.connected);
+    _sub = published!.listen((mqPub) {
+      int id = mqPub.variableHeader!.messageIdentifier!;
+      var c = _cachePulishd.remove(id);
+      if (c != null) {
+        c.complete();
+      }
+    });
   }
 
 // unconnected
   void onDisconnected() {
     _log.info('Disconnected');
+    // _cachePulishd.clear();
+    _sub?.cancel();
     mqLibState?.call(ConnectState.disconnect);
   }
 

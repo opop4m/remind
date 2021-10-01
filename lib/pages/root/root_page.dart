@@ -71,9 +71,11 @@ class _RootPageState extends State<RootPage> with RouteAware {
     var chatConf = Global.get().chatConf;
     var user = Global.get().curUser;
     _log.info("go connect: ${chatConf.toJson()}");
+    String uuid = Global.get().uuid;
+    if (API.env == "dev") uuid = user.id;
     await Im.get().init(
       user.id,
-      Global.get().uuid,
+      uuid,
       host: chatConf.host,
       port: chatConf.port,
       account: user.id,
@@ -86,9 +88,14 @@ class _RootPageState extends State<RootPage> with RouteAware {
       } else if (state == ConnectState.connected) {
         setupInteractedMessage();
         initWebRtc();
+        initData();
       }
     });
     Im.get().connect();
+  }
+
+  void initData() {
+    Im.get().requestSystem(actALlriendRequest, {});
   }
 
   Future<void> setupInteractedMessage() async {

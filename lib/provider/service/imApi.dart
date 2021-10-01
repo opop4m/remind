@@ -62,25 +62,25 @@ class ImApi {
   //   return res;
   // }
 
-  static Future<RspDb<List<ChatUser>>> getChatUser(List<String> reqList) async {
+  static Future<List<ChatUser>> getChatUser(List<String> reqList) async {
     var uidStr = reqList.join(",");
     var rsp = await Req.g().post(API.getChatUser, {"uids": uidStr});
     var res = new RspDb<List<ChatUser>>();
+    List<ChatUser> resq = [];
     if (rsp.data != null) {
       res.fromJson(rsp.data);
       if (res.data != null) {
         List? list = res.data!["users"];
         if (list != null) {
-          res.res = [];
           for (var i = 0; i < list.length; i++) {
             var user = ChatUser.fromJson(list[i]);
             ImDb.g().db.chatUserDao.insertChatUser(user.toCompanion(false));
-            res.res!.add(user);
+            resq.add(user);
           }
         }
       }
     }
-    return res;
+    return resq;
   }
 
   static Future<RspDb<ChatUser>> searchUser(String search) async {
