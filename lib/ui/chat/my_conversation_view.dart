@@ -1,4 +1,3 @@
-import 'package:client/provider/model/chatList.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/message_view/content_msg.dart';
 import 'package:flutter/material.dart';

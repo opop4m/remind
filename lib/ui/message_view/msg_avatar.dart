@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:client/pages/contacts/contacts_details_page.dart';
 import 'package:client/provider/global_cache.dart';
-import 'package:client/provider/global_model.dart';
-import 'package:client/provider/model/chat_data.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 

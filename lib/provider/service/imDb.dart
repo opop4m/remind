@@ -1,5 +1,6 @@
 import 'package:client/provider/model/chatDb.dart';
 import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/tools/library.dart';
 import 'package:moor/moor.dart';
 import 'package:client/tools/adapter/moor.dart'
     if (dart.library.js) 'package:client/tools/adapter/moor_web.dart';
@@ -120,7 +121,53 @@ class ChatRecentDao extends DatabaseAccessor<UcDatabase>
 class ChatMsgDao extends DatabaseAccessor<UcDatabase> with _$ChatMsgDaoMixin {
   ChatMsgDao(UcDatabase attachedDatabase) : super(attachedDatabase);
 
-  Stream<List<ChatMsg>> getMsgList(
+  Stream<List<ChatMsg>> getGroupMsgList(String peerId, int limit, int offset) {
+    var myId = Global.get().curUser.id;
+    var q = select(chatMsgs)
+      ..where((tbl) {
+        return tbl.peerId.equals(peerId) & tbl.type.equals(typeGroup);
+      })
+      ..orderBy([
+        (msg) =>
+            OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
+      ])
+      ..limit(limit, offset: offset);
+    return q.watch();
+  }
+
+  Stream<List<ChatMsg>> getP2PMsgList(String peerId, int limit, int offset) {
+    var myId = Global.get().curUser.id;
+    var q = select(chatMsgs)
+      ..where((tbl) {
+        return (tbl.peerId.equals(peerId) & tbl.fromId.equals(myId) |
+                tbl.fromId.equals(peerId) & tbl.peerId.equals(myId)) &
+            tbl.type.equals(typePerson);
+      })
+      ..orderBy([
+        (msg) =>
+            OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
+      ])
+      ..limit(limit, offset: offset);
+    return q.watch();
+  }
+
+  Future delGroupMsgList(String peerId) {
+    var q = delete(chatMsgs);
+    q.where((tbl) => tbl.peerId.equals(peerId) & tbl.type.equals(typeGroup));
+    return q.go();
+  }
+
+  Future delP2PMsgList(String peerId) {
+    var myId = Global.get().curUser.id;
+    var q = delete(chatMsgs);
+    q.where((tbl) =>
+        (tbl.peerId.equals(peerId) & tbl.fromId.equals(myId) |
+            tbl.fromId.equals(peerId) & tbl.peerId.equals(myId)) &
+        tbl.type.equals(typePerson));
+    return q.go();
+  }
+
+  Future<List<ChatMsg>> queryMsgList(
       String peerId, int type, int limit, int offset) {
     var q = select(chatMsgs)
       ..where((tbl) {
@@ -132,7 +179,7 @@ class ChatMsgDao extends DatabaseAccessor<UcDatabase> with _$ChatMsgDaoMixin {
             OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
       ])
       ..limit(limit, offset: offset);
-    return q.watch();
+    return q.get();
   }
 
   Future insertChatMsgData(ChatMsgsCompanion msg) =>

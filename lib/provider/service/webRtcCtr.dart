@@ -190,7 +190,7 @@ class WebRtcCtr {
   onMessageFromSocket(String topic, Map res) {
     // Map<String, dynamic> data = res['data'];
     var tb = ImData.parserTopic(topic);
-    _log.info("webrtc act: ${tb.act}");
+    // _log.info("webrtc act: ${tb.act}");
 
     switch (tb.act) {
       case actOffer:

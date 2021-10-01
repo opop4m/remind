@@ -3,7 +3,9 @@ import 'dart:typed_data';
 
 import 'package:client/http/api.dart';
 import 'package:client/pages/navigation.dart';
+import 'package:client/provider/model/chatBean.dart';
 import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/imApi.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 export 'package:client/provider/service/mqttLib.dart';
@@ -131,8 +133,7 @@ class Im {
     MqttLib.get().publish(topic, msg);
   }
 
-  Future requestSystem(String act, Map<String, dynamic> params,
-      {String? msgId}) {
+  Future requestSystem(String act, Map params, {String? msgId}) {
     var fromId = Global.get().curUser.id;
     String topic = topicSystem + "/$fromId/$act";
     if (msgId != null) {
@@ -202,5 +203,31 @@ class Im {
     var t = DateTime.now().millisecondsSinceEpoch;
     var newId = Im.get().selfId + "-" + peerId + "-" + t.toString();
     return newId;
+  }
+
+  void initData() async {
+    Im.get().requestSystem(actAllriendRequest, {});
+    Im.get().requestSystem(actChatAllPop, {});
+    //1, 最近的聊天列表。 2，检查列表的聊天记录。
+    List<ChatRecent> list = await ImApi.requestRecentList();
+    SyncChat chatReq = SyncChat();
+    for (var i = 0; i < list.length; i++) {
+      ChatRecent recent = list[i];
+      var query = await ImDb.g()
+          .db
+          .chatMsgDao
+          .queryMsgList(recent.peerId, recent.type, 1, 0);
+      if (recent.type == typePerson || recent.type == typeGroup) {
+        SyncChatPage chat;
+        if (query.length == 1) {
+          chat = SyncChatPage(recent.peerId, recent.type, query[0].createTime);
+        } else {
+          chat = SyncChatPage(recent.peerId, recent.type, 0);
+        }
+        chatReq.chatList.add(chat);
+      }
+    }
+    if (chatReq.chatList.length > 0)
+      Im.get().requestSystem(actSyncChat, chatReq.toJson());
   }
 }

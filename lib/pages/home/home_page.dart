@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getChatData() async {
-    _chatData = await ImData.get().getRecentList(update: true);
+    _chatData = await ImData.get().getRecentList(update: false);
     _pop = await ImData.get().getUnread();
     Notice.addListener(UcActions.recentList(), (data) {
       // _log.info("notice recentList");

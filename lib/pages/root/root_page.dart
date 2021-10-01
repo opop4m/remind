@@ -88,14 +88,10 @@ class _RootPageState extends State<RootPage> with RouteAware {
       } else if (state == ConnectState.connected) {
         setupInteractedMessage();
         initWebRtc();
-        initData();
+        Im.get().initData();
       }
     });
     Im.get().connect();
-  }
-
-  void initData() {
-    Im.get().requestSystem(actALlriendRequest, {});
   }
 
   Future<void> setupInteractedMessage() async {

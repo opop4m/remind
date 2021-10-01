@@ -20,7 +20,7 @@ class ImApi {
   //   return res;
   // }
 
-  static Future<RspDb<List<ChatRecent>>> requestRecentList() async {
+  static Future<List<ChatRecent>> requestRecentList() async {
     var rsp = await Req.g().get(API.recentList);
     var res = new RspDb<List<ChatRecent>>();
     if (rsp.data != null) {
@@ -45,7 +45,7 @@ class ImApi {
         }
       }
     }
-    return res;
+    return res.res!;
   }
 
   // static Future<Rsp<ChatUserList>> getChatUser(List<String> reqList) async {

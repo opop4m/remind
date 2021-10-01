@@ -18,10 +18,13 @@ const actChat = "chat";
 const actChatRead = "chatRead";
 const actChatDelivered = "chatDelivered";
 const actChatPop = "chatPop";
+const actChatAllPop = "chatAllPop";
 const actOnline = "online";
 const actFriendRequest = "friendReqeust";
-const actALlriendRequest = "alllFriendReqeust";
+const actAllriendRequest = "allFriendReqeust";
+// const actALlriendRequest = "alllFriendReqeust";
 const actReplyFriendRequest = "replyFriendRequest";
+const actSyncChat = "syncChat";
 
 class ImData {
   static ImData? _instance;
@@ -82,13 +85,46 @@ class ImData {
       case actFriendRequest:
         onFriendRequest(tb, res);
         break;
-      case actALlriendRequest:
-        onALlriendRequest(tb, res);
+      case actAllriendRequest:
+        onAllFriendRequest(tb, res);
+        break;
+      case actChatAllPop:
+        onChatAllPop(tb, res);
+        break;
+      case actSyncChat:
+        onSyncChatLog(tb, res);
         break;
     }
   }
 
-  void onALlriendRequest(TopicBean tb, res) async {
+  void onSyncChatLog(TopicBean tb, data) async {
+    var syncChat = SyncChat.fromJson(data);
+    syncChat.chatList.forEach((chatPageData) async {
+      if (chatPageData.msgList!.length == syncChat.limit) {
+        if (chatPageData.type == typePerson) {
+          await ImDb.g().db.chatMsgDao.delP2PMsgList(chatPageData.peerId);
+        } else if (chatPageData.type == typeGroup) {
+          await ImDb.g().db.chatMsgDao.delGroupMsgList(chatPageData.peerId);
+        }
+      }
+      chatPageData.msgList!.forEach((msg) {
+        ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
+      });
+    });
+  }
+
+  void onChatAllPop(TopicBean tb, data) async {
+    List list = data;
+    if (list.length > 1) {
+      await ImDb.g().db.popsDao.delAll();
+    }
+    for (var i = 0; i < list.length; i++) {
+      var pop = Pop.fromJson(list[i]);
+      await ImDb.g().db.popsDao.insertPop(pop.toCompanion(true));
+    }
+  }
+
+  void onAllFriendRequest(TopicBean tb, res) async {
     await ImDb.g().db.friendReqeustsDao.delAll();
     onFriendRequest(tb, res);
   }
@@ -111,16 +147,19 @@ class ImData {
     return;
   }
 
-  void onChatPop(data) {
+  Future onChatPop(data) async {
     List list = data;
     if (list.length > 1) {
-      ImDb.g().db.popsDao.delAll();
+      await ImDb.g().db.popsDao.delAll();
     }
+    List<Pop> res = [];
     for (var i = 0; i < list.length; i++) {
       var pop = Pop.fromJson(list[i]);
-      ImDb.g().db.popsDao.insertPop(pop.toCompanion(true));
+      await ImDb.g().db.popsDao.insertPop(pop.toCompanion(true));
+      res.add(pop);
     }
     Notice.send(UcActions.chatPop());
+    return res;
   }
 
   void onChatDelivered(TopicBean tb) async {
@@ -190,7 +229,11 @@ class ImData {
   }
 
   Stream<List<ChatMsg>> getChatList(String peerId, int type, int offset) {
-    var res = ImDb.g().db.chatMsgDao.getMsgList(peerId, type, 100, offset);
+    Stream<List<ChatMsg>> res;
+    if (type == typePerson)
+      res = ImDb.g().db.chatMsgDao.getP2PMsgList(peerId, 100, offset);
+    else
+      res = ImDb.g().db.chatMsgDao.getGroupMsgList(peerId, 100, offset);
     // var json = jsonEncode(res);
     // _log.info("getChatList: $json");
     return res;
