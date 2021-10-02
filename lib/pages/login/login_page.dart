@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
         new InkWell(
           child: new Text(item, style: TextStyle(color: tipColor)),
           onTap: () {
-            showToast(context, S.of(context).notOpen + item);
+            showToast(S.of(context).notOpen + item);
           },
         ),
         item == S.of(context).weChatSecurityCenter
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!strNoEmpty(pWC.text)) return;
     if (actType == "email") {
       if (!isEmail(emailC.text)) {
-        showToast(context, '请输入正确的邮箱');
+        showToast('请输入正确的邮箱');
         return;
       }
       ;
@@ -135,10 +135,10 @@ class _LoginPageState extends State<LoginPage> {
     var params = {"email": emailC.text, "passwd": pWC.text, "type": actType};
     var u = await gModel.logic.login(params);
     if (u.code == 0) {
-      showToast(context, '登陆成功');
+      showToast('登陆成功');
       routePushAndRemove(new RootPage());
     } else {
-      showToast(context, u.msg);
+      showToast(u.msg);
     }
   }
 

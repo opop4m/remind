@@ -21,7 +21,6 @@ class UnicornHttp {
   }
 
   static Map<String, dynamic> getHeader() {
-    var rng = new Random();
     Map<String, dynamic> header = {
       "accessToken": Global.get().curUser.accessToken,
       "appKey": API.appKey,
@@ -29,10 +28,19 @@ class UnicornHttp {
       "channel": Global.get().getChannel(),
       "uuid": Global.get().uuid,
       "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      "n": rng.nextInt(intMaxValue),
+      "n": getRandomInt(),
     };
     header['sign'] = getSign(header, API.appClientSecret);
     return header;
+  }
+
+  static getRandomInt() {
+    var rng = new Random(DateTime.now().millisecondsSinceEpoch);
+    int r = rng.nextInt(intMaxValue);
+    if (r == 0) {
+      return getRandomInt();
+    }
+    return r;
   }
 
   static String getSign(Map<String, dynamic> params, String secret) {

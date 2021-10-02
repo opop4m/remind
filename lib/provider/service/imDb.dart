@@ -23,6 +23,7 @@ class ImDb {
   ImDb._internal() {}
 
   void init(String account) async {
+    print("init db account: $account");
     if (_db != null) {
       await _db!.close();
     }
@@ -241,7 +242,7 @@ class PopsDao extends DatabaseAccessor<UcDatabase> with _$PopsDaoMixin {
 
   Future insertPop(PopsCompanion pop) => into(pops).insertOnConflictUpdate(pop);
 
-  Future<List<Pop>> queryAll() => select(pops).get();
+  Stream<List<Pop>> queryAll() => select(pops).watch();
 
   Future delAll() => delete(pops).go();
 
@@ -249,6 +250,14 @@ class PopsDao extends DatabaseAccessor<UcDatabase> with _$PopsDaoMixin {
     var q = delete(pops);
     q.where((tbl) => tbl.targetId.equals(targetId) & tbl.type.equals(type));
     return q.go();
+  }
+
+  Stream<int?> queryFriendPopSum() {
+    var q = selectOnly(pops);
+    var sum = pops.count.sum();
+    q.addColumns([sum]);
+    q.where(pops.type.equals(PopTypeNewFriend));
+    return q.map((row) => row.read(sum)).watchSingle();
   }
 
   Stream<int?> queryChatPopSum() {

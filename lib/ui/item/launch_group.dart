@@ -24,7 +24,7 @@ class LaunchGroupItem extends StatelessWidget {
           if (item == '选择一个群') {
             routePush(new GroupSelectPage());
           } else {
-            showToast(context, '敬请期待');
+            showToast('敬请期待');
           }
         },
         child: new Container(

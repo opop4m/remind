@@ -2,7 +2,6 @@ import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/chat/more_info_page.dart';
 import 'package:client/pages/chat/set_remark_page.dart';
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
-import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/ui/item/contact_card.dart';
 import 'package:client/ui/orther/button_row.dart';
@@ -10,7 +9,6 @@ import 'package:client/ui/orther/label_row.dart';
 import 'package:flutter/material.dart';
 
 import 'package:client/tools/library.dart';
-import 'package:provider/provider.dart';
 
 class ContactsDetailsPage extends StatefulWidget {
   final String title, id;
@@ -66,7 +64,7 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         visible: !isSelf,
         child: new ButtonRow(
           text: '音视频通话',
-          onPressed: () => showToast(context, '敬请期待'),
+          onPressed: () => showToast('敬请期待'),
         ),
       ),
     ];

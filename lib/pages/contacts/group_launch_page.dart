@@ -137,7 +137,7 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
       radius: 4.0,
       onTap: () {
         if (PlatformUtils.isIOS) {
-          showToast(context, 'IOS暂不支持发起群聊');
+          showToast('IOS暂不支持发起群聊');
           return;
         }
         // createGroupChat(selectData, name: selectData.join(),
@@ -149,7 +149,7 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
         //     }
         //   }
         // });
-        showToast(context, '当前ID：${selectData.toString()}');
+        showToast('当前ID：${selectData.toString()}');
       },
     );
 

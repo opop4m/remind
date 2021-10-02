@@ -5,6 +5,7 @@ import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/shared_util.dart';
 import 'package:client/tools/library.dart';
 import 'dart:convert';
@@ -24,6 +25,7 @@ class GlobalLogic {
     if (rsp.data != null) {
       res.fromJson(rsp.data, new LoginRsp());
       if (res.data != null) {
+        ImDb.g().init(res.data!.user.id);
         onLogin(res.data!);
       }
     }
@@ -43,6 +45,7 @@ class GlobalLogic {
     if (rsp.data != null) {
       res.fromJson(rsp.data, new LoginRsp());
       if (res.data != null) {
+        ImDb.g().init(res.data!.user.id);
         onLogin(res.data!);
       }
     }
@@ -81,6 +84,7 @@ class GlobalLogic {
     var userStr = await SharedUtil.instance.getString(Keys.user);
     if (strNoEmpty(userStr)) {
       Global.get().curUser.fromJson(jsonDecode(userStr));
+      ImDb.g().init(Global.get().curUser.id);
     } else {
       hasLogin = false;
     }

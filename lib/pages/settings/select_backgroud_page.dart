@@ -29,7 +29,7 @@ class _SelectBgPageState extends State<SelectBgPage> {
           fit: BoxFit.fill,
         ),
       ),
-      onTap: () => showToast(context, '敬请期待'),
+      onTap: () => showToast('敬请期待'),
 //      onTap: () =>
 //          routePush(new ChatBackgroundDetailsPage(item['img'], item['name'])),
     );

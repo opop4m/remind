@@ -330,13 +330,13 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!strNoEmpty(pWC.text)) return;
     if (registType == "email") {
       if (!isEmail(emailC.text)) {
-        showToast(context, '请输入正确的邮箱');
+        showToast('请输入正确的邮箱');
         return;
       }
       ;
     } else {
       if (!isMobilePhoneNumberCN(phoneC.text)) {
-        showToast(context, '请输入正确的手机号');
+        showToast('请输入正确的手机号');
         return;
       }
     }
@@ -358,10 +358,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     var u = await gModel.logic.register(params);
     if (u.code == 0) {
-      showToast(context, '注册成功');
+      showToast('注册成功');
       routePushAndRemove(new RootPage());
     } else {
-      showToast(context, u.msg);
+      showToast(u.msg);
     }
   }
 }

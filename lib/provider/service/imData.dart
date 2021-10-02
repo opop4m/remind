@@ -22,7 +22,6 @@ const actChatAllPop = "chatAllPop";
 const actOnline = "online";
 const actFriendRequest = "friendReqeust";
 const actAllriendRequest = "allFriendReqeust";
-// const actALlriendRequest = "alllFriendReqeust";
 const actReplyFriendRequest = "replyFriendRequest";
 const actSyncChat = "syncChat";
 
@@ -60,8 +59,7 @@ class ImData {
 
   void dispatch(String topic, res) {
     var tb = parserTopic(topic);
-    _log.info(tb.act);
-    _log.info("dispatch message: $res");
+    _log.info("act: ${tb.act},dispatch message: $res");
     // var data = res["data"];
     switch (tb.act) {
       case actChat:
@@ -115,9 +113,7 @@ class ImData {
 
   void onChatAllPop(TopicBean tb, data) async {
     List list = data;
-    if (list.length > 1) {
-      await ImDb.g().db.popsDao.delAll();
-    }
+    await ImDb.g().db.popsDao.delAll();
     for (var i = 0; i < list.length; i++) {
       var pop = Pop.fromJson(list[i]);
       await ImDb.g().db.popsDao.insertPop(pop.toCompanion(true));
@@ -142,7 +138,7 @@ class ImData {
       "status": status,
       "requestUid": requestUid,
     };
-    await Im.get().requestSystem(actReplyFriendRequest, params);
+    Im.get().requestSystem(actReplyFriendRequest, params);
     await ImDb.g().db.friendReqeustsDao.updateStatus(requestUid, status);
     return;
   }
@@ -319,20 +315,22 @@ class ImData {
     return res;
   }
 
-  Future<Map<String, int>> getUnread() async {
-    var list = await ImDb.g().db.popsDao.queryAll();
-    var res = Map<String, int>();
-    for (var i = 0; i < list.length; i++) {
-      var pop = list[i];
-      var key = pop.type.toString();
-      if (pop.type == PopTypeGroup) {
-        key = pop.targetId + "_" + typeGroup.toString();
-      } else if (pop.type == PopTypeP2P) {
-        key = pop.targetId + "_" + typePerson.toString();
+  Stream getUnread() {
+    Stream s = ImDb.g().db.popsDao.queryAll().map((list) {
+      var res = Map<String, int>();
+      for (var i = 0; i < list.length; i++) {
+        var pop = list[i];
+        var key = pop.type.toString();
+        if (pop.type == PopTypeGroup) {
+          key = pop.targetId + "_" + typeGroup.toString();
+        } else if (pop.type == PopTypeP2P) {
+          key = pop.targetId + "_" + typePerson.toString();
+        }
+        res[key] = pop.count;
       }
-      res[key] = pop.count;
-    }
-    return res;
+      return res;
+    });
+    return s;
   }
 
   void readMsg(String fUid, int readTime) {

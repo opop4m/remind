@@ -35,9 +35,11 @@ class _RootPageState extends State<RootPage> with RouteAware {
   WidgetsBind bind = WidgetsBind();
 
   late StreamSubscription<int?> _popSub;
+  late StreamSubscription<int?> _popNewFriendSub;
   late StreamSubscription<ConnectState> _connectSub;
 
   int chatPopSum = 0;
+  int friendPopSum = 0;
 
   @override
   void initState() {
@@ -50,6 +52,12 @@ class _RootPageState extends State<RootPage> with RouteAware {
     WidgetsBinding.instance?.addObserver(bind);
     // ifBrokenNetwork();
     initChat().then((value) {
+      _popNewFriendSub =
+          ImDb.g().db.popsDao.queryFriendPopSum().listen((event) {
+        _log.info(" Friend pop: $event");
+        friendPopSum = event ?? 0;
+        if (mounted) setState(() {});
+      });
       _popSub = ImDb.g().db.popsDao.queryChatPopSum().listen((event) {
         _log.info("imdb update pop: $event");
         chatPopSum = event ?? 0;
@@ -161,6 +169,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
         icon: new LoadImage("assets/images/tabbar_contacts_c.webp"),
         selectIcon: new LoadImage("assets/images/tabbar_contacts_s.webp"),
         page: new ContactsPage(),
+        pop: friendPopSum,
       ),
       new TabBarModel(
         title: S.of(context).discover,
@@ -187,6 +196,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     super.dispose();
     _log.info("dispose");
     _popSub.cancel();
+    _popNewFriendSub.cancel();
     _connectSub.cancel();
     WebRtcCtr.get().onReceiveOffer = null;
     WidgetsBinding.instance?.removeObserver(bind); //添加观察者

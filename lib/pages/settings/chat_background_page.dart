@@ -55,7 +55,7 @@ class _ChatBackgroundPageState extends State<ChatBackgroundPage> {
 //      if (Navigator.of(context).canPop()) {
 //        Navigator.of(context).pop();
 //      }
-      showToast(context, '切换完毕');
+      showToast('切换完毕');
     } else {
       return;
     }

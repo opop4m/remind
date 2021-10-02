@@ -128,7 +128,7 @@ class _VideoCall extends State<VideoCallView> {
   StreamSubscription<int>? _subProximity;
   void onIceConnectionState(RTCIceConnectionState state) {
     if (state == RTCIceConnectionState.RTCIceConnectionStateFailed && mounted) {
-      showToast(context, "Connection State Failed");
+      showToast("Connection State Failed");
       _hangUp();
     } else if (state == RTCIceConnectionState.RTCIceConnectionStateConnected &&
         mounted) {

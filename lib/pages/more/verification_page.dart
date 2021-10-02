@@ -87,6 +87,6 @@ class _VerificationPageState extends State<VerificationPage> {
     };
     // ImApi.requestAddFriend(params);
     Im.get().requestSystem(actFriendRequest, params);
-    navGK.currentState!.pop();
+    popToRootPage();
   }
 }

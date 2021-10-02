@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-showToast(BuildContext context, String msg, {int duration = 1, int? gravity}) {
+showToast(String msg, {int duration = 1, int? gravity}) {
   // Toast.show(msg, context, duration: duration, gravity: gravity);
   EasyLoading.showToast(msg);
   // FToast fToast = FToast();

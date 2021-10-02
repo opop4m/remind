@@ -21,17 +21,16 @@ class _ContactsPageState extends State<ContactsPage>
   ScrollController? sC;
   List<Friend> _contacts = [];
 
-  List<ContactItem> _functionButtons = [
-    new ContactItem(
-        avatar: contactAssets + 'ic_new_friend.webp', title: '新的朋友'),
-    new ContactItem(avatar: contactAssets + 'ic_group.webp', title: '群聊'),
-    // new ContactItem(avatar: contactAssets + 'ic_tag.webp', title: '标签'),
-    // new ContactItem(avatar: contactAssets + 'ic_no_public.webp', title: '公众号'),
-  ];
   final Map _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
 
   late StreamSubscription<List<Friend>> _sub;
+  StreamSubscription<int?>? _subNewFriendPop;
+  int newFriendPop = 0;
   Future getContacts() async {
+    _subNewFriendPop = ImDb.g().db.popsDao.queryFriendPopSum().listen((event) {
+      newFriendPop = event ?? 0;
+      if (mounted) setState(() {});
+    });
     _sub = ImData.get().friendList().listen((event) {
       _contacts.clear();
       _contacts..addAll(event);
@@ -120,6 +119,7 @@ class _ContactsPageState extends State<ContactsPage>
 
   void canCelListener() {
     _sub.cancel();
+    _subNewFriendPop?.cancel();
   }
 
   @override
@@ -128,7 +128,19 @@ class _ContactsPageState extends State<ContactsPage>
 
     List<Widget> body = [
       new ContactView(
-          sC: sC, functionButtons: _functionButtons, contacts: _contacts),
+        sC: sC,
+        functionButtons: [
+          new ContactItem(
+            avatar: contactAssets + 'ic_new_friend.webp',
+            title: '新的朋友',
+            showBadge: newFriendPop > 0,
+          ),
+          new ContactItem(avatar: contactAssets + 'ic_group.webp', title: '群聊'),
+          // new ContactItem(avatar: contactAssets + 'ic_tag.webp', title: '标签'),
+          // new ContactItem(avatar: contactAssets + 'ic_no_public.webp', title: '公众号'),
+        ],
+        contacts: _contacts,
+      ),
       new Positioned(
         width: Constants.IndexBarWidth,
         right: 0.0,

@@ -26,6 +26,7 @@ class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   List<ChatRecentBean> _chatData = [];
   Map<String, int> _pop = {};
+  StreamSubscription? _popSub;
   // Map<String, ChatUser> _chatUsers = {};
 
   var tapPos;
@@ -43,7 +44,6 @@ class _HomePageState extends State<HomePage>
 
   Future getChatData() async {
     _chatData = await ImData.get().getRecentList(update: false);
-    _pop = await ImData.get().getUnread();
     Notice.addListener(UcActions.recentList(), (data) {
       // _log.info("notice recentList");
       ImData.get().getRecentList().then((value) async {
@@ -56,11 +56,11 @@ class _HomePageState extends State<HomePage>
       _chatData = await ImData.get().getRecentList();
       if (mounted) setState(() {});
     });
-    Notice.addListener(UcActions.chatPop(), (data) async {
-      _pop = await ImData.get().getUnread();
-      // _log.info("chatPop: $_pop");
+    _popSub = ImData.get().getUnread().listen((event) {
+      _pop = event;
       if (mounted) setState(() {});
     });
+
     // await initChatUsers(_chatData);
     if (mounted) setState(() {});
   }
@@ -104,9 +104,8 @@ class _HomePageState extends State<HomePage>
   }
 
   void canCelListener() {
-    if (_messageStreamSubscription != null) {
-      _messageStreamSubscription?.cancel();
-    }
+    _popSub?.cancel();
+    _messageStreamSubscription?.cancel();
   }
 
   Future<void> initPlatformState() async {

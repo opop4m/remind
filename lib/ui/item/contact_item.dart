@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:client/pages/contacts/all_label_page.dart';
 import 'package:client/pages/contacts/contacts_details_page.dart';
 import 'package:client/pages/contacts/group_list_page.dart';
@@ -22,12 +23,14 @@ class ContactItem extends StatefulWidget {
   final ClickType type;
   final OnAdd? add;
   final OnCancel? cancel;
+  final bool showBadge;
 
   ContactItem({
     required this.avatar,
     required this.title,
     this.id,
     this.isLine = true,
+    this.showBadge = false,
     this.groupTitle,
     this.type = ClickType.open,
     this.add,
@@ -111,8 +114,11 @@ class ContactItemState extends State<ContactItem> {
           ),
 
           /// 姓名
-          child: new Text(widget.title,
-              style: TextStyle(fontWeight: FontWeight.w400), maxLines: 1),
+          child: Badge(
+            showBadge: widget.showBadge,
+            child: Text(widget.title,
+                style: TextStyle(fontWeight: FontWeight.w400), maxLines: 1),
+          ),
         ),
       ),
       widget.type == ClickType.select

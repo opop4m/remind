@@ -74,7 +74,8 @@ class TextItemContainer2 extends StatelessWidget {
         pressType: PressType.longPress,
         actions: ['复制', '转发', '收藏', '撤回', '删除'],
         child: ExtendedText(
-          text == "" ? '文字为空' : text + "          ".joinChar(),
+          text +
+              (isMyself ? "            ".joinChar() : "          ".joinChar()),
           maxLines: 99,
           overflow: TextOverflow.visible,
           specialTextSpanBuilder: _spanBuilder,
@@ -111,6 +112,7 @@ class TextItemContainer2 extends StatelessWidget {
                           timeStr,
                           style: _tips,
                         ),
+                        Space(width: 5),
                         status == -2
                             ? SizedBox()
                             : status > 1 && isMyself

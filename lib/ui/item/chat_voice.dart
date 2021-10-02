@@ -55,7 +55,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
         var d = event.duration.inSeconds;
         decibel = event.decibels?.toInt() ?? 0;
         if (d > 59) {
-          showToast(context, "语音最长 60s");
+          showToast("语音最长 60s");
           hideVoiceView();
         } else {
           _voiceKey.currentState?.update(decibel);
@@ -94,7 +94,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     } catch (err, s) {
       print(err.toString());
       print(s);
-      showToast(context, 'startRecorder error: ${err}');
+      showToast('startRecorder error: ${err}');
     }
   }
 
@@ -107,7 +107,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     } catch (err, s) {
       print(err);
       print(s);
-      showToast(context, 'stopRecorder error');
+      showToast('stopRecorder error');
     }
   }
 
@@ -171,7 +171,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       print("进行发送");
       int timeLen = DateTime.now().millisecondsSinceEpoch - startTimeMillis;
       if (timeLen < 1000) {
-        showToast(context, '时间太短了');
+        showToast('时间太短了');
         return;
       }
 

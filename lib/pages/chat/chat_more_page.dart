@@ -88,7 +88,7 @@ class _ChatMorePageState extends State<ChatMorePage> {
           ),
           arguments: key);
     } else {
-      showToast(context, '敬请期待$name');
+      showToast('敬请期待$name');
     }
   }
 

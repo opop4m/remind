@@ -24,7 +24,7 @@ class _GroupRemarksPageState extends State<GroupRemarksPage> {
 
   handle() {
     if (!strNoEmpty(_textController.text)) {
-      showToast(context, '请输入内容');
+      showToast('请输入内容');
       return;
     }
     if (widget.groupInfoType == GroupInfoType.name) {
@@ -32,7 +32,7 @@ class _GroupRemarksPageState extends State<GroupRemarksPage> {
       //     callback: (_) {});
       Navigator.pop(context, _textController.text);
     } else {
-      showToast(context, '敬请期待');
+      showToast('敬请期待');
     }
   }
 

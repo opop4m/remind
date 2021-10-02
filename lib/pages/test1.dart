@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
@@ -149,6 +150,7 @@ class _test extends State<Test> {
         });
         break;
       case "dismissLoading":
+        ImDb.g().init("6157e2be54761c05d2127743");
         break;
       case "sub":
         _sub = UcNotice.addListener(UcActions.chatPop()).listen((event) {

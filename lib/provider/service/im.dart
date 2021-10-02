@@ -54,7 +54,6 @@ class Im {
     String account = "",
     String passwd = "",
   }) async {
-    ImDb.g().init(account);
     var mqttConf = MqttConf();
     mqttConf.host = "ws://$host/mqtt";
     mqttConf.port = int.parse(port);
@@ -207,7 +206,7 @@ class Im {
 
   void initData() async {
     Im.get().requestSystem(actAllriendRequest, {});
-    Im.get().requestSystem(actChatAllPop, {});
+    // Im.get().requestSystem(actChatAllPop, {});
     //1, 最近的聊天列表。 2，检查列表的聊天记录。
     List<ChatRecent> list = await ImApi.requestRecentList();
     SyncChat chatReq = SyncChat();

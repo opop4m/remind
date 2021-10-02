@@ -2,7 +2,6 @@
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/massage/wait1.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
-import 'package:extended_text/extended_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 

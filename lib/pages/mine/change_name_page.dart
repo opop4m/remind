@@ -22,11 +22,11 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
 
   void setInfoMethod(GlobalModel model) {
     if (!strNoEmpty(_tc.text)) {
-      showToast(context, '输入的内容不能为空');
+      showToast('输入的内容不能为空');
       return;
     }
     if (_tc.text.length > 12) {
-      showToast(context, '输入的内容太长了');
+      showToast('输入的内容太长了');
       return;
     }
 

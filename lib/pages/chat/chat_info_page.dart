@@ -72,7 +72,7 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
           confirmAlert(
             context,
             (isOK) {
-              if (isOK) showToast(context, '敬请期待');
+              if (isOK) showToast('敬请期待');
             },
             title: '确定删除群的聊天记录吗？',
             okBtn: '清空',

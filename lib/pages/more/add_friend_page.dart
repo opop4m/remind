@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:client/pages/contacts/contacts_details_page.dart';
 import 'package:client/pages/mine/code_page.dart';
 import 'package:client/pages/root/user_page.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imData.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class AddFriendPage extends StatefulWidget {
 }
 
 class _AddFriendPageState extends State<AddFriendPage> {
-  bool isSearch = false;
+  bool isSearch = true;
   bool showBtn = false;
   bool isResult = false;
 
@@ -84,7 +86,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
     ];
     var content = [
       new SearchMainView(
-        text: '微信号/手机号',
+        text: 'email/账号',
         onTap: () {
           isSearch = true;
           setState(() {});
@@ -129,12 +131,12 @@ class _AddFriendPageState extends State<AddFriendPage> {
           ),
         ),
         new Space(height: mainSpace),
-        new SearchTileView(searchC.text, type: 1),
-        new Container(
-          color: Colors.white,
-          width: winWidth(context),
-          height: (winHeight(context) - 185 * 1.38),
-        )
+        // new SearchTileView(searchC.text, type: 1),
+        // new Container(
+        //   color: Colors.white,
+        //   width: winWidth(context),
+        //   height: (winHeight(context) - 185 * 1.38),
+        // )
       ];
     } else {
       return [
@@ -178,36 +180,23 @@ class _AddFriendPageState extends State<AddFriendPage> {
 
   // 搜索好友
   Future search(String userName) async {
-    // final data = await getUsersProfile([userName]);
-    // List<dynamic> dataMap = json.decode(data);
-    // setState(() {
-    //   if (Platform.isIOS) {
-    //     IPersonInfoEntity model = IPersonInfoEntity.fromJson(dataMap[0]);
-    //     if (strNoEmpty(model.allowType.toString())) {
-    //       routePush(new AddFriendsDetails('search', model.identifier,
-    //           model.faceURL, model.nickname, model.gender));
-    //     } else {
-    //       isResult = true;
-    //     }
-    //   } else {
-    //     PersonInfoEntity model = PersonInfoEntity.fromJson(dataMap[0]);
-    //     if (strNoEmpty(model.allowType)) {
-    //       routePush(new AddFriendsDetails('search', model.identifier,
-    //           model.faceUrl, model.nickName, model.gender));
-    //     } else {
-    //       isResult = true;
-    //     }
-    //   }
-    // });
-
     var rsp = await ImData.get().searchUser(userName);
     if (rsp.code == 0) {
       var user = rsp.res!;
-      print("AddFriendsDetails");
-      routePush(new AddFriendsDetails('search', user.id,
-          getAvatarUrl(user.avatar), user.name, user.gender ?? genderMale));
+      ImDb.g().db.friendDao.queryFriend(user.id).then((friend) {
+        routePush(ContactsDetailsPage(
+          avatar: getAvatarUrl(friend.avatar),
+          title: friend.name,
+          id: friend.id,
+        ));
+      }).catchError((err) {
+        routePush(new AddFriendsDetails('search', user.id,
+            getAvatarUrl(user.avatar), user.name, user.gender ?? genderMale));
+      });
     } else {
       isResult = true;
+      if (mounted) setState(() {});
+      // showToast(rsp.msg);
     }
   }
 
@@ -219,7 +208,8 @@ class _AddFriendPageState extends State<AddFriendPage> {
         height: 28,
         child: new Icon(CupertinoIcons.back, color: Colors.black),
       ),
-      onTap: () => unFocusMethod(),
+      // onTap: () => unFocusMethod(),
+      onTap: () => Navigator.pop(context),
     );
 
     // ignore: unused_element
@@ -231,7 +221,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
             controller: searchC,
             style: TextStyle(textBaseline: TextBaseline.alphabetic),
             decoration:
-                InputDecoration(hintText: '微信号/手机号', border: InputBorder.none),
+                InputDecoration(hintText: 'email/账号', border: InputBorder.none),
             onChanged: (txt) {
               if (strNoEmpty(searchC.text))
                 showBtn = true;
@@ -261,7 +251,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
       child: isSearch
           ? new GestureDetector(
               child: new Column(children: searchBody()),
-              onTap: () => unFocusMethod(),
+              // onTap: () => unFocusMethod(),
             )
           : body(),
     );
@@ -270,6 +260,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
       child: new Scaffold(
         backgroundColor: appBarColor,
         appBar: new ComMomBar(
+          // backgroundColor: Colors.white,
           leadingW: isSearch ? leading : null,
           title: '添加朋友',
           titleW: isSearch ? new Row(children: searchView()) : null,
@@ -277,11 +268,11 @@ class _AddFriendPageState extends State<AddFriendPage> {
         body: bodyView,
       ),
       onWillPop: () async {
-        if (isSearch) {
-          unFocusMethod();
-        } else {
-          Navigator.pop(context);
-        }
+        // if (isSearch) {
+        //   unFocusMethod();
+        // } else {
+        Navigator.pop(context);
+        // }
         return true;
       },
     );

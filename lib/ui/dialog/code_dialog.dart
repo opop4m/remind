@@ -18,7 +18,7 @@ codeDialog(BuildContext context, List items) {
         padding: EdgeInsets.symmetric(vertical: 15.0),
         onPressed: () {
           Navigator.of(context).pop();
-          showToast(context, '$item正在开发中');
+          showToast('$item正在开发中');
         },
         child: new Text(item),
       ),
