@@ -53,22 +53,9 @@ class _HomePageState extends State<HomePage>
       if (mounted) setState(() {});
     });
 
-    // _chatData = await ImData.get().getRecentList(update: false);
-    // Notice.addListener(UcActions.recentList(), (data) {
-    //   // _log.info("notice recentList");
-    //   ImData.get().getRecentList().then((value) async {
-    //     _chatData = await ImData.get().getRecentList();
-    //     if (mounted) setState(() {});
-    //   });
-    // });
-    // Notice.addListener(UcActions.chatUser(), (data) async {
-    //   // _log.info("notice chatUser");
-    //   _chatData = await ImData.get().getRecentList();
-    //   if (mounted) setState(() {});
-    // });
     _popSub = ImData.get().getUnread().listen((event) {
       _pop = event;
-      // _log.info("getUnread: " + jsonEncode(event));
+      _log.info("getUnread: " + jsonEncode(event));
       if (mounted) setState(() {});
     });
 
@@ -166,7 +153,7 @@ class _HomePageState extends State<HomePage>
 
     if (!listNoEmpty(_chatData)) return new HomeNullView();
     _c++;
-    _log.info("build count: $_c,list: " + jsonEncode(_chatData[0].recent));
+    _log.info("build count: $_c");
     return new Container(
       color: Color(AppColors.BackgroundColor),
       child: new ScrollConfiguration(

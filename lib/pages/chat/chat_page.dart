@@ -106,8 +106,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void readedMsg() {
-    if (widget.type == typePerson)
-      ImData.get().readMsg(widget.id, Utils.getTimestampSecond());
+    ImData.get().readMsg(widget.id, Utils.getTimestampSecond(), widget.type);
   }
 
   void insertText(String text) {

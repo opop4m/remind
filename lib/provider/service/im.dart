@@ -209,7 +209,7 @@ class Im {
     if (hasInit) return;
     hasInit = true;
     Im.get().requestSystem(actAllriendRequest, {});
-    // Im.get().requestSystem(actChatAllPop, {});
+    Im.get().requestSystem(actChatAllPop, {});
     //1, 最近的聊天列表。 2，检查列表的聊天记录。
     List<ChatRecent> list = await ImApi.requestRecentList();
     SyncChat chatReq = SyncChat();

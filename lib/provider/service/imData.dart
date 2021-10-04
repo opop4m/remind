@@ -172,17 +172,21 @@ class ImData {
 
   void onChatRead(data) async {
     Map<String, dynamic> res = data;
-    String fUid = res["friendUid"];
+    String fUid = res["targetId"];
     int readTime = res["readTime"];
-    var changeRow = await ImDb.g().db.friendDao.updateReadTime(fUid, readTime);
-    if (changeRow == 0) {
-      await ImApi.friendList();
-      changeRow = await ImDb.g().db.friendDao.updateReadTime(fUid, readTime);
+    int type = res["type"];
+    if (type == typePerson) {
+      var changeRow =
+          await ImDb.g().db.friendDao.updateReadTime(fUid, readTime);
       if (changeRow == 0) {
-        _log.info("error: not found fUid: $fUid");
+        await ImApi.friendList();
+        changeRow = await ImDb.g().db.friendDao.updateReadTime(fUid, readTime);
+        if (changeRow == 0) {
+          _log.info("error: not found fUid: $fUid");
+        }
       }
+      await ImDb.g().db.chatMsgDao.updateReaded(fUid, readTime);
     }
-    await ImDb.g().db.chatMsgDao.updateReaded(fUid, readTime);
     Notice.send(UcActions.chatRead(), res);
   }
 
@@ -206,7 +210,11 @@ class ImData {
       pageKey = Im.routeKey(msg.peerId, typeGroup);
     }
     if (UcNavigation.curPage.endsWith(pageKey)) {
-      readMsg(msg.fromId, Utils.getTimestampSecond());
+      var targetId = msg.fromId;
+      if (msg.type == typeGroup) {
+        targetId = msg.peerId;
+      }
+      readMsg(targetId, Utils.getTimestampSecond(), msg.type);
     }
 
     // Notice.send(UcActions.newMsg(), msg);
@@ -223,13 +231,11 @@ class ImData {
     }
 
     var recent = ChatRecent.fromJson(jsonMsg);
-    _log.info("onNewRecent 1.0");
     ImDb.g()
         .db
         .chatRecentDao
         .insertChat(recent.toCompanion(true))
         .then((value) => Notice.send(UcActions.recentList()));
-    _log.info("onNewRecent 1.1");
     if (msg.type == typePerson) {
       ImDb.g().db.chatUserDao.getChatUsers([jsonMsg["targetId"]]).then((value) {
         if (value.length == 0) {
@@ -294,7 +300,6 @@ class ImData {
     });
     var ret =
         ImDb.g().db.chatRecentDao.watchRecentList(100, 0).map((list) async {
-      _log.info("watchRecentList: " + jsonEncode(list));
       List<ChatRecentBean> res = [];
       List<String> reqList = [];
       List<String> reqGroupList = [];
@@ -412,12 +417,7 @@ class ImData {
       var res = Map<String, int>();
       for (var i = 0; i < list.length; i++) {
         var pop = list[i];
-        var key = pop.type.toString();
-        if (pop.type == PopTypeGroup) {
-          key = pop.targetId + "_" + typeGroup.toString();
-        } else if (pop.type == PopTypeP2P) {
-          key = pop.targetId + "_" + typePerson.toString();
-        }
+        var key = Im.routeKey(pop.targetId, pop.type);
         res[key] = pop.count;
       }
       return res;
@@ -425,11 +425,14 @@ class ImData {
     return s;
   }
 
-  void readMsg(String fUid, int readTime) {
-    var params = {"friendUid": fUid, "readTime": readTime};
+  void readMsg(String fUid, int readTime, int type) {
+    var params = {
+      "targetId": fUid,
+      "readTime": readTime,
+      "type": type,
+    };
     Im.get().requestSystem(actChatRead, params);
-    int t = PopTypeP2P;
-    ImDb.g().db.popsDao.delPop(fUid, t);
+    ImDb.g().db.popsDao.delPop(fUid, type);
     Notice.send(UcActions.chatPop());
   }
 
