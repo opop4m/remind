@@ -140,7 +140,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
       String peerId = message.data['peer'];
       int type = int.parse(message.data['type']);
       var peerInfo = await ImData.get().getChatUser(peerId);
-      String key = "$type-" + peerId;
+      String key = Im.routeKey(peerId, type);
       var chatPage =
           ChatPage(id: peerInfo.id, title: peerInfo.name, type: type);
       if (UcNavigation.curPage.startsWith(UcNavigation.chatPage)) {

@@ -77,3 +77,28 @@ class FriendReqeusts extends Table {
   @override
   Set<Column> get primaryKey => {requestUid};
 }
+
+class Groups extends Table {
+  TextColumn get id => text()();
+  TextColumn get uid => text()();
+  TextColumn get name => text()();
+  TextColumn get avatar => text().nullable()();
+  TextColumn get manager => text().nullable()();
+  IntColumn get memberCount => integer()();
+  TextColumn get notice => text().nullable()();
+  BoolColumn get isDeleted => boolean().nullable()();
+  IntColumn get createTime => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class GroupMembers extends Table {
+  TextColumn get id => text()();
+  TextColumn get uid => text()();
+  TextColumn get groupId => text()();
+  BoolColumn get isNotify => boolean()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

@@ -2067,6 +2067,703 @@ class $FriendReqeustsTable extends FriendReqeusts
   }
 }
 
+class Group extends DataClass implements Insertable<Group> {
+  final String id;
+  final String uid;
+  final String name;
+  final String? avatar;
+  final String? manager;
+  final int memberCount;
+  final String? notice;
+  final bool? isDeleted;
+  final int createTime;
+  Group(
+      {required this.id,
+      required this.uid,
+      required this.name,
+      this.avatar,
+      this.manager,
+      required this.memberCount,
+      this.notice,
+      this.isDeleted,
+      required this.createTime});
+  factory Group.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Group(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      uid: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}uid'])!,
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      avatar: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}avatar']),
+      manager: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}manager']),
+      memberCount: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}member_count'])!,
+      notice: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}notice']),
+      isDeleted: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_deleted']),
+      createTime: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}create_time'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['uid'] = Variable<String>(uid);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || avatar != null) {
+      map['avatar'] = Variable<String?>(avatar);
+    }
+    if (!nullToAbsent || manager != null) {
+      map['manager'] = Variable<String?>(manager);
+    }
+    map['member_count'] = Variable<int>(memberCount);
+    if (!nullToAbsent || notice != null) {
+      map['notice'] = Variable<String?>(notice);
+    }
+    if (!nullToAbsent || isDeleted != null) {
+      map['is_deleted'] = Variable<bool?>(isDeleted);
+    }
+    map['create_time'] = Variable<int>(createTime);
+    return map;
+  }
+
+  GroupsCompanion toCompanion(bool nullToAbsent) {
+    return GroupsCompanion(
+      id: Value(id),
+      uid: Value(uid),
+      name: Value(name),
+      avatar:
+          avatar == null && nullToAbsent ? const Value.absent() : Value(avatar),
+      manager: manager == null && nullToAbsent
+          ? const Value.absent()
+          : Value(manager),
+      memberCount: Value(memberCount),
+      notice:
+          notice == null && nullToAbsent ? const Value.absent() : Value(notice),
+      isDeleted: isDeleted == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDeleted),
+      createTime: Value(createTime),
+    );
+  }
+
+  factory Group.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Group(
+      id: serializer.fromJson<String>(json['id']),
+      uid: serializer.fromJson<String>(json['uid']),
+      name: serializer.fromJson<String>(json['name']),
+      avatar: serializer.fromJson<String?>(json['avatar']),
+      manager: serializer.fromJson<String?>(json['manager']),
+      memberCount: serializer.fromJson<int>(json['memberCount']),
+      notice: serializer.fromJson<String?>(json['notice']),
+      isDeleted: serializer.fromJson<bool?>(json['isDeleted']),
+      createTime: serializer.fromJson<int>(json['createTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'uid': serializer.toJson<String>(uid),
+      'name': serializer.toJson<String>(name),
+      'avatar': serializer.toJson<String?>(avatar),
+      'manager': serializer.toJson<String?>(manager),
+      'memberCount': serializer.toJson<int>(memberCount),
+      'notice': serializer.toJson<String?>(notice),
+      'isDeleted': serializer.toJson<bool?>(isDeleted),
+      'createTime': serializer.toJson<int>(createTime),
+    };
+  }
+
+  Group copyWith(
+          {String? id,
+          String? uid,
+          String? name,
+          String? avatar,
+          String? manager,
+          int? memberCount,
+          String? notice,
+          bool? isDeleted,
+          int? createTime}) =>
+      Group(
+        id: id ?? this.id,
+        uid: uid ?? this.uid,
+        name: name ?? this.name,
+        avatar: avatar ?? this.avatar,
+        manager: manager ?? this.manager,
+        memberCount: memberCount ?? this.memberCount,
+        notice: notice ?? this.notice,
+        isDeleted: isDeleted ?? this.isDeleted,
+        createTime: createTime ?? this.createTime,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Group(')
+          ..write('id: $id, ')
+          ..write('uid: $uid, ')
+          ..write('name: $name, ')
+          ..write('avatar: $avatar, ')
+          ..write('manager: $manager, ')
+          ..write('memberCount: $memberCount, ')
+          ..write('notice: $notice, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('createTime: $createTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(
+          uid.hashCode,
+          $mrjc(
+              name.hashCode,
+              $mrjc(
+                  avatar.hashCode,
+                  $mrjc(
+                      manager.hashCode,
+                      $mrjc(
+                          memberCount.hashCode,
+                          $mrjc(
+                              notice.hashCode,
+                              $mrjc(isDeleted.hashCode,
+                                  createTime.hashCode)))))))));
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Group &&
+          other.id == this.id &&
+          other.uid == this.uid &&
+          other.name == this.name &&
+          other.avatar == this.avatar &&
+          other.manager == this.manager &&
+          other.memberCount == this.memberCount &&
+          other.notice == this.notice &&
+          other.isDeleted == this.isDeleted &&
+          other.createTime == this.createTime);
+}
+
+class GroupsCompanion extends UpdateCompanion<Group> {
+  final Value<String> id;
+  final Value<String> uid;
+  final Value<String> name;
+  final Value<String?> avatar;
+  final Value<String?> manager;
+  final Value<int> memberCount;
+  final Value<String?> notice;
+  final Value<bool?> isDeleted;
+  final Value<int> createTime;
+  const GroupsCompanion({
+    this.id = const Value.absent(),
+    this.uid = const Value.absent(),
+    this.name = const Value.absent(),
+    this.avatar = const Value.absent(),
+    this.manager = const Value.absent(),
+    this.memberCount = const Value.absent(),
+    this.notice = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.createTime = const Value.absent(),
+  });
+  GroupsCompanion.insert({
+    required String id,
+    required String uid,
+    required String name,
+    this.avatar = const Value.absent(),
+    this.manager = const Value.absent(),
+    required int memberCount,
+    this.notice = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    required int createTime,
+  })  : id = Value(id),
+        uid = Value(uid),
+        name = Value(name),
+        memberCount = Value(memberCount),
+        createTime = Value(createTime);
+  static Insertable<Group> custom({
+    Expression<String>? id,
+    Expression<String>? uid,
+    Expression<String>? name,
+    Expression<String?>? avatar,
+    Expression<String?>? manager,
+    Expression<int>? memberCount,
+    Expression<String?>? notice,
+    Expression<bool?>? isDeleted,
+    Expression<int>? createTime,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uid != null) 'uid': uid,
+      if (name != null) 'name': name,
+      if (avatar != null) 'avatar': avatar,
+      if (manager != null) 'manager': manager,
+      if (memberCount != null) 'member_count': memberCount,
+      if (notice != null) 'notice': notice,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (createTime != null) 'create_time': createTime,
+    });
+  }
+
+  GroupsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? uid,
+      Value<String>? name,
+      Value<String?>? avatar,
+      Value<String?>? manager,
+      Value<int>? memberCount,
+      Value<String?>? notice,
+      Value<bool?>? isDeleted,
+      Value<int>? createTime}) {
+    return GroupsCompanion(
+      id: id ?? this.id,
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+      avatar: avatar ?? this.avatar,
+      manager: manager ?? this.manager,
+      memberCount: memberCount ?? this.memberCount,
+      notice: notice ?? this.notice,
+      isDeleted: isDeleted ?? this.isDeleted,
+      createTime: createTime ?? this.createTime,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (avatar.present) {
+      map['avatar'] = Variable<String?>(avatar.value);
+    }
+    if (manager.present) {
+      map['manager'] = Variable<String?>(manager.value);
+    }
+    if (memberCount.present) {
+      map['member_count'] = Variable<int>(memberCount.value);
+    }
+    if (notice.present) {
+      map['notice'] = Variable<String?>(notice.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool?>(isDeleted.value);
+    }
+    if (createTime.present) {
+      map['create_time'] = Variable<int>(createTime.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupsCompanion(')
+          ..write('id: $id, ')
+          ..write('uid: $uid, ')
+          ..write('name: $name, ')
+          ..write('avatar: $avatar, ')
+          ..write('manager: $manager, ')
+          ..write('memberCount: $memberCount, ')
+          ..write('notice: $notice, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('createTime: $createTime')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GroupsTable extends Groups with TableInfo<$GroupsTable, Group> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $GroupsTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _uidMeta = const VerificationMeta('uid');
+  late final GeneratedColumn<String?> uid = GeneratedColumn<String?>(
+      'uid', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+      'name', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _avatarMeta = const VerificationMeta('avatar');
+  late final GeneratedColumn<String?> avatar = GeneratedColumn<String?>(
+      'avatar', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _managerMeta = const VerificationMeta('manager');
+  late final GeneratedColumn<String?> manager = GeneratedColumn<String?>(
+      'manager', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _memberCountMeta =
+      const VerificationMeta('memberCount');
+  late final GeneratedColumn<int?> memberCount = GeneratedColumn<int?>(
+      'member_count', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  final VerificationMeta _noticeMeta = const VerificationMeta('notice');
+  late final GeneratedColumn<String?> notice = GeneratedColumn<String?>(
+      'notice', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _isDeletedMeta = const VerificationMeta('isDeleted');
+  late final GeneratedColumn<bool?> isDeleted = GeneratedColumn<bool?>(
+      'is_deleted', aliasedName, true,
+      typeName: 'INTEGER',
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_deleted IN (0, 1))');
+  final VerificationMeta _createTimeMeta = const VerificationMeta('createTime');
+  late final GeneratedColumn<int?> createTime = GeneratedColumn<int?>(
+      'create_time', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        uid,
+        name,
+        avatar,
+        manager,
+        memberCount,
+        notice,
+        isDeleted,
+        createTime
+      ];
+  @override
+  String get aliasedName => _alias ?? '"groups"';
+  @override
+  String get actualTableName => '"groups"';
+  @override
+  VerificationContext validateIntegrity(Insertable<Group> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('uid')) {
+      context.handle(
+          _uidMeta, uid.isAcceptableOrUnknown(data['uid']!, _uidMeta));
+    } else if (isInserting) {
+      context.missing(_uidMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('avatar')) {
+      context.handle(_avatarMeta,
+          avatar.isAcceptableOrUnknown(data['avatar']!, _avatarMeta));
+    }
+    if (data.containsKey('manager')) {
+      context.handle(_managerMeta,
+          manager.isAcceptableOrUnknown(data['manager']!, _managerMeta));
+    }
+    if (data.containsKey('member_count')) {
+      context.handle(
+          _memberCountMeta,
+          memberCount.isAcceptableOrUnknown(
+              data['member_count']!, _memberCountMeta));
+    } else if (isInserting) {
+      context.missing(_memberCountMeta);
+    }
+    if (data.containsKey('notice')) {
+      context.handle(_noticeMeta,
+          notice.isAcceptableOrUnknown(data['notice']!, _noticeMeta));
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
+    if (data.containsKey('create_time')) {
+      context.handle(
+          _createTimeMeta,
+          createTime.isAcceptableOrUnknown(
+              data['create_time']!, _createTimeMeta));
+    } else if (isInserting) {
+      context.missing(_createTimeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Group map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Group.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $GroupsTable createAlias(String alias) {
+    return $GroupsTable(_db, alias);
+  }
+}
+
+class GroupMember extends DataClass implements Insertable<GroupMember> {
+  final String id;
+  final String uid;
+  final String groupId;
+  final bool isNotify;
+  GroupMember(
+      {required this.id,
+      required this.uid,
+      required this.groupId,
+      required this.isNotify});
+  factory GroupMember.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return GroupMember(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      uid: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}uid'])!,
+      groupId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}group_id'])!,
+      isNotify: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_notify'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['uid'] = Variable<String>(uid);
+    map['group_id'] = Variable<String>(groupId);
+    map['is_notify'] = Variable<bool>(isNotify);
+    return map;
+  }
+
+  GroupMembersCompanion toCompanion(bool nullToAbsent) {
+    return GroupMembersCompanion(
+      id: Value(id),
+      uid: Value(uid),
+      groupId: Value(groupId),
+      isNotify: Value(isNotify),
+    );
+  }
+
+  factory GroupMember.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return GroupMember(
+      id: serializer.fromJson<String>(json['id']),
+      uid: serializer.fromJson<String>(json['uid']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      isNotify: serializer.fromJson<bool>(json['isNotify']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'uid': serializer.toJson<String>(uid),
+      'groupId': serializer.toJson<String>(groupId),
+      'isNotify': serializer.toJson<bool>(isNotify),
+    };
+  }
+
+  GroupMember copyWith(
+          {String? id, String? uid, String? groupId, bool? isNotify}) =>
+      GroupMember(
+        id: id ?? this.id,
+        uid: uid ?? this.uid,
+        groupId: groupId ?? this.groupId,
+        isNotify: isNotify ?? this.isNotify,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('GroupMember(')
+          ..write('id: $id, ')
+          ..write('uid: $uid, ')
+          ..write('groupId: $groupId, ')
+          ..write('isNotify: $isNotify')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(uid.hashCode, $mrjc(groupId.hashCode, isNotify.hashCode))));
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GroupMember &&
+          other.id == this.id &&
+          other.uid == this.uid &&
+          other.groupId == this.groupId &&
+          other.isNotify == this.isNotify);
+}
+
+class GroupMembersCompanion extends UpdateCompanion<GroupMember> {
+  final Value<String> id;
+  final Value<String> uid;
+  final Value<String> groupId;
+  final Value<bool> isNotify;
+  const GroupMembersCompanion({
+    this.id = const Value.absent(),
+    this.uid = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.isNotify = const Value.absent(),
+  });
+  GroupMembersCompanion.insert({
+    required String id,
+    required String uid,
+    required String groupId,
+    required bool isNotify,
+  })  : id = Value(id),
+        uid = Value(uid),
+        groupId = Value(groupId),
+        isNotify = Value(isNotify);
+  static Insertable<GroupMember> custom({
+    Expression<String>? id,
+    Expression<String>? uid,
+    Expression<String>? groupId,
+    Expression<bool>? isNotify,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uid != null) 'uid': uid,
+      if (groupId != null) 'group_id': groupId,
+      if (isNotify != null) 'is_notify': isNotify,
+    });
+  }
+
+  GroupMembersCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? uid,
+      Value<String>? groupId,
+      Value<bool>? isNotify}) {
+    return GroupMembersCompanion(
+      id: id ?? this.id,
+      uid: uid ?? this.uid,
+      groupId: groupId ?? this.groupId,
+      isNotify: isNotify ?? this.isNotify,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (isNotify.present) {
+      map['is_notify'] = Variable<bool>(isNotify.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupMembersCompanion(')
+          ..write('id: $id, ')
+          ..write('uid: $uid, ')
+          ..write('groupId: $groupId, ')
+          ..write('isNotify: $isNotify')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GroupMembersTable extends GroupMembers
+    with TableInfo<$GroupMembersTable, GroupMember> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $GroupMembersTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _uidMeta = const VerificationMeta('uid');
+  late final GeneratedColumn<String?> uid = GeneratedColumn<String?>(
+      'uid', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
+  late final GeneratedColumn<String?> groupId = GeneratedColumn<String?>(
+      'group_id', aliasedName, false,
+      typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _isNotifyMeta = const VerificationMeta('isNotify');
+  late final GeneratedColumn<bool?> isNotify = GeneratedColumn<bool?>(
+      'is_notify', aliasedName, false,
+      typeName: 'INTEGER',
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (is_notify IN (0, 1))');
+  @override
+  List<GeneratedColumn> get $columns => [id, uid, groupId, isNotify];
+  @override
+  String get aliasedName => _alias ?? 'group_members';
+  @override
+  String get actualTableName => 'group_members';
+  @override
+  VerificationContext validateIntegrity(Insertable<GroupMember> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('uid')) {
+      context.handle(
+          _uidMeta, uid.isAcceptableOrUnknown(data['uid']!, _uidMeta));
+    } else if (isInserting) {
+      context.missing(_uidMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta));
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('is_notify')) {
+      context.handle(_isNotifyMeta,
+          isNotify.isAcceptableOrUnknown(data['is_notify']!, _isNotifyMeta));
+    } else if (isInserting) {
+      context.missing(_isNotifyMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GroupMember map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return GroupMember.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $GroupMembersTable createAlias(String alias) {
+    return $GroupMembersTable(_db, alias);
+  }
+}
+
 abstract class _$UcDatabase extends GeneratedDatabase {
   _$UcDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $ChatRecentsTable chatRecents = $ChatRecentsTable(this);
@@ -2075,6 +2772,8 @@ abstract class _$UcDatabase extends GeneratedDatabase {
   late final $FriendsTable friends = $FriendsTable(this);
   late final $PopsTable pops = $PopsTable(this);
   late final $FriendReqeustsTable friendReqeusts = $FriendReqeustsTable(this);
+  late final $GroupsTable groups = $GroupsTable(this);
+  late final $GroupMembersTable groupMembers = $GroupMembersTable(this);
   late final ChatMsgDao chatMsgDao = ChatMsgDao(this as UcDatabase);
   late final ChatRecentDao chatRecentDao = ChatRecentDao(this as UcDatabase);
   late final ChatUserDao chatUserDao = ChatUserDao(this as UcDatabase);
@@ -2082,11 +2781,21 @@ abstract class _$UcDatabase extends GeneratedDatabase {
   late final PopsDao popsDao = PopsDao(this as UcDatabase);
   late final FriendReqeustsDao friendReqeustsDao =
       FriendReqeustsDao(this as UcDatabase);
+  late final GroupDao groupDao = GroupDao(this as UcDatabase);
+  late final GroupMemberDao groupMemberDao = GroupMemberDao(this as UcDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [chatRecents, chatUsers, chatMsgs, friends, pops, friendReqeusts];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        chatRecents,
+        chatUsers,
+        chatMsgs,
+        friends,
+        pops,
+        friendReqeusts,
+        groups,
+        groupMembers
+      ];
 }
 
 // **************************************************************************
@@ -2110,4 +2819,10 @@ mixin _$PopsDaoMixin on DatabaseAccessor<UcDatabase> {
 }
 mixin _$FriendReqeustsDaoMixin on DatabaseAccessor<UcDatabase> {
   $FriendReqeustsTable get friendReqeusts => attachedDatabase.friendReqeusts;
+}
+mixin _$GroupDaoMixin on DatabaseAccessor<UcDatabase> {
+  $GroupsTable get groups => attachedDatabase.groups;
+}
+mixin _$GroupMemberDaoMixin on DatabaseAccessor<UcDatabase> {
+  $GroupMembersTable get groupMembers => attachedDatabase.groupMembers;
 }

@@ -28,6 +28,7 @@ class ImApi {
       if (res.data != null) {
         List list = res.data!["chatList"] ?? [];
         List? userList = res.data!["users"];
+        List? groupList = res.data!["groups"];
 
         res.res = [];
         ImDb.g().db.chatRecentDao.delAll();
@@ -41,6 +42,12 @@ class ImApi {
           for (var i = 0; i < userList.length; i++) {
             var user = ChatUser.fromJson(userList[i]);
             ImDb.g().db.chatUserDao.insertChatUser(user.toCompanion(false));
+          }
+        }
+        if (groupList != null) {
+          for (var json in groupList) {
+            var g = Group.fromJson(json);
+            ImDb.g().db.groupDao.insertGroup(g.toCompanion(true));
           }
         }
       }
@@ -133,5 +140,24 @@ class ImApi {
 
   static Future appStart(String token) async {
     return await Req.g().get(API.appStart, params: {"token": token});
+  }
+
+  static Future<List<Group>> groupInfo(List<String> groupIds) async {
+    var rsp = await Req.g()
+        .get(API.groupInfo, params: {"groupIds": groupIds.join(",")});
+    var res = RspDb<List<Group>>();
+    res.res = [];
+    if (rsp.data != null) {
+      res.fromJson(rsp.data);
+      if (res.data != null) {
+        List list = res.data!["groups"];
+        list.forEach((json) {
+          var g = Group.fromJson(json);
+          ImDb.g().db.groupDao.insertGroup(g.toCompanion(true));
+          res.res!.add(g);
+        });
+      }
+    }
+    return res.res!;
   }
 }

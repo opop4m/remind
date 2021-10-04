@@ -41,6 +41,8 @@ class ImDb {
   Friends,
   Pops,
   FriendReqeusts,
+  Groups,
+  GroupMembers,
 ], daos: [
   ChatMsgDao,
   ChatRecentDao,
@@ -48,6 +50,8 @@ class ImDb {
   FriendDao,
   PopsDao,
   FriendReqeustsDao,
+  GroupDao,
+  GroupMemberDao,
 ])
 class UcDatabase extends _$UcDatabase {
   // we tell the database where to store the data with this constructor
@@ -109,6 +113,31 @@ class ChatRecentDao extends DatabaseAccessor<UcDatabase>
       ])
       ..limit(limit, offset: offset);
     return q.get();
+  }
+
+  Stream<List<ChatRecent>> watchRecentList(int limit, int offset) {
+    var q = select(chatRecents)
+      ..orderBy([
+        (msg) =>
+            OrderingTerm(expression: msg.createTime, mode: OrderingMode.desc),
+      ])
+      ..limit(limit, offset: offset);
+    return q.watch();
+  }
+
+  Future refresh() {
+    Completer completer = Completer();
+    select(chatRecents)
+      ..limit(1)
+      ..getSingleOrNull().then((q) {
+        if (q != null) {
+          insertChat(q.toCompanion(true));
+        }
+        completer.complete();
+      }).catchError((onError) {
+        completer.complete();
+      });
+    return completer.future;
   }
 
   Future insertChat(ChatRecentsCompanion chat) {
@@ -226,10 +255,14 @@ class ChatUserDao extends DatabaseAccessor<UcDatabase> with _$ChatUserDaoMixin {
     return q.get();
   }
 
-  Future<List<ChatUser>> getAllChatUsers(List<String> uids) {
+  Future<List<ChatUser>> getAllChatUsers() {
     final q = select(chatUsers);
-    // q.where((tbl) => tbl.id.isIn(uids));
     return q.get();
+  }
+
+  Stream<List<ChatUser>> watchAllChatUsers() {
+    final q = select(chatUsers);
+    return q.watch();
   }
 
   Future insertChatUser(ChatUsersCompanion user) =>
@@ -293,5 +326,55 @@ class FriendReqeustsDao extends DatabaseAccessor<UcDatabase>
     return q.write(FriendReqeustsCompanion(
       status: Value(status),
     ));
+  }
+}
+
+@UseDao(tables: [Groups])
+class GroupDao extends DatabaseAccessor<UcDatabase> with _$GroupDaoMixin {
+  GroupDao(UcDatabase attachedDatabase) : super(attachedDatabase);
+
+  Future insertGroup(GroupsCompanion group) =>
+      into(groups).insertOnConflictUpdate(group);
+
+  Future delGroup(String groupId) {
+    var q = delete(groups);
+    q.where((tbl) => tbl.id.equals(groupId));
+    return q.go();
+  }
+
+  Future<Group?> getGroup(String groupId) {
+    var q = select(groups);
+    q.where((tbl) => tbl.id.equals(groupId));
+    return q.getSingleOrNull();
+  }
+
+  Future<List<Group>> queryAllGroup() => select(groups).get();
+  Stream<List<Group>> watchAllGroup() => select(groups).watch();
+}
+
+@UseDao(tables: [GroupMembers])
+class GroupMemberDao extends DatabaseAccessor<UcDatabase>
+    with _$GroupMemberDaoMixin {
+  GroupMemberDao(UcDatabase attachedDatabase) : super(attachedDatabase);
+
+  Future insertGroupMember(GroupMembersCompanion mem) =>
+      into(groupMembers).insertOnConflictUpdate(mem);
+
+  Future<List<GroupMember>> queryGroupMember(String groupId) {
+    var q = select(groupMembers);
+    q.where((tbl) => tbl.groupId.equals(groupId));
+    return q.get();
+  }
+
+  Future delGroup(String groupId) {
+    var q = delete(groupMembers);
+    q.where((tbl) => tbl.groupId.equals(groupId));
+    return q.go();
+  }
+
+  Future delGroupMember(String id) {
+    var q = delete(groupMembers);
+    q.where((tbl) => tbl.id.equals(id));
+    return q.go();
   }
 }

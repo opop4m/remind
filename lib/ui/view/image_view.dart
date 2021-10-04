@@ -1,6 +1,6 @@
 import 'package:client/tools/utils.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:client/tools/library.dart';
 
 class ImageView extends StatelessWidget {
@@ -30,12 +30,21 @@ class ImageView extends StatelessWidget {
         cacheManager: cacheManager,
       );
     } else if (isAssetsImg(img)) {
-      image = new Image.asset(
-        img,
-        width: width,
-        height: height,
-        fit: width != null && height != null ? BoxFit.fill : fit,
-      );
+      if (isAssetsSvg(img)) {
+        image = SvgPicture.asset(
+          img,
+          // semanticsLabel: 'avatar',
+          width: width,
+          height: height,
+        );
+      } else {
+        image = new Image.asset(
+          img,
+          width: width,
+          height: height,
+          fit: width != null && height != null ? BoxFit.fill : fit,
+        );
+      }
     } else if (!PlatformUtils.isWeb && File(img).existsSync()) {
       image = new Image.file(
         File(img),

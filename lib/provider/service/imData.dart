@@ -7,6 +7,7 @@ import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/provider/service/imApi.dart';
+import 'package:client/provider/service/imGroupData.dart';
 import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/tools/utils.dart';
@@ -24,6 +25,7 @@ const actFriendRequest = "friendReqeust";
 const actAllriendRequest = "allFriendReqeust";
 const actReplyFriendRequest = "replyFriendRequest";
 const actSyncChat = "syncChat";
+const actCreateGroup = "createGroup";
 
 class ImData {
   static ImData? _instance;
@@ -56,6 +58,8 @@ class ImData {
       }
     });
   }
+
+  ImGroupData groupData = ImGroupData();
 
   void dispatch(String topic, res) {
     var tb = parserTopic(topic);
@@ -91,6 +95,9 @@ class ImData {
         break;
       case actSyncChat:
         onSyncChatLog(tb, res);
+        break;
+      case actCreateGroup:
+        groupData.onCreateGroup(tb, res);
         break;
     }
   }
@@ -192,11 +199,14 @@ class ImData {
     ChatMsg msg = ChatMsg.fromJson(data);
     ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
     onNewRecent(msg);
+    String pageKey;
     if (msg.type == typePerson) {
-      String pageKey = "${typePerson}-" + msg.fromId;
-      if (UcNavigation.curPage.endsWith(pageKey)) {
-        readMsg(msg.fromId, Utils.getTimestampSecond());
-      }
+      pageKey = Im.routeKey(msg.fromId, typePerson);
+    } else {
+      pageKey = Im.routeKey(msg.peerId, typeGroup);
+    }
+    if (UcNavigation.curPage.endsWith(pageKey)) {
+      readMsg(msg.fromId, Utils.getTimestampSecond());
     }
 
     // Notice.send(UcActions.newMsg(), msg);
@@ -206,22 +216,35 @@ class ImData {
     var jsonMsg = msg.toJson();
     var my = Global.get().curUser;
     jsonMsg["targetId"] = msg.peerId;
-    if (my.id == msg.peerId) {
-      jsonMsg["targetId"] = msg.fromId;
+    if (msg.type == typePerson) {
+      if (my.id == msg.peerId) {
+        jsonMsg["targetId"] = msg.fromId;
+      }
     }
+
     var recent = ChatRecent.fromJson(jsonMsg);
+    _log.info("onNewRecent 1.0");
     ImDb.g()
         .db
         .chatRecentDao
         .insertChat(recent.toCompanion(true))
         .then((value) => Notice.send(UcActions.recentList()));
-    ImDb.g().db.chatUserDao.getChatUsers([jsonMsg["targetId"]]).then((value) {
-      if (value.length == 0) {
-        Im.get().requestSystem(API.actChatUser, {
-          "uids": [jsonMsg["targetId"]]
-        });
-      }
-    });
+    _log.info("onNewRecent 1.1");
+    if (msg.type == typePerson) {
+      ImDb.g().db.chatUserDao.getChatUsers([jsonMsg["targetId"]]).then((value) {
+        if (value.length == 0) {
+          Im.get().requestSystem(API.actChatUser, {
+            "uids": [jsonMsg["targetId"]]
+          });
+        }
+      });
+    } else {
+      ImDb.g().db.groupDao.getGroup(jsonMsg["targetId"]).then((g) {
+        if (g == null) {
+          ImApi.groupInfo([jsonMsg["targetId"]]);
+        }
+      });
+    }
   }
 
   Stream<List<ChatMsg>> getChatList(String peerId, int type, int offset) {
@@ -235,27 +258,96 @@ class ImData {
     return res;
   }
 
-  Future<List<ChatRecentBean>> getRecentList({bool update = false}) async {
-    List<ChatRecentBean> res = [];
-    List<ChatRecent> list =
-        await ImDb.g().db.chatRecentDao.getRecentList(100, 0);
+  // Future<List<ChatRecentBean>> getRecentList({bool update = false}) async {
+  //   List<ChatRecentBean> res = [];
+  //   List<ChatRecent> list =
+  //       await ImDb.g().db.chatRecentDao.getRecentList(100, 0);
 
-    List<String> reqList = [];
-    if (list.length > 0) {
-      list.forEach((recent) {
-        // addUnique2list(reqList, recent.fromId);
-        addUnique2list(reqList, recent.targetId);
-      });
-      var uMap = await getChatUsers(reqList);
-      list.forEach((recent) {
-        var bean = ChatRecentBean(recent, uMap[recent.targetId]!);
-        res.add(bean);
-      });
+  //   List<String> reqList = [];
+  //   if (list.length > 0) {
+  //     list.forEach((recent) {
+  //       // addUnique2list(reqList, recent.fromId);
+  //       if (recent.type == typePerson) addUnique2list(reqList, recent.targetId);
+  //     });
+  //     var uMap = await getChatUsers(reqList);
+  //     list.forEach((recent) {
+  //       var bean = ChatRecentBean(recent, user: uMap[recent.targetId]!);
+  //       res.add(bean);
+  //     });
+  //   }
+  //   if (update)
+  //     ImApi.requestRecentList()
+  //         .then((value) => {Notice.send(UcActions.recentList())});
+  //   return res;
+  // }
+
+  StreamSubscription? _subChatUser, _subGroup;
+
+  Stream<Future<List<ChatRecentBean>>> watchRecentList({bool update = false}) {
+    _subGroup?.cancel();
+    _subGroup = ImDb.g().db.groupDao.watchAllGroup().listen((event) {
+      ImDb.g().db.chatRecentDao.refresh();
+    });
+    _subChatUser?.cancel();
+    _subChatUser = ImDb.g().db.chatUserDao.watchAllChatUsers().listen((event) {
+      ImDb.g().db.chatRecentDao.refresh();
+    });
+    var ret =
+        ImDb.g().db.chatRecentDao.watchRecentList(100, 0).map((list) async {
+      _log.info("watchRecentList: " + jsonEncode(list));
+      List<ChatRecentBean> res = [];
+      List<String> reqList = [];
+      List<String> reqGroupList = [];
+      if (list.length > 0) {
+        list.forEach((recent) {
+          // addUnique2list(reqList, recent.fromId);
+          if (recent.type == typePerson)
+            addUnique2list(reqList, recent.targetId);
+          else
+            addUnique2list(reqGroupList, recent.targetId);
+        });
+        var uMap = await getChatUsers(reqList);
+        var gMap = await getChatGroups(reqGroupList);
+        list.forEach((recent) {
+          var bean = ChatRecentBean(recent);
+          if (recent.type == typePerson) {
+            bean.user = uMap[recent.targetId]!;
+          } else {
+            bean.group = gMap[recent.targetId]!;
+          }
+          res.add(bean);
+        });
+      }
+      if (update)
+        ImApi.requestRecentList()
+            .then((value) => {Notice.send(UcActions.recentList())});
+      return res;
+    });
+    return ret;
+  }
+
+  Future<Map<String, Group>> getChatGroups(List<String> reqGroupList) async {
+    List<Group> list = await ImDb.g().db.groupDao.queryAllGroup();
+    Map<String, Group> res = {};
+    list.forEach((group) {
+      res[group.id] = group;
+    });
+    List<String> updateId = [];
+    reqGroupList.forEach((id) {
+      if (res[id] == null) {
+        res[id] = Group(
+            id: id,
+            uid: Global.get().curUser.id,
+            name: "loading...",
+            memberCount: 1,
+            isDeleted: false,
+            createTime: 0);
+        updateId.add(id);
+      }
+    });
+    if (updateId.length > 0) {
+      ImApi.groupInfo(updateId);
     }
-
-    if (update)
-      ImApi.requestRecentList()
-          .then((value) => {Notice.send(UcActions.recentList())});
     return res;
   }
 

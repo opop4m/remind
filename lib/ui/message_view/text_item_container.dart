@@ -74,8 +74,7 @@ class TextItemContainer2 extends StatelessWidget {
         pressType: PressType.longPress,
         actions: ['复制', '转发', '收藏', '撤回', '删除'],
         child: ExtendedText(
-          text +
-              (isMyself ? "            ".joinChar() : "          ".joinChar()),
+          text + (isMyself ? "          ".joinChar() : "          ".joinChar()),
           maxLines: 99,
           overflow: TextOverflow.visible,
           specialTextSpanBuilder: _spanBuilder,

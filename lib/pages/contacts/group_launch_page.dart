@@ -1,4 +1,5 @@
 import 'package:client/config/dictionary.dart';
+import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils.dart';
@@ -15,31 +16,19 @@ class GroupLaunchPage extends StatefulWidget {
 }
 
 class _GroupLaunchPageState extends State<GroupLaunchPage> {
-  bool isSearch = false;
-  bool showBtn = false;
-  bool isResult = false;
+  // bool isSearch = false;
+  // bool showBtn = false;
+  // bool isResult = false;
 
-  List defItems = ['选择一个群', '面对面建群'];
+  // List defItems = ['选择一个群', '面对面建群'];
   List<Friend> _contacts = [];
   List<String> selectData = [];
 
-  FocusNode searchF = new FocusNode();
-  TextEditingController searchC = new TextEditingController();
+  // FocusNode searchF = new FocusNode();
+  // TextEditingController searchC = new TextEditingController();
   late ScrollController sC;
 
   final Map _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
-
-  List<Widget> searchBody() {
-    if (isResult) {
-      return [
-        new Space(height: mainSpace),
-      ];
-    } else {
-      return [
-        new Space(height: mainSpace),
-      ];
-    }
-  }
 
   @override
   void initState() {
@@ -51,13 +40,6 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
   void dispose() {
     super.dispose();
     _sub.cancel();
-  }
-
-  unFocusMethod() {
-    searchF.unfocus();
-    isSearch = false;
-    if (isResult) isResult = !isResult;
-    setState(() {});
   }
 
   late StreamSubscription<List<Friend>> _sub;
@@ -85,35 +67,22 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
     sC = new ScrollController();
   }
 
-  // 搜索好友
-  Future search(String userName) async {
-    // final data = await getUsersProfile([userName]);
-    // List<dynamic> dataMap = json.decode(data);
-    // if (strNoEmpty(dataMap[0]['allowType'])) {
-    //   routePush(
-    //     new AddFriendsDetails(
-    //       'search',
-    //       dataMap[0]['identifier'],
-    //       dataMap[0]['faceUrl'],
-    //       dataMap[0]['nickName'],
-    //       dataMap[0]['gender'],
-    //     ),
-    //   );
-    // } else {
-    //   isResult = true;
-    //   setState(() {});
-    // }
-  }
+  TextEditingController groupNameC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     List<Widget> body() {
       return [
-        new Space(height: 50.0),
-        new Container(
-          child: new Column(
-            children:
-                defItems.map((item) => new LaunchGroupItem(item)).toList(),
+        Padding(
+          padding: EdgeInsets.only(left: 5, right: 5),
+          child: TextFormField(
+            controller: groupNameC,
+            // onChanged: (String text) {},
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              labelText: '群名称',
+              labelStyle: TextStyle(color: Colors.grey),
+            ),
           ),
         ),
         new Expanded(
@@ -136,10 +105,6 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
       margin: EdgeInsets.all(10.0),
       radius: 4.0,
       onTap: () {
-        if (PlatformUtils.isIOS) {
-          showToast('IOS暂不支持发起群聊');
-          return;
-        }
         // createGroupChat(selectData, name: selectData.join(),
         //     callback: (callBack) {
         //   if (callBack.toString().contains('succ')) {
@@ -149,7 +114,20 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
         //     }
         //   }
         // });
-        showToast('当前ID：${selectData.toString()}');
+        var name = groupNameC.text;
+        if (!strNoEmpty(name)) {
+          showToast("群名称不可为空");
+          return;
+        }
+
+        // showToast('当前ID：${selectData.toString()}');
+
+        var params = {
+          "name": name,
+          "uids": selectData,
+        };
+        Im.get().requestSystem(actCreateGroup, params);
+        Navigator.of(context).pop();
       },
     );
 
@@ -157,57 +135,12 @@ class _GroupLaunchPageState extends State<GroupLaunchPage> {
       child: new Scaffold(
         backgroundColor: appBarColor,
         appBar: new ComMomBar(title: '发起群聊', rightDMActions: <Widget>[rWidget]),
-        body: new Stack(
-          children: <Widget>[
-            new MainInputBody(
-              child: isSearch
-                  ? new GestureDetector(
-                      child: new Column(children: searchBody()),
-                      onTap: () => unFocusMethod(),
-                    )
-                  : new Column(children: body()),
-              onTap: () => unFocusMethod(),
-            ),
-            new Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
-                border: Border(
-                  bottom: BorderSide(
-                      color: isSearch ? Colors.green : lineColor, width: 0.3),
-                ),
-              ),
-              width: winWidth(context),
-              alignment: Alignment.center,
-              height: 50.0,
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: new LaunchSearch(
-                searchC: searchC,
-                searchF: searchF,
-                onChanged: (txt) {
-                  if (strNoEmpty(searchC.text))
-                    showBtn = true;
-                  else
-                    showBtn = false;
-                  if (isResult) isResult = false;
-
-                  setState(() {});
-                },
-                onTap: () {
-                  setState(() => isSearch = true);
-                },
-                onSubmitted: (txt) => search(txt),
-                delOnTap: () => setState(() {}),
-              ),
-            )
-          ],
+        body: new Column(
+          children: body(),
         ),
       ),
       onWillPop: () async {
-        if (isSearch) {
-          unFocusMethod();
-        } else {
-          Navigator.pop(context);
-        }
+        Navigator.pop(context);
         return true;
       },
     );

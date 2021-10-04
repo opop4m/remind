@@ -31,6 +31,7 @@ const itemOnColor = Color.fromRGBO(68, 68, 68, 1.0);
 const btTextColor = Color.fromRGBO(112, 113, 135, 1.0);
 
 const defIcon = 'assets/images/def_avatar.png';
+const defGroupIcon = 'assets/images/group/chat_group.svg';
 
 const contactAssets = 'assets/images/contact/';
 

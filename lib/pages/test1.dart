@@ -4,6 +4,7 @@ import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/ui/dialog/inputDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -52,72 +53,93 @@ class _test extends State<Test> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextFormField(
-          controller: inputC,
-          onChanged: (String text) {},
-          decoration: InputDecoration(
-              border: UnderlineInputBorder(), labelText: 'Enter your uid'),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
+    return Container(
+      decoration: BoxDecoration(color: appBarColor),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: inputC,
+            onChanged: (String text) {},
+            decoration: InputDecoration(
+                border: UnderlineInputBorder(), labelText: 'Enter your uid'),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                onPressed: () => event("test"),
+                child: Text("test"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                onPressed: () => event("badge"),
+                child: Text("badge"),
+              ),
+              ElevatedButton(
+                onPressed: () => event("showLoading"),
+                child: Text("showLoading"),
+              ),
+              ElevatedButton(
+                onPressed: () => event("dismissLoading"),
+                child: Text("dismissLoading"),
+              ),
+            ],
+          ),
+          Text('proximity sensor, is near ?  $_isNear\n'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                onPressed: () => event("start"),
+                child: Text("start ProximitySensor"),
+              ),
+              ElevatedButton(
+                onPressed: () => event("end"),
+                child: Text("end ProximitySensor"),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () => event("sub"),
+                child: Text("sub"),
+              ),
+              ElevatedButton(
+                onPressed: () => event("subCancel"),
+                child: Text("subCancel"),
+              ),
+              ElevatedButton(
+                onPressed: () => event("send"),
+                child: Text("send"),
+              ),
+            ],
+          ),
+          Row(children: [
             ElevatedButton(
-              onPressed: () => event("test"),
-              child: Text("test"),
+              onPressed: () => _showInputDialog(context),
+              child: Text("showInputDialog"),
             ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ElevatedButton(
-              onPressed: () => event("badge"),
-              child: Text("badge"),
-            ),
-            ElevatedButton(
-              onPressed: () => event("showLoading"),
-              child: Text("showLoading"),
-            ),
-            ElevatedButton(
-              onPressed: () => event("dismissLoading"),
-              child: Text("dismissLoading"),
-            ),
-          ],
-        ),
-        Text('proximity sensor, is near ?  $_isNear\n'),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ElevatedButton(
-              onPressed: () => event("start"),
-              child: Text("start ProximitySensor"),
-            ),
-            ElevatedButton(
-              onPressed: () => event("end"),
-              child: Text("end ProximitySensor"),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () => event("sub"),
-              child: Text("sub"),
-            ),
-            ElevatedButton(
-              onPressed: () => event("subCancel"),
-              child: Text("subCancel"),
-            ),
-            ElevatedButton(
-              onPressed: () => event("send"),
-              child: Text("send"),
-            ),
-          ],
-        )
-      ],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  OverlayEntry? _dialog;
+  void _showInputDialog(BuildContext ctx) {
+    _dialog = showInputDialog(
+      context,
+      "label",
+      "hint",
+      cb: (status) {
+        _dialog?.remove();
+      },
     );
   }
 

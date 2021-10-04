@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/model/chatBean.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
 // import 'package:client/provider/model/chatList.dart';
 // import 'package:client/provider/model/chat_list.dart';
-import 'package:client/provider/service/im.dart';
-import 'package:client/provider/service/imApi.dart';
+
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/utils.dart';
@@ -32,6 +35,7 @@ class _HomePageState extends State<HomePage>
   var tapPos;
   TextSpanBuilder _builder = TextSpanBuilder();
   StreamSubscription<dynamic>? _messageStreamSubscription;
+  StreamSubscription? _subRecent;
 
   @override
   void initState() {
@@ -43,21 +47,28 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getChatData() async {
-    _chatData = await ImData.get().getRecentList(update: false);
-    Notice.addListener(UcActions.recentList(), (data) {
-      // _log.info("notice recentList");
-      ImData.get().getRecentList().then((value) async {
-        _chatData = await ImData.get().getRecentList();
-        if (mounted) setState(() {});
-      });
-    });
-    Notice.addListener(UcActions.chatUser(), (data) async {
-      // _log.info("notice chatUser");
-      _chatData = await ImData.get().getRecentList();
+    _subRecent = ImData.get().watchRecentList().listen((futrue) async {
+      _chatData = await futrue;
+      if (_chatData.length == 0) return;
       if (mounted) setState(() {});
     });
+
+    // _chatData = await ImData.get().getRecentList(update: false);
+    // Notice.addListener(UcActions.recentList(), (data) {
+    //   // _log.info("notice recentList");
+    //   ImData.get().getRecentList().then((value) async {
+    //     _chatData = await ImData.get().getRecentList();
+    //     if (mounted) setState(() {});
+    //   });
+    // });
+    // Notice.addListener(UcActions.chatUser(), (data) async {
+    //   // _log.info("notice chatUser");
+    //   _chatData = await ImData.get().getRecentList();
+    //   if (mounted) setState(() {});
+    // });
     _popSub = ImData.get().getUnread().listen((event) {
       _pop = event;
+      // _log.info("getUnread: " + jsonEncode(event));
       if (mounted) setState(() {});
     });
 
@@ -105,6 +116,7 @@ class _HomePageState extends State<HomePage>
 
   void canCelListener() {
     _popSub?.cancel();
+    _subRecent?.cancel();
     _messageStreamSubscription?.cancel();
   }
 
@@ -146,10 +158,15 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  int _c = 0;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     if (!listNoEmpty(_chatData)) return new HomeNullView();
+    _c++;
+    _log.info("build count: $_c,list: " + jsonEncode(_chatData[0].recent));
     return new Container(
       color: Color(AppColors.BackgroundColor),
       child: new ScrollConfiguration(
@@ -158,13 +175,24 @@ class _HomePageState extends State<HomePage>
           itemBuilder: (BuildContext context, int index) {
             ChatRecentBean bean = _chatData[index];
             ChatRecent msg = bean.recent;
-            ChatUser u = bean.user;
-            var key = u.id + "_" + msg.type.toString();
+            String key = Im.routeKey(bean.recent.targetId, msg.type);
+            String imageUrl, name;
+            if (msg.type == typePerson) {
+              ChatUser u = bean.user!;
+              imageUrl = getAvatarUrl(u.avatar);
+              name = u.name;
+            } else {
+              Group group = bean.group!;
+              imageUrl = getGroupAvatarUrl(group.avatar);
+              name = group.name;
+            }
+
             int unread = _pop[key] ?? 0;
             return InkWell(
               onTap: () {
-                String key = "${msg.type}-" + u.id;
-                routePush(new ChatPage(id: u.id, title: u.name, type: msg.type),
+                routePush(
+                    new ChatPage(
+                        id: bean.recent.targetId, title: name, type: msg.type),
                     arguments: key);
               },
               onTapDown: (TapDownDetails details) {
@@ -172,17 +200,17 @@ class _HomePageState extends State<HomePage>
               },
               onLongPress: () {
                 if (PlatformUtils.isAndroid) {
-                  _showMenu(context, tapPos, msg.type, u.id);
+                  _showMenu(context, tapPos, msg.type, bean.recent.targetId);
                 } else {
                   debugPrint("IOS聊天长按选项功能开发中");
                 }
               },
               child: new MyConversationView(
-                imageUrl: getAvatarUrl(u.avatar),
-                title: u.name,
+                imageUrl: imageUrl,
+                title: name,
                 msg: msg,
                 time: timeView(msg.createTime),
-                isBorder: u.id != _chatData[0].recent.fromId,
+                isBorder: msg.msgId != _chatData[0].recent.msgId,
                 unread: unread,
               ),
             );
@@ -197,8 +225,8 @@ class _HomePageState extends State<HomePage>
   void dispose() {
     super.dispose();
     _log.info("dispose");
-    Notice.removeListenerByEvent(UcActions.chatUser());
-    Notice.removeListenerByEvent(UcActions.recentList());
+    // Notice.removeListenerByEvent(UcActions.chatUser());
+    // Notice.removeListenerByEvent(UcActions.recentList());
     canCelListener();
   }
 }

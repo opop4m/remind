@@ -29,6 +29,7 @@ class MyConversationView extends StatefulWidget {
 class _MyConversationViewState extends State<MyConversationView> {
   @override
   Widget build(BuildContext context) {
+    print("build pop: " + widget.unread.toString());
     var row = new Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[

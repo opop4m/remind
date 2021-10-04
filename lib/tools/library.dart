@@ -36,6 +36,7 @@ import 'dart:ui';
 
 import 'package:client/config/api.dart';
 import 'package:client/config/const.dart';
+import 'package:client/tools/check.dart';
 import 'package:connectivity/connectivity.dart';
 // import 'package:dim/dim.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -65,4 +66,11 @@ String getAvatarUrl(String? imgPath) {
     return defIcon;
   }
   return API.fileHost + imgPath;
+}
+
+String getGroupAvatarUrl(String? imgPath) {
+  if (!strNoEmpty(imgPath)) {
+    return defGroupIcon;
+  }
+  return API.fileHost + imgPath!;
 }

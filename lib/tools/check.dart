@@ -82,6 +82,10 @@ bool isAssetsImg(String img) {
   return img.startsWith('asset') || img.startsWith('assets');
 }
 
+bool isAssetsSvg(String img) {
+  return img.endsWith(".svg");
+}
+
 double getMemoryImageCashe() {
   return PaintingBinding.instance!.imageCache!.maximumSize / 1000;
 }

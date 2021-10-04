@@ -2,9 +2,10 @@ import 'package:client/provider/service/imDb.dart';
 
 class ChatRecentBean {
   ChatRecent recent;
-  ChatUser user;
+  ChatUser? user;
+  Group? group;
 
-  ChatRecentBean(this.recent, this.user);
+  ChatRecentBean(this.recent, {this.user, this.group});
 }
 
 class SyncChat {

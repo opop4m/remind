@@ -145,9 +145,9 @@ class Im {
   }
 
   void sendChatMsg(ChatMsg msg) {
-    String topic = topicP2P + msg.peerId + "/chat/${msg.msgId}";
+    String topic = topicP2P + msg.peerId + "/$actChat/${msg.msgId}";
     if (msg.type == typeGroup) {
-      topic = topicGroup + msg.peerId;
+      topic = topicGroup + msg.peerId + "/$actChat/${msg.msgId}";
     }
     // ImData.get().onNewRecent(msg);
     // var data = {"act": "chat", "data": msg};
@@ -193,7 +193,7 @@ class Im {
 
   void disConnect() {
     print("disConnect");
-    reconnect = false;
+    hasInit = reconnect = false;
     MqttLib.get().disconnect();
   }
 
@@ -204,7 +204,10 @@ class Im {
     return newId;
   }
 
+  bool hasInit = false;
   void initData() async {
+    if (hasInit) return;
+    hasInit = true;
     Im.get().requestSystem(actAllriendRequest, {});
     // Im.get().requestSystem(actChatAllPop, {});
     //1, 最近的聊天列表。 2，检查列表的聊天记录。
@@ -228,5 +231,10 @@ class Im {
     }
     if (chatReq.chatList.length > 0)
       Im.get().requestSystem(actSyncChat, chatReq.toJson());
+  }
+
+  static String routeKey(String targetId, int type) {
+    String key = type.toString() + "-" + targetId;
+    return key;
   }
 }

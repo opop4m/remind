@@ -1,10 +1,11 @@
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:client/provider/global_model.dart';
 
 class JoinMessage extends StatelessWidget {
-  final dynamic data;
+  final ChatMsg data;
 
   JoinMessage(this.data);
 
@@ -16,15 +17,7 @@ class JoinMessage extends StatelessWidget {
       alignment: Alignment.center,
       margin: EdgeInsets.symmetric(vertical: 5.0),
       child: new Text(
-        data['changedGroupMemberInfo'].toString().substring(
-                    data['changedGroupMemberInfo'].toString().indexOf('{') + 1,
-                    data['changedGroupMemberInfo'].toString().indexOf(':')) ==
-                Global.get().curUser.nickName
-            ? '你 加入了群聊'
-            : data['changedGroupMemberInfo'].toString().substring(
-                    data['changedGroupMemberInfo'].toString().indexOf('{') + 1,
-                    data['changedGroupMemberInfo'].toString().indexOf(':')) +
-                ' 加入了群聊',
+        data.content!,
         style:
             TextStyle(color: Color.fromRGBO(108, 108, 108, 0.8), fontSize: 11),
       ),
