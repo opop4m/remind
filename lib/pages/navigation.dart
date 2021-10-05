@@ -47,6 +47,7 @@ class UcNavigation extends NavigatorObserver {
     if (route.settings.name == null) {
       return;
     }
+    _log.info("1.0");
     var name = route.settings.name!;
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
@@ -55,6 +56,7 @@ class UcNavigation extends NavigatorObserver {
       name += "-" + route.settings.arguments.toString();
     }
     curPage = name;
+    _log.info("1.1");
     Im.get().requestSystem(actOnline, {}, msgId: name);
   }
 }

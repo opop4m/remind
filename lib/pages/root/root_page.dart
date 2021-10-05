@@ -54,7 +54,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     initChat().then((value) {
       _popNewFriendSub =
           ImDb.g().db.popsDao.queryFriendPopSum().listen((event) {
-        _log.info(" Friend pop: $event");
+        _log.info("new friend pop: $event");
         friendPopSum = event ?? 0;
         if (mounted) setState(() {});
       });

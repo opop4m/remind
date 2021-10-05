@@ -175,6 +175,7 @@ class _HomePageState extends State<HomePage>
             }
 
             int unread = _pop[key] ?? 0;
+            // _log.info("key: $key");
             return InkWell(
               onTap: () {
                 routePush(

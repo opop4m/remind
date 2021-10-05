@@ -121,13 +121,7 @@ class ImApi {
         if (list != null) {
           res.res = [];
           for (var i = 0; i < list.length; i++) {
-            var fJson = list[i];
-            if (strNoEmpty(fJson["alias"])) {
-              fJson["name"] = fJson["alias"];
-            } else {
-              fJson["name"] = fJson["nickname"];
-            }
-            fJson["nameIndex"] = PinyinHelper.getFirstWordPinyin(fJson["name"]);
+            var fJson = parserFriendName(list[i]);
             var friend = Friend.fromJson(fJson);
             ImDb.g().db.friendDao.insertFriend(friend.toCompanion(true));
             res.res!.add(friend);
@@ -136,6 +130,16 @@ class ImApi {
       }
     }
     return res;
+  }
+
+  static Map<String, dynamic> parserFriendName(Map<String, dynamic> fJson) {
+    if (strNoEmpty(fJson["alias"])) {
+      fJson["name"] = fJson["alias"];
+    } else {
+      fJson["name"] = fJson["nickname"];
+    }
+    fJson["nameIndex"] = PinyinHelper.getFirstWordPinyin(fJson["name"]);
+    return fJson;
   }
 
   static Future appStart(String token) async {

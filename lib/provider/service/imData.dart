@@ -24,6 +24,7 @@ const actOnline = "online";
 const actFriendRequest = "friendReqeust";
 const actAllriendRequest = "allFriendReqeust";
 const actReplyFriendRequest = "replyFriendRequest";
+const actFriendUpdate = "friendUpdate";
 const actSyncChat = "syncChat";
 const actCreateGroup = "createGroup";
 
@@ -99,6 +100,21 @@ class ImData {
       case actCreateGroup:
         groupData.onCreateGroup(tb, res);
         break;
+      case actFriendUpdate:
+        onFriendUpdate(tb, res);
+        break;
+    }
+  }
+
+  void onFriendUpdate(TopicBean tb, data) async {
+    Map map = data;
+    if (map["event"] == "update") {
+      List list = map["list"];
+      list.forEach((json) {
+        var fJson = ImApi.parserFriendName(json);
+        var friend = Friend.fromJson(fJson);
+        ImDb.g().db.friendDao.insertFriend(friend.toCompanion(true));
+      });
     }
   }
 
@@ -414,6 +430,7 @@ class ImData {
 
   Stream getUnread() {
     Stream s = ImDb.g().db.popsDao.queryAll().map((list) {
+      _log.info("list pop: " + jsonEncode(list));
       var res = Map<String, int>();
       for (var i = 0; i < list.length; i++) {
         var pop = list[i];
