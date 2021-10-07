@@ -476,7 +476,7 @@ class $ChatRecentsTable extends ChatRecents
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {targetId, type};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   ChatRecent map(Map<String, dynamic> data, {String? tablePrefix}) {
     return ChatRecent.fromData(data, _db,
@@ -2521,12 +2521,12 @@ class GroupMember extends DataClass implements Insertable<GroupMember> {
   final String id;
   final String uid;
   final String groupId;
-  final bool isNotify;
+  final bool? isNotify;
   GroupMember(
       {required this.id,
       required this.uid,
       required this.groupId,
-      required this.isNotify});
+      this.isNotify});
   factory GroupMember.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -2538,7 +2538,7 @@ class GroupMember extends DataClass implements Insertable<GroupMember> {
       groupId: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}group_id'])!,
       isNotify: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_notify'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_notify']),
     );
   }
   @override
@@ -2547,7 +2547,9 @@ class GroupMember extends DataClass implements Insertable<GroupMember> {
     map['id'] = Variable<String>(id);
     map['uid'] = Variable<String>(uid);
     map['group_id'] = Variable<String>(groupId);
-    map['is_notify'] = Variable<bool>(isNotify);
+    if (!nullToAbsent || isNotify != null) {
+      map['is_notify'] = Variable<bool?>(isNotify);
+    }
     return map;
   }
 
@@ -2556,7 +2558,9 @@ class GroupMember extends DataClass implements Insertable<GroupMember> {
       id: Value(id),
       uid: Value(uid),
       groupId: Value(groupId),
-      isNotify: Value(isNotify),
+      isNotify: isNotify == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isNotify),
     );
   }
 
@@ -2567,7 +2571,7 @@ class GroupMember extends DataClass implements Insertable<GroupMember> {
       id: serializer.fromJson<String>(json['id']),
       uid: serializer.fromJson<String>(json['uid']),
       groupId: serializer.fromJson<String>(json['groupId']),
-      isNotify: serializer.fromJson<bool>(json['isNotify']),
+      isNotify: serializer.fromJson<bool?>(json['isNotify']),
     );
   }
   @override
@@ -2577,7 +2581,7 @@ class GroupMember extends DataClass implements Insertable<GroupMember> {
       'id': serializer.toJson<String>(id),
       'uid': serializer.toJson<String>(uid),
       'groupId': serializer.toJson<String>(groupId),
-      'isNotify': serializer.toJson<bool>(isNotify),
+      'isNotify': serializer.toJson<bool?>(isNotify),
     };
   }
 
@@ -2617,7 +2621,7 @@ class GroupMembersCompanion extends UpdateCompanion<GroupMember> {
   final Value<String> id;
   final Value<String> uid;
   final Value<String> groupId;
-  final Value<bool> isNotify;
+  final Value<bool?> isNotify;
   const GroupMembersCompanion({
     this.id = const Value.absent(),
     this.uid = const Value.absent(),
@@ -2628,16 +2632,15 @@ class GroupMembersCompanion extends UpdateCompanion<GroupMember> {
     required String id,
     required String uid,
     required String groupId,
-    required bool isNotify,
+    this.isNotify = const Value.absent(),
   })  : id = Value(id),
         uid = Value(uid),
-        groupId = Value(groupId),
-        isNotify = Value(isNotify);
+        groupId = Value(groupId);
   static Insertable<GroupMember> custom({
     Expression<String>? id,
     Expression<String>? uid,
     Expression<String>? groupId,
-    Expression<bool>? isNotify,
+    Expression<bool?>? isNotify,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2651,7 +2654,7 @@ class GroupMembersCompanion extends UpdateCompanion<GroupMember> {
       {Value<String>? id,
       Value<String>? uid,
       Value<String>? groupId,
-      Value<bool>? isNotify}) {
+      Value<bool?>? isNotify}) {
     return GroupMembersCompanion(
       id: id ?? this.id,
       uid: uid ?? this.uid,
@@ -2673,7 +2676,7 @@ class GroupMembersCompanion extends UpdateCompanion<GroupMember> {
       map['group_id'] = Variable<String>(groupId.value);
     }
     if (isNotify.present) {
-      map['is_notify'] = Variable<bool>(isNotify.value);
+      map['is_notify'] = Variable<bool?>(isNotify.value);
     }
     return map;
   }
@@ -2709,9 +2712,9 @@ class $GroupMembersTable extends GroupMembers
       typeName: 'TEXT', requiredDuringInsert: true);
   final VerificationMeta _isNotifyMeta = const VerificationMeta('isNotify');
   late final GeneratedColumn<bool?> isNotify = GeneratedColumn<bool?>(
-      'is_notify', aliasedName, false,
+      'is_notify', aliasedName, true,
       typeName: 'INTEGER',
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints: 'CHECK (is_notify IN (0, 1))');
   @override
   List<GeneratedColumn> get $columns => [id, uid, groupId, isNotify];
@@ -2744,8 +2747,6 @@ class $GroupMembersTable extends GroupMembers
     if (data.containsKey('is_notify')) {
       context.handle(_isNotifyMeta,
           isNotify.isAcceptableOrUnknown(data['is_notify']!, _isNotifyMeta));
-    } else if (isInserting) {
-      context.missing(_isNotifyMeta);
     }
     return context;
   }

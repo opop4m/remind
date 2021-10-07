@@ -111,14 +111,14 @@ class _MyApp extends State<MyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: model.currentLocale,
       navigatorObservers: [routeObserver],
-      routes: {
-        '/': (context) {
-          return Global.get().hasLogin ? new RootPage() : new LoginBeginPage();
-          // return new LoginBeginPage();
-        }
-      },
+      // routes: {
+      //   '/': (context) {
+      //     return Global.get().hasLogin ? new RootPage() : new LoginBeginPage();
+      //     // return new LoginBeginPage();
+      //   }
+      // },
       builder: EasyLoading.init(),
-      // home: Global.get().hasLogin ? new RootPage() : new LoginBeginPage(),
+      home: Global.get().hasLogin ? new RootPage() : new LoginBeginPage(),
     );
   }
 

@@ -84,6 +84,11 @@ class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
   FriendDao(UcDatabase attachedDatabase) : super(attachedDatabase);
 
   Stream<List<Friend>> getAllFriend() => select(friends).watch();
+  Stream<List<Friend>> watchFriendList(List<String> exceptIds) {
+    var q = select(friends);
+    q.where((tbl) => tbl.id.isIn(exceptIds).not());
+    return q.watch();
+  }
 
   Future insertFriend(FriendsCompanion f) =>
       into(friends).insertOnConflictUpdate(f);
@@ -97,6 +102,12 @@ class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
   Future<Friend> queryFriend(String fUid) {
     var q = select(friends)..where((tbl) => tbl.id.equals(fUid));
     return q.getSingle();
+  }
+
+  Future deleteFriend(String fUid) {
+    var q = delete(friends);
+    q.where((tbl) => tbl.id.equals(fUid));
+    return q.go();
   }
 }
 
@@ -140,8 +151,46 @@ class ChatRecentDao extends DatabaseAccessor<UcDatabase>
     return completer.future;
   }
 
-  Future insertChat(ChatRecentsCompanion chat) {
-    return into(chatRecents).insertOnConflictUpdate(chat);
+  Future insertChat(ChatRecentsCompanion chat) async {
+    var q = select(chatRecents);
+    if (chat.type.value == typePerson) {
+      q.where((tbl) =>
+          tbl.type.equals(typePerson) &
+          ((tbl.fromId.equals(chat.fromId.value) &
+                  tbl.peerId.equals(chat.peerId.value)) |
+              (tbl.fromId.equals(chat.peerId.value) &
+                  tbl.peerId.equals(chat.fromId.value))));
+    } else {
+      q.where((tbl) =>
+          tbl.type.equals(typeGroup) &
+          tbl.targetId.equals(chat.targetId.value));
+    }
+    var query = await q.getSingleOrNull();
+    int ret;
+    if (query != null) {
+      var up = update(chatRecents);
+      up.whereExpr = q.whereExpr;
+      ret = await up.write(chat);
+    } else {
+      ret = await into(chatRecents).insert(chat);
+    }
+    return ret;
+    // return into(chatRecents).insertOnConflictUpdate(chat);
+  }
+
+  Future delRecent(String targetId, int type) {
+    var q = delete(chatRecents);
+    if (type == typeGroup) {
+      q.where((tbl) => tbl.targetId.equals(targetId) & tbl.type.equals(type));
+    } else {
+      String fromId = Global.get().curUser.id;
+      q.where((tbl) =>
+          tbl.type.equals(typePerson) &
+          ((tbl.fromId.equals(fromId) & tbl.peerId.equals(targetId)) |
+              (tbl.fromId.equals(targetId) & tbl.peerId.equals(fromId))));
+    }
+
+    return q.go();
   }
 
   Future delAll() => delete(chatRecents).go();
@@ -364,6 +413,12 @@ class GroupMemberDao extends DatabaseAccessor<UcDatabase>
     var q = select(groupMembers);
     q.where((tbl) => tbl.groupId.equals(groupId));
     return q.get();
+  }
+
+  Stream<List<GroupMember>> watchGroupMember(String groupId) {
+    var q = select(groupMembers);
+    q.where((tbl) => tbl.groupId.equals(groupId));
+    return q.watch();
   }
 
   Future delGroup(String groupId) {

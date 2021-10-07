@@ -162,25 +162,27 @@ class _HomePageState extends State<HomePage>
           itemBuilder: (BuildContext context, int index) {
             ChatRecentBean bean = _chatData[index];
             ChatRecent msg = bean.recent;
-            String key = Im.routeKey(bean.recent.targetId, msg.type);
             String imageUrl, name;
+            String targetId = bean.recent.peerId;
             if (msg.type == typePerson) {
               ChatUser u = bean.user!;
               imageUrl = getAvatarUrl(u.avatar);
               name = u.name;
+              if (targetId == Global.get().curUser.id) {
+                targetId = bean.recent.fromId;
+              }
             } else {
               Group group = bean.group!;
               imageUrl = getGroupAvatarUrl(group.avatar);
               name = group.name;
             }
-
+            String key = Im.routeKey(targetId, msg.type);
             int unread = _pop[key] ?? 0;
             // _log.info("key: $key");
             return InkWell(
               onTap: () {
                 routePush(
-                    new ChatPage(
-                        id: bean.recent.targetId, title: name, type: msg.type),
+                    new ChatPage(id: targetId, title: name, type: msg.type),
                     arguments: key);
               },
               onTapDown: (TapDownDetails details) {

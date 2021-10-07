@@ -64,8 +64,9 @@ class _ContentMsgState extends State<ContentMsg> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done &&
             !snapshot.hasError &&
-            msg.type == typeGroup) {
-          str = snapshot.data.toString();
+            msg.type == typeGroup &&
+            msg.msgType != msgTypeTips) {
+          str = snapshot.data.toString() + str;
         }
 
         return ExtendedText(
@@ -81,9 +82,9 @@ class _ContentMsgState extends State<ContentMsg> {
   }
 
   Future<String> _getGroupStr(ChatRecent msg) async {
-    if (msg.type == typeGroup) {
+    if (msg.type == typeGroup && msg.msgType != msgTypeTips) {
       ChatUser user = await ImData.get().getChatUser(msg.fromId);
-      var groupContent = user.name + " : " + (msg.content ?? "");
+      var groupContent = user.name + " : ";
       return groupContent;
     }
     return "";

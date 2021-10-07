@@ -31,7 +31,7 @@ class ImApi {
         List? groupList = res.data!["groups"];
 
         res.res = [];
-        ImDb.g().db.chatRecentDao.delAll();
+        await ImDb.g().db.chatRecentDao.delAll();
         for (var i = 0; i < list.length; i++) {
           var recent = ChatRecent.fromJson(list[i]);
           ImDb.g().db.chatRecentDao.insertChat(recent.toCompanion(true));
@@ -52,6 +52,7 @@ class ImApi {
         }
       }
     }
+    _log.info("finished requestRecentList");
     return res.res!;
   }
 

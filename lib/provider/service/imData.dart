@@ -25,8 +25,12 @@ const actFriendRequest = "friendReqeust";
 const actAllriendRequest = "allFriendReqeust";
 const actReplyFriendRequest = "replyFriendRequest";
 const actFriendUpdate = "friendUpdate";
+const actFriendDelete = "friendDelete";
 const actSyncChat = "syncChat";
 const actCreateGroup = "createGroup";
+const actQuitGroup = "quitGroup";
+const actAllGroupMem = "allGroupMem";
+const actGroupInvite = "groupInvite";
 
 class ImData {
   static ImData? _instance;
@@ -103,7 +107,23 @@ class ImData {
       case actFriendUpdate:
         onFriendUpdate(tb, res);
         break;
+      case actFriendDelete:
+        onFriendDelete(tb.msgId);
+        break;
+      case actAllGroupMem:
+        groupData.onAllGroupMem(tb, res);
+        break;
+      case actQuitGroup:
+        groupData.onQuitGroup(tb.msgId);
+        break;
     }
+  }
+
+  void onFriendDelete(String fId) {
+    ImDb.g().db.friendDao.deleteFriend(fId);
+    ImDb.g().db.chatRecentDao.delRecent(fId, typePerson);
+    ImDb.g().db.chatMsgDao.delP2PMsgList(fId);
+    ImDb.g().db.popsDao.delPop(fId, PopTypeP2P);
   }
 
   void onFriendUpdate(TopicBean tb, data) async {
@@ -306,6 +326,7 @@ class ImData {
   StreamSubscription? _subChatUser, _subGroup;
 
   Stream<Future<List<ChatRecentBean>>> watchRecentList({bool update = false}) {
+    _log.info("watchRecentList");
     _subGroup?.cancel();
     _subGroup = ImDb.g().db.groupDao.watchAllGroup().listen((event) {
       ImDb.g().db.chatRecentDao.refresh();
@@ -317,22 +338,30 @@ class ImData {
     var ret =
         ImDb.g().db.chatRecentDao.watchRecentList(100, 0).map((list) async {
       List<ChatRecentBean> res = [];
-      List<String> reqList = [];
+      // List<String> reqList = [];
+      Set<String> reqList = {};
       List<String> reqGroupList = [];
       if (list.length > 0) {
         list.forEach((recent) {
           // addUnique2list(reqList, recent.fromId);
-          if (recent.type == typePerson)
-            addUnique2list(reqList, recent.targetId);
-          else
+          if (recent.type == typePerson) {
+            // addUnique2list(reqList, recent.peerId);
+            // addUnique2list(reqList, recent.fromId);
+            reqList.add(recent.peerId);
+            reqList.add(recent.fromId);
+          } else
             addUnique2list(reqGroupList, recent.targetId);
         });
-        var uMap = await getChatUsers(reqList);
+        var uMap = await getChatUsers(reqList.toList());
         var gMap = await getChatGroups(reqGroupList);
         list.forEach((recent) {
           var bean = ChatRecentBean(recent);
           if (recent.type == typePerson) {
-            bean.user = uMap[recent.targetId]!;
+            var id = recent.peerId;
+            if (id == Global.get().curUser.id) {
+              id = recent.fromId;
+            }
+            bean.user = uMap[id]!;
           } else {
             bean.group = gMap[recent.targetId]!;
           }
@@ -345,6 +374,24 @@ class ImData {
       return res;
     });
     return ret;
+  }
+
+  Future<Group> getChatGroup(String groupId) async {
+    var group = await ImDb.g().db.groupDao.getGroup(groupId);
+    if (group == null) {
+      var list = await ImApi.groupInfo([groupId]);
+      if (list.length > 0) {
+        group = list[0];
+      } else {
+        group = Group(
+            id: groupId,
+            uid: "loading",
+            name: "loading",
+            memberCount: 1,
+            createTime: 0);
+      }
+    }
+    return group;
   }
 
   Future<Map<String, Group>> getChatGroups(List<String> reqGroupList) async {

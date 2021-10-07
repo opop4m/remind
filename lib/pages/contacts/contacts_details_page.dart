@@ -4,6 +4,9 @@ import 'package:client/pages/chat/set_remark_page.dart';
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
+import 'package:client/provider/service/imDb.dart';
+import 'package:client/ui/dialog/confirm_alert.dart';
 import 'package:client/ui/item/contact_card.dart';
 import 'package:client/ui/orther/button_row.dart';
 import 'package:client/ui/orther/label_row.dart';
@@ -65,12 +68,53 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
       ),
       new Visibility(
         visible: !isSelf,
-        child: new ButtonRow(
-          text: '音视频通话',
-          onPressed: () => showToast('敬请期待'),
+        child: Column(
+          children: [
+            Divider(
+              height: 1,
+              thickness: 0.1,
+              color: appBarColor,
+            ),
+            ButtonRow(
+              text: '音频通话',
+              onPressed: () => showToast('敬请期待'),
+            ),
+            Divider(
+              height: 1,
+              thickness: 0.1,
+              color: appBarColor,
+            ),
+            ButtonRow(
+              text: '视频频通话',
+              onPressed: () => showToast('敬请期待'),
+            ),
+            Space(height: 20),
+            ButtonRow(
+              text: '删除好友',
+              style: TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.w600, fontSize: 16),
+              onPressed: () {
+                _deleteFriend();
+              },
+            ),
+          ],
         ),
       ),
     ];
+  }
+
+  void _deleteFriend() {
+    confirmAlert(
+      context,
+      (state) {
+        if (state) {
+          Im.get().requestSystem(actFriendDelete, {}, msgId: widget.id);
+          ImData.get().onFriendDelete(widget.id);
+          Navigator.of(context).pop();
+        }
+      },
+      title: "确定删除该好友吗？",
+    );
   }
 
   @override

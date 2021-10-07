@@ -114,6 +114,7 @@ class GlobalLogic {
     if (Global.get().curUser.id != "") {
       await SharedUtil.instance
           .saveString(Keys.account, Global.get().curUser.id);
+      Global.get().hasLogin = true;
       String userStr = jsonEncode(Global.get().curUser);
       String chatConfStr = jsonEncode(Global.get().chatConf);
       _log.info("save user str: $userStr");

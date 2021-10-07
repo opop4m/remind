@@ -80,7 +80,23 @@ pushReplacement(Widget page) {
 }
 
 popToRootPage() {
-  navGK.currentState!.popUntil(ModalRoute.withName('/'));
+  // navGK.currentState!.popUntil(ModalRoute.withName('/'));
+  navGK.currentState!.popUntil((Route<dynamic> route) {
+    return !route.willHandlePopInternally &&
+        route is ModalRoute &&
+        (route.settings.name == "/" || route.settings.name == "RootPage");
+  });
+}
+
+popToTimes(int times) {
+  int pop = 0;
+  navGK.currentState!.popUntil((Route<dynamic> route) {
+    pop++;
+    // print("popToTimes: $pop, name: ${route.settings.name}");
+    return !route.willHandlePopInternally &&
+        route is ModalRoute &&
+        (pop == times + 1);
+  });
 }
 
 popToPage(Widget page) {

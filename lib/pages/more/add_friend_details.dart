@@ -49,11 +49,17 @@ class _AddFriendsDetailsState extends State<AddFriendsDetails> {
         onPressed: () => routePush(new WeChatFriendsCircle()),
       ),
       new ButtonRow(
-        margin: EdgeInsets.only(top: 10.0),
-        text: '添加到通讯录',
-        onPressed: () => routePush(
-            new VerificationPage(nickName: widget.nickName, id: widget.imUser)),
-      ),
+          margin: EdgeInsets.only(top: 10.0),
+          text: '添加到通讯录',
+          onPressed: () {
+            var my = Global.get().curUser;
+            if (widget.imUser == my.id) {
+              showToast("不可以添加自己");
+              return;
+            }
+            routePush(new VerificationPage(
+                nickName: widget.nickName, id: widget.imUser));
+          })
     ];
 
     return new Column(children: content);

@@ -7,7 +7,7 @@ final _log = Logger("Global");
 class Global {
   static Global? _instance;
 
-  static Global get() {
+  factory Global.get() {
     if (_instance == null) {
       _instance = Global._();
     }
@@ -21,7 +21,14 @@ class Global {
   }
 
   ///是否已登陆
-  bool hasLogin = false;
+  bool _hasLogin = false;
+  set hasLogin(bool b) {
+    _log.info("set hasLogin: $b");
+    _hasLogin = b;
+  }
+
+  bool get hasLogin => _hasLogin;
+
   // String accessToken = "";
   User curUser = User();
   ChatConf chatConf = ChatConf();

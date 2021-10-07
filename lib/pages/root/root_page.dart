@@ -4,6 +4,7 @@ import 'package:client/pages/chat/videoCall2.dart';
 import 'package:client/pages/navigation.dart';
 import 'package:client/pages/test1.dart';
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/global_model.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
@@ -20,6 +21,7 @@ import 'package:client/pages/mine/mine_page.dart';
 import 'package:client/pages/root/root_tabbar.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:provider/provider.dart';
 // import 'dart:js' as js;
 
 UcNavigation routeObserver = UcNavigation();
@@ -139,10 +141,19 @@ class _RootPageState extends State<RootPage> with RouteAware {
     if (message.data['act'] == actChat) {
       String peerId = message.data['peer'];
       int type = int.parse(message.data['type']);
-      var peerInfo = await ImData.get().getChatUser(peerId);
+      String id, title;
+      if (type == typePerson) {
+        var peerInfo = await ImData.get().getChatUser(peerId);
+        id = peerInfo.id;
+        title = peerInfo.name;
+      } else {
+        var group = await ImData.get().getChatGroup(peerId);
+        id = group.id;
+        title = group.name;
+      }
+
       String key = Im.routeKey(peerId, type);
-      var chatPage =
-          ChatPage(id: peerInfo.id, title: peerInfo.name, type: type);
+      var chatPage = ChatPage(id: id, title: title, type: type);
       if (UcNavigation.curPage.startsWith(UcNavigation.chatPage)) {
         routePushReplace(chatPage, arguments: key);
       } else {
@@ -156,6 +167,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
   @override
   Widget build(BuildContext context) {
     _context = context;
+    Provider.of<GlobalModel>(context)..setContext(context);
     List<TabBarModel> pages = <TabBarModel>[
       new TabBarModel(
         title: S.of(context).message,

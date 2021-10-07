@@ -1,4 +1,8 @@
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imData.dart';
+import 'package:client/provider/service/imDb.dart';
+import 'package:client/provider/service/imGroupData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/group/select_members_page.dart';
@@ -13,6 +17,8 @@ import 'package:client/tools/commom.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/confirm_alert.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
+
+final _log = Logger("GroupDetailsPage");
 
 class GroupDetailsPage extends StatefulWidget {
   final String peer;
@@ -29,17 +35,16 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   bool _showName = false;
   bool _contact = false;
   bool _dnd = false;
-  late String groupName;
-  late String groupNotification;
-  late String time;
+  // late String groupName;
+  //  String groupNotification = "groupNotification";
+  String time = "time--";
   late String cardName = '默认';
   bool isGroupOwner = false;
 
-  List memberList = [
-    {'user': '+'},
-//    {'user': '-'}
-  ];
-  List dataGroup = [];
+  // Map userAdd = {'user': '+'};
+  List<String> memberList = [];
+  // List dataGroup = [];
+  Group? group;
 
   @override
   void initState() {
@@ -47,6 +52,12 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     _getGroupMembers();
     _getGroupInfo();
     getCardName();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _subGroupMem?.cancel();
   }
 
   getCardName() async {
@@ -57,56 +68,54 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   }
 
   // 获取群组信息
-  _getGroupInfo() {
-    // DimGroup.getGroupInfoListModel([widget.peer], callback: (result) async {
-    //   dataGroup = json.decode(result.toString().replaceAll("'", '"'));
-    //   final user = await SharedUtil.instance.getString(Keys.account);
-    //   isGroupOwner = dataGroup[0]['groupOwner'] == user;
-    //   groupName = dataGroup[0]['groupName'].toString();
-    //   String notice = strNoEmpty(dataGroup[0]['groupNotification'].toString())
-    //       ? dataGroup[0]['groupNotification'].toString()
-    //       : '暂无公告';
-    //   groupNotification = notice;
-    //   time = dataGroup[0]['groupIntroduction'].toString();
-    //   setState(() {});
-    // });
+  _getGroupInfo() async {
+    group = await ImData.get().getChatGroup(widget.peer);
+    var my = Global.get().curUser;
+    isGroupOwner = my.id == group!.uid;
+    if (mounted) setState(() {});
   }
 
+  StreamSubscription? _subGroupMem;
   // 获取群成员列表
   _getGroupMembers() async {
-    // await DimGroup.getGroupMembersListModelLIST(widget.peer,
-    //     callback: (result) {
-    //   memberList.insertAll(
-    //       0, json.decode(result.toString().replaceAll("'", '"')));
-    //   setState(() {});
-    // });
+    memberList = ["+"];
+    Im.get().requestSystem(actAllGroupMem, {}, msgId: widget.peer);
+    _subGroupMem =
+        ImDb.g().db.groupMemberDao.watchGroupMember(widget.peer).listen((list) {
+      memberList.clear();
+      for (var i = 0; i < (list.length >= 9 ? 9 : list.length); i++) {
+        memberList.add(list[i].uid);
+      }
+      memberList.add("+");
+      if (mounted) setState(() {});
+    });
   }
 
-  Widget memberItem(item) {
+  Widget memberItem(String item) {
     List<dynamic> userInfo = [];
     String uId = "";
     String uFace = '';
     String nickName = "";
-    if (item['user'] == "+" || item['user'] == '-') {
+    if (item == "+" || item == '-') {
       return new InkWell(
         child: new SizedBox(
           width: (winWidth(context) - 60) / 5,
           child: Image.asset(
-            'assets/images/group/${item['user']}.png',
+            'assets/images/group/$item.png',
             height: 48.0,
             width: 48.0,
           ),
         ),
-        onTap: () => routePush(new SelectMembersPage()),
+        onTap: () => routePush(new SelectMembersPage(memberList, widget.peer)),
       );
     }
     return new FutureBuilder(
-      // future: DimFriend.getUsersProfile(item['user'], (cb) {
-      //   userInfo = json.decode(cb.toString());
-      //   uId = userInfo[0]['identifier'];
-      //   uFace = userInfo[0]['faceUrl'];
-      //   nickName = userInfo[0]['nickName'];
-      // }),
+      future: getUserInfo(item, (cb) {
+        ChatUser u = cb;
+        uId = u.id;
+        uFace = u.avatar ?? "";
+        nickName = u.name;
+      }),
       builder: (context, snap) {
         var my = Global.get().curUser;
         return new SizedBox(
@@ -127,7 +136,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                           fit: BoxFit.cover,
                         )
                       : CachedNetworkImage(
-                          imageUrl: uFace,
+                          imageUrl: getAvatarUrl(uFace),
                           height: 48.0,
                           width: 48.0,
                           cacheManager: cacheManager,
@@ -152,6 +161,11 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     );
   }
 
+  Future getUserInfo(String uid, Callback cb) async {
+    var u = await ImData.get().getChatUser(uid);
+    cb(u);
+  }
+
   // 设置消息免打扰
   _setDND(int type) {
     // DimGroup.setReceiveMessageOptionModel(widget.peer, Data.user(), type,
@@ -161,13 +175,13 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    if (!listNoEmpty(dataGroup)) {
+    if (this.group == null) {
       return new Container(color: Colors.white);
     }
-
+    Group group = this.group!;
     return Scaffold(
       backgroundColor: Color(0xffEDEDED),
-      appBar: new ComMomBar(title: '聊天信息 (${dataGroup[0]['memberNum']})'),
+      appBar: new ComMomBar(title: '聊天信息 (${group.memberCount})'),
       body: new ScrollConfiguration(
         behavior: MyBehavior(),
         child: new ListView(
@@ -197,9 +211,9 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
             SizedBox(height: 10.0),
             functionBtn(
               '群聊名称',
-              detail: groupName.toString().length > 7
-                  ? '${groupName.toString().substring(0, 6)}...'
-                  : groupName.toString(),
+              detail: group.name.length > 7
+                  ? '${group.name.substring(0, 6)}...'
+                  : group.name,
             ),
             functionBtn(
               '群二维码',
@@ -208,7 +222,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
             ),
             functionBtn(
               '群公告',
-              detail: groupNotification.toString(),
+              detail: group.notice,
             ),
             new Visibility(
               visible: isGroupOwner,
@@ -269,31 +283,9 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                 if (widget.peer == '') return;
                 confirmAlert(context, (isOK) {
                   if (isOK) {
-                    // DimGroup.quitGroupModel(widget.peer, callback: (str) {
-                    //   if (str.toString().contains('失败')) {
-                    //     print('失败了，开始执行解散');
-                    //     DimGroup.deleteGroupModel(widget.peer,
-                    //         callback: (data) {
-                    //       if (str.toString().contains('成功')) {
-                    //         Navigator.of(context).pop();
-                    //         Navigator.of(context).pop();
-                    //         if (Navigator.canPop(context)) {
-                    //           Navigator.of(context).pop();
-                    //         }
-                    //         print('解散群聊成功');
-                    //         showToast(context, '解散群聊成功');
-                    //       }
-                    //     });
-                    //   } else if (str.toString().contains('succ')) {
-                    //     Navigator.of(context).pop();
-                    //     Navigator.of(context).pop();
-                    //     if (Navigator.canPop(context)) {
-                    //       Navigator.of(context).pop();
-                    //     }
-                    //     print('退出成功');
-                    //     showToast(context, '退出成功');
-                    //   }
-                    // });
+                    Im.get()
+                        .requestSystem(actQuitGroup, {}, msgId: widget.peer);
+                    popToRootPage();
                   }
                 }, title: '确定要退出本群吗？');
               },
@@ -321,12 +313,13 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
         routePush(
           new GroupRemarksPage(
             groupInfoType: GroupInfoType.name,
-            text: groupName,
+            text: group!.name,
             groupId: widget.peer,
           ),
         ).then((data) {
-          groupName = data ?? groupName;
-          Notice.send(UcActions.groupName(), groupName);
+          _log.info("name: $data");
+          // group.name = data ?? groupName;
+          // Notice.send(UcActions.groupName(), groupName);
         });
         break;
       case '群二维码':
@@ -335,14 +328,14 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
       case '群公告':
         routePush(
           new GroupBillBoardPage(
-            dataGroup[0]['groupOwner'],
-            groupNotification,
+            group!.uid,
+            group!.notice ?? "",
             groupId: widget.peer,
             time: time,
             callback: (timeData) => time = timeData,
           ),
         ).then((data) {
-          groupNotification = data ?? groupNotification;
+          _log.info("notice: $data");
         });
         break;
       case '查找聊天记录':

@@ -28,10 +28,8 @@ class SendMessageView2 extends StatelessWidget {
       return new ImgMsg(_msg, user);
     } else if (_msg.msgType == msgTypeVoice) {
       return new SoundMsg(_msg, user);
-    } else if (_msg.tipsType == tipsTypeJoin) {
+    } else if (_msg.tipsType == tipsTypeJoin || _msg.tipsType == tipsTypeQuit) {
       return JoinMessage(_msg);
-    } else if (_msg.tipsType == tipsTypeQuit) {
-      return QuitMessage(_msg);
     } else if (_msg.tipsType == tipsTypeGroupNotice) {
       return ModifyNotificationMessage(_msg);
     } else if (_msg.tipsType == tipsTypeGroupNameChange) {

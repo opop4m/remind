@@ -132,7 +132,7 @@ class Im {
     MqttLib.get().publish(topic, msg);
   }
 
-  Future requestSystem(String act, Map params, {String? msgId}) {
+  Future requestSystem(String act, Object? params, {String? msgId}) {
     var fromId = Global.get().curUser.id;
     String topic = topicSystem + "/$fromId/$act";
     if (msgId != null) {
@@ -153,7 +153,8 @@ class Im {
     // var data = {"act": "chat", "data": msg};
     var msgStr = json.encode(msg);
     _log.info(msgStr);
-    ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
+    // ImDb.g().db.chatMsgDao.insertChatMsgData(msg.toCompanion(true));
+    ImData.get().onChatMsg(msg.toJson());
     MqttLib.get().publish(topic, msgStr);
   }
 

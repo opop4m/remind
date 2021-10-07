@@ -79,6 +79,11 @@ class _VerificationPageState extends State<VerificationPage> {
   }
 
   _addFriend() {
+    var my = Global.get().curUser;
+    if (widget.id == my.id) {
+      showToast("不可以添加自己");
+      return;
+    }
     var params = {
       "friendUid": widget.id,
       "msg": infoC.text,

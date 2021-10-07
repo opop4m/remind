@@ -163,8 +163,14 @@ class MqttLib {
     // var codeUnits = msg.codeUnits;
     //uint8buffer.add()
     uint8buffer.addAll(byte);
-    var msgId = client.publishMessage(topic, MqttQos.atLeastOnce, uint8buffer);
-    _cachePulishd[msgId] = completer;
+    try {
+      var msgId =
+          client.publishMessage(topic, MqttQos.atLeastOnce, uint8buffer);
+      _cachePulishd[msgId] = completer;
+    } catch (e, s) {
+      print(e.toString());
+      print(s);
+    }
     return completer.future;
   }
 
