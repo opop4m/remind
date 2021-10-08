@@ -31,7 +31,7 @@ class SendMessageView2 extends StatelessWidget {
     } else if (_msg.tipsType == tipsTypeJoin || _msg.tipsType == tipsTypeQuit) {
       return JoinMessage(_msg);
     } else if (_msg.tipsType == tipsTypeGroupNotice) {
-      return ModifyNotificationMessage(_msg);
+      return ModifyNotificationMessage(_msg, user);
     } else if (_msg.tipsType == tipsTypeGroupNameChange) {
       return ModifyGroupInfoMessage(_msg);
     } else {

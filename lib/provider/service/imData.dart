@@ -31,6 +31,7 @@ const actCreateGroup = "createGroup";
 const actQuitGroup = "quitGroup";
 const actAllGroupMem = "allGroupMem";
 const actGroupInvite = "groupInvite";
+const actGroupUpdate = "groupUpdate";
 
 class ImData {
   static ImData? _instance;
@@ -46,7 +47,7 @@ class ImData {
 
   late StreamSubscription<MqMsg> _subMsg;
   ImData._internal() {
-    _subMsg = MqttLib.get().messageStream.listen((mqMsg) {
+    _subMsg = MqttLib.get().messageStream.listen((mqMsg) async {
       var res = jsonDecode(mqMsg.pt);
       dispatch(mqMsg.topic, res);
     });
@@ -66,7 +67,7 @@ class ImData {
 
   ImGroupData groupData = ImGroupData();
 
-  void dispatch(String topic, res) {
+  Future dispatch(String topic, res) async {
     var tb = parserTopic(topic);
     _log.info("act: ${tb.act},dispatch message: $res");
     // var data = res["data"];
@@ -116,6 +117,13 @@ class ImData {
       case actQuitGroup:
         groupData.onQuitGroup(tb.msgId);
         break;
+      case actGroupUpdate:
+        await groupData.onGroupUpdate(tb, res);
+        break;
+    }
+    var c = _cacheRequest.remove(tb.act);
+    if (c != null) {
+      c.complete();
     }
   }
 
@@ -512,6 +520,25 @@ class ImData {
       }
     }
     return tb;
+  }
+
+  Map<String, Completer> _cacheRequest = {};
+  Future request(String act, {Object? params, String? msgId}) {
+    var completer = Completer();
+    Im.get().requestSystem(act, params, msgId: msgId).then((value) {
+      _cacheRequest[act] = completer;
+      _log.info("_cacheRequest $act");
+    });
+    return completer.future;
+  }
+
+  static ChatUser defaultUser(String uid) {
+    return ChatUser(id: uid, name: "loading...");
+  }
+
+  static Future getUserInfo(String uid, Callback cb) async {
+    var u = await ImData.get().getChatUser(uid);
+    cb(u);
   }
 }
 

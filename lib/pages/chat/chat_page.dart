@@ -97,9 +97,13 @@ class _ChatPageState extends State<ChatPage> {
       }
       if (mounted) setState(() {});
     });
-    var res = await ImData.get().getChatUsers([widget.id]);
+    if (widget.type == typePerson) {
+      var res = await ImData.get().getChatUsers([widget.id]);
+      peer = res[widget.id]!;
+    } else {
+      peer = ImData.defaultUser(widget.id);
+    }
 
-    peer = res[widget.id]!;
     if (mounted) setState(() {});
   }
 

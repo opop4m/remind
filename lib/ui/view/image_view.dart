@@ -13,7 +13,7 @@ class ImageView extends StatelessWidget {
   ImageView({
     required this.img,
     this.height,
-    required this.width,
+    this.width,
     this.fit,
     this.isRadius = true,
   });
@@ -33,9 +33,9 @@ class ImageView extends StatelessWidget {
       if (isAssetsSvg(img)) {
         image = SvgPicture.asset(
           img,
-          // semanticsLabel: 'avatar',
           width: width,
           height: height,
+          fit: fit ?? BoxFit.contain,
         );
       } else {
         image = new Image.asset(
@@ -76,6 +76,34 @@ class ImageView extends StatelessWidget {
     }
     return image;
   }
+
+  // static Widget getAvatarWidget(String? avatar, int type) {
+  //   double w = 48.0, h = 48.0;
+  //   var path =
+  //       type == typePerson ? getAvatarUrl(avatar) : getGroupAvatarUrl(avatar);
+  //   Widget img;
+  //   if (avatar == null) {
+  //     img = Image.asset(
+  //       path,
+  //       height: h,
+  //       width: w,
+  //       fit: BoxFit.cover,
+  //     );
+  //   } else {
+  //     img = CachedNetworkImage(
+  //       imageUrl: path,
+  //       height: h,
+  //       width: w,
+  //       cacheManager: cacheManager,
+  //       fit: BoxFit.cover,
+  //     );
+  //   }
+  //   var c = ClipRRect(
+  //     borderRadius: BorderRadius.all(Radius.circular(5)),
+  //     child: img,
+  //   );
+  //   return c;
+  // }
 }
 
 Widget getImageWidget(String img,

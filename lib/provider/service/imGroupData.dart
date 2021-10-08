@@ -35,4 +35,9 @@ class ImGroupData {
     ImDb.g().db.chatRecentDao.delRecent(groupId, typeGroup);
     ImDb.g().db.chatMsgDao.delGroupMsgList(groupId);
   }
+
+  Future onGroupUpdate(TopicBean tb, res) {
+    var group = Group.fromJson(res);
+    return ImDb.g().db.groupDao.insertGroup(group.toCompanion(true));
+  }
 }

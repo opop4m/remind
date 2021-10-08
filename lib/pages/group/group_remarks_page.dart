@@ -4,15 +4,19 @@ import 'package:client/tools/library.dart';
 
 enum GroupInfoType { remark, name, cardName }
 
+typedef void OnBack(String id, String cb);
+
 class GroupRemarksPage extends StatefulWidget {
   final GroupInfoType groupInfoType;
   final String text;
-  final String? groupId;
+  final String groupId;
+  final String? avatar;
 
   GroupRemarksPage({
     this.groupInfoType = GroupInfoType.remark,
     this.text = '',
-    this.groupId,
+    required this.groupId,
+    this.avatar,
   });
 
   @override
@@ -28,8 +32,6 @@ class _GroupRemarksPageState extends State<GroupRemarksPage> {
       return;
     }
     if (widget.groupInfoType == GroupInfoType.name) {
-      // DimGroup.modifyGroupNameModel(widget.groupId, _textController.text,
-      //     callback: (_) {});
       Navigator.pop(context, _textController.text);
     } else {
       showToast('敬请期待');
@@ -94,9 +96,12 @@ class _GroupRemarksPageState extends State<GroupRemarksPage> {
                 ),
                 child: new Row(
                   children: <Widget>[
-                    new Image.network(
-                      defGroupAvatar,
+                    ImageView(
                       width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      img: getGroupAvatarUrl(widget.avatar),
+                      isRadius: true,
                     ),
                     new Space(),
                     new Expanded(

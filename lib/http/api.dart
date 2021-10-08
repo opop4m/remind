@@ -3,10 +3,12 @@ import 'dart:typed_data';
 
 import 'package:client/http/req.dart';
 import 'package:client/provider/global_model.dart';
+import 'package:client/tools/adapter/imagePickerApi.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/tools/mimeType.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:http_parser/http_parser.dart';
@@ -117,4 +119,21 @@ Future<String> uploadMediaApi(
     // _log.info("upload res: ${rsp.data}");
   }
   return path;
+}
+
+Future<String?> openGallery({type = ImageSource.gallery}) async {
+  var avatarImgBytes = await UcImagePicker.image();
+  if (avatarImgBytes == null) {
+    _log.info("did not choose any file");
+    return null;
+  }
+  var mime = lookupMimeType('', headerBytes: avatarImgBytes.sublist(0, 10));
+  if (mime == null) {
+    _log.info("unknow file type");
+    return null;
+  }
+  var ext = findExtFromMime(mime);
+  _log.info("mime type: $mime, ext: $ext");
+  var avatarPath = await uploadMediaApi(avatarImgBytes, ext, "avatar");
+  return avatarPath;
 }

@@ -34,52 +34,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   _openGallery({type = ImageSource.gallery}) async {
-    var avatarImgBytes = await UcImagePicker.image();
-    if (avatarImgBytes == null) {
-      _log.info("did not choose any file");
-      return;
-    }
-    var mime = lookupMimeType('', headerBytes: avatarImgBytes.sublist(0, 10));
-    if (mime == null) {
-      _log.info("unknow file type");
-      return;
-    }
-    var ext = findExtFromMime(mime);
-    _log.info("mime type: $mime, ext: $ext");
-    var avatarPath = await uploadMediaApi(avatarImgBytes, ext, "avatar");
+    var avatarPath = await openGallery();
     if (strNoEmpty(avatarPath)) {
       await _model.logic.updateUser({"avatar": avatarPath});
       if (mounted) setState(() {});
     }
-    // final model = Provider.of<GlobalModel>(context, listen: false);
-    // var ip = ImagePicker();
-    // XFile? imageFile = await ip.pickImage(source: type);
-    // if (imageFile == null) return;
-    // List<int> imageBytes = await compressFile(File(imageFile.path));
-    // if (imageFile != null) {
-    //   String base64Img = 'data:image/jpeg;base64,${base64Encode(imageBytes)}';
-    //   uploadImgApi(context, base64Img, (v) {
-    //     if (v == null) {
-    //       showToast(context, '上传头像失败,请换张图像再试');
-    //       return;
-    //     }
-
-    //     setUsersProfileMethod(
-    //       context,
-    //       avatarStr: v,
-    //       nickNameStr: model.nickName,
-    //       callback: (data) {
-    //         if (data.toString().contains('ucc')) {
-    //           showToast(context, '设置头像成功');
-    //           model.avatar = v;
-    //           model.refresh();
-    //         } else {
-    //           showToast(context, '设置头像失败');
-    //         }
-    //       },
-    //     );
-    //   });
-    // }
   }
 
   Widget dynamicAvatar(avatar, {size}) {

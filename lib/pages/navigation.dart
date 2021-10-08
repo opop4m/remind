@@ -23,7 +23,6 @@ class UcNavigation extends NavigatorObserver {
     if (pre?.settings.name == null) {
       return;
     }
-    _log.info("didPop 1.0");
     var name = pre!.settings.name!;
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
@@ -32,7 +31,7 @@ class UcNavigation extends NavigatorObserver {
       name += "-" + (pre.settings.arguments.toString());
     }
     curPage = name;
-    _log.info("didPop curPage: $curPage");
+    // _log.info("didPop curPage: $curPage");
     Im.get().requestSystem(actOnline, {}, msgId: name);
     Notice.send(UcActions.routePop(), name);
     UcNotice.send(UcActions.routePop(), name);
@@ -49,7 +48,6 @@ class UcNavigation extends NavigatorObserver {
     if (route.settings.name == null) {
       return;
     }
-    _log.info("didPush 1.0");
     var name = route.settings.name!;
     if (name == "/" && Global.get().hasLogin) {
       name = "RootPage";
@@ -58,7 +56,7 @@ class UcNavigation extends NavigatorObserver {
       name += "-" + route.settings.arguments.toString();
     }
     curPage = name;
-    _log.info("didPush curPage: $curPage");
+    // _log.info("didPush curPage: $curPage");
     Im.get().requestSystem(actOnline, {}, msgId: name);
   }
 }

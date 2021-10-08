@@ -63,9 +63,10 @@ class _GroupBillBoardPageState extends State<GroupBillBoardPage> {
     return Scaffold(
       appBar: new ComMomBar(title: '群公告', rightDMActions: <Widget>[rWidget]),
       body: TextField(
+        enabled: !inputState,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: inputState ? Colors.grey[100] : Colors.white,
           hintText: '请编辑群公告',
         ),
         autofocus: true,

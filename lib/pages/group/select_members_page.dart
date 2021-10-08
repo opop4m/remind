@@ -4,7 +4,6 @@ import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/item/contact_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:azlistview/azlistview.dart';
 import 'package:client/tools/library.dart';
 
 class SelectMembersPage extends StatefulWidget {

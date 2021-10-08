@@ -1,4 +1,6 @@
 import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/contacts/group_launch_page.dart';
@@ -12,7 +14,7 @@ class GroupListPage extends StatefulWidget {
 }
 
 class _GroupListPageState extends State<GroupListPage> {
-  List _groupList = [];
+  List<Group> _groupList = [];
 
   @override
   void initState() {
@@ -25,6 +27,8 @@ class _GroupListPageState extends State<GroupListPage> {
 
   // 获取群聊列表
   Future _getGroupListModel() async {
+    _groupList = await ImDb.g().db.groupDao.queryAllGroup();
+    if (mounted) setState(() {});
     // await DimGroup.getGroupListModel((result) {
     //   setState(() =>
     //       _groupList = json.decode(result.toString().replaceAll("'", '"')));
@@ -35,12 +39,14 @@ class _GroupListPageState extends State<GroupListPage> {
       String gFaceURL, String title) {
     return FlatButton(
       onPressed: () {
-        routePush(ChatPage(
-          title: gName,
-          type: typeGroup,
-          id: gId,
-//                returnType: 1,
-        ));
+        var key = Im.routeKey(gId, typeGroup);
+        routePush(
+            ChatPage(
+              title: gName,
+              type: typeGroup,
+              id: gId,
+            ),
+            arguments: key);
       },
       child: Column(
         children: <Widget>[
@@ -112,12 +118,10 @@ class _GroupListPageState extends State<GroupListPage> {
                     _groupList.length > 0
                         ? groupItem(
                             context,
-                            _groupList[index]['groupName'] ?? '',
-                            _groupList[index]['groupId'] ?? '',
-                            !strNoEmpty(_groupList[index]['getFaceUrl'])
-                                ? defGroupAvatar
-                                : _groupList[index]['getFaceUrl'],
-                            _groupList[index]['groupId'] ?? '',
+                            _groupList[index].name,
+                            _groupList[index].id,
+                            getGroupAvatarUrl(_groupList[index].avatar),
+                            'title',
                           )
                         : SizedBox(height: 1),
                   ],

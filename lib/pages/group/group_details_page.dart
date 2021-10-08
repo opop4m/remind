@@ -1,8 +1,8 @@
+import 'package:client/http/api.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
-import 'package:client/provider/service/imGroupData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:client/pages/group/select_members_page.dart';
@@ -10,13 +10,13 @@ import 'package:client/pages/group/group_billboard_page.dart';
 import 'package:client/pages/group/group_member_details.dart';
 import 'package:client/pages/group/group_members_page.dart';
 import 'package:client/pages/group/group_remarks_page.dart';
-import 'package:client/pages/home/search_page.dart';
 import 'package:client/pages/mine/code_page.dart';
 import 'package:client/pages/settings/chat_background_page.dart';
 import 'package:client/tools/commom.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/confirm_alert.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
+import 'package:image_picker/image_picker.dart';
 
 final _log = Logger("GroupDetailsPage");
 
@@ -38,12 +38,10 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   // late String groupName;
   //  String groupNotification = "groupNotification";
   String time = "time--";
-  late String cardName = '默认';
+  String cardName = '默认';
   bool isGroupOwner = false;
 
-  // Map userAdd = {'user': '+'};
   List<String> memberList = [];
-  // List dataGroup = [];
   Group? group;
 
   @override
@@ -51,20 +49,12 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     super.initState();
     _getGroupMembers();
     _getGroupInfo();
-    getCardName();
   }
 
   @override
   void dispose() {
     super.dispose();
     _subGroupMem?.cancel();
-  }
-
-  getCardName() async {
-    // await InfoModel.getSelfGroupNameCardModel(widget.peer, callback: (str) {
-    //   cardName = str.toString();
-    //   setState(() {});
-    // });
   }
 
   // 获取群组信息
@@ -110,7 +100,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
       );
     }
     return new FutureBuilder(
-      future: getUserInfo(item, (cb) {
+      future: ImData.getUserInfo(item, (cb) {
         ChatUser u = cb;
         uId = u.id;
         uFace = u.avatar ?? "";
@@ -161,11 +151,6 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     );
   }
 
-  Future getUserInfo(String uid, Callback cb) async {
-    var u = await ImData.get().getChatUser(uid);
-    cb(u);
-  }
-
   // 设置消息免打扰
   _setDND(int type) {
     // DimGroup.setReceiveMessageOptionModel(widget.peer, Data.user(), type,
@@ -174,6 +159,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // _model = Provider.of<GlobalModel>(context);
     SizeConfig().init(context);
     if (this.group == null) {
       return new Container(color: Colors.white);
@@ -209,30 +195,46 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
               ),
             ),
             SizedBox(height: 10.0),
-            functionBtn(
-              '群聊名称',
-              detail: group.name.length > 7
-                  ? '${group.name.substring(0, 6)}...'
+            GroupItem(
+              title: "群头像",
+              right: ImageView(
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+                img: getGroupAvatarUrl(group.avatar),
+                isRadius: true,
+              ),
+              onPressed: () => handle("avatar"),
+            ),
+            GroupItem(
+              title: '群聊名称',
+              onPressed: () => handle("name"),
+              detail: group.name.length > 9
+                  ? '${group.name.substring(0, 8)}...'
                   : group.name,
             ),
-            functionBtn(
-              '群二维码',
+            GroupItem(
+              title: '群二维码',
+              onPressed: () => handle("groupQr"),
               right: new Image.asset('assets/images/group/group_code.png',
                   width: 20),
             ),
-            functionBtn(
-              '群公告',
+            GroupItem(
+              title: '群公告',
               detail: group.notice,
+              onPressed: () => handle("notice"),
             ),
             new Visibility(
               visible: isGroupOwner,
-              child: functionBtn('群管理'),
+              child: GroupItem(
+                title: '群管理',
+                onPressed: () => handle("manager"),
+              ),
             ),
-            functionBtn('备注'),
-            new Space(height: 10.0),
-            functionBtn('查找聊天记录'),
-            new Space(height: 10.0),
-            functionBtn('消息免打扰',
+            GroupItem(
+                title: '消息免打扰',
+                onPressed: () => handle("isNotify"),
+                isSwitch: true,
                 right: CupertinoSwitch(
                   value: _dnd,
                   onChanged: (bool value) {
@@ -241,40 +243,28 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                     value ? _setDND(1) : _setDND(2);
                   },
                 )),
-            functionBtn('聊天置顶',
-                right: CupertinoSwitch(
-                  value: _top,
-                  onChanged: (bool value) {
-                    _top = value;
-                    setState(() {});
-                    value ? _setTop(1) : _setTop(2);
-                  },
-                )),
-            functionBtn('保存到通讯录',
-                right: CupertinoSwitch(
-                  value: _contact,
-                  onChanged: (bool value) {
-                    _contact = value;
-                    setState(() {});
-                    value ? _setTop(1) : _setTop(2);
-                  },
-                )),
-            new Space(height: 10.0),
-            functionBtn('我在群里的昵称', detail: cardName),
-            functionBtn('显示群成员昵称',
-                right: CupertinoSwitch(
-                  value: _showName,
-                  onChanged: (bool value) {
-                    _showName = value;
-                    setState(() {});
-                    value ? _setTop(1) : _setTop(2);
-                  },
-                )),
-            new Space(),
-            functionBtn('设置当前聊天背景'),
-            functionBtn('投诉'),
-            new Space(),
-            functionBtn('清空聊天记录'),
+            GroupItem(
+              title: '设置当前聊天背景',
+              noBorder: true,
+              onPressed: () => handle("setChatBackground"),
+            ),
+            // GroupItem(
+            //     title: '聊天置顶',
+            //     onPressed: () => handle("topChat"),
+            //     right: CupertinoSwitch(
+            //       value: _top,
+            //       onChanged: (bool value) {
+            //         _top = value;
+            //         setState(() {});
+            //         value ? _setTop(1) : _setTop(2);
+            //       },
+            //     )),
+            // GroupItem(
+            //   title: '投诉',
+            //   noBorder: true,
+            //   onPressed: () => handle("complaint"),
+            // ),
+
             new Space(),
             FlatButton(
               padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
@@ -304,12 +294,33 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     );
   }
 
+  // late GlobalModel _model;
+
+  _openGallery({type = ImageSource.gallery}) async {
+    var avatarPath = await openGallery();
+    if (strNoEmpty(avatarPath)) {
+      var params = {"avatar": avatarPath};
+      _updateGroup(params);
+      // await _model.logic.updateUser({"avatar": avatarPath});
+      // if (mounted) setState(() {});
+    }
+  }
+
+  _updateGroup(Map params) {
+    ImData.get()
+        .request(actGroupUpdate, params: params, msgId: widget.peer)
+        .then((value) {
+      _getGroupInfo();
+    });
+  }
+
   handle(String title) {
+    print("handle $title");
     switch (title) {
-      case '备注':
-        routePush(new GroupRemarksPage());
+      case "avatar":
+        _openGallery();
         break;
-      case '群聊名称':
+      case 'name':
         routePush(
           new GroupRemarksPage(
             groupInfoType: GroupInfoType.name,
@@ -318,14 +329,16 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
           ),
         ).then((data) {
           _log.info("name: $data");
-          // group.name = data ?? groupName;
-          // Notice.send(UcActions.groupName(), groupName);
+          if (data != null) {
+            var params = {"name": data};
+            _updateGroup(params);
+          }
         });
         break;
-      case '群二维码':
+      case 'groupQr':
         routePush(new CodePage(true));
         break;
-      case '群公告':
+      case 'notice':
         routePush(
           new GroupBillBoardPage(
             group!.uid,
@@ -336,64 +349,39 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
           ),
         ).then((data) {
           _log.info("notice: $data");
+          var params = {"notice": data};
+          _updateGroup(params);
         });
         break;
-      case '查找聊天记录':
-        routePush(new SearchPage());
-        break;
-      case '消息免打扰':
+      case 'isNotify':
         _dnd = !_dnd;
         _dnd ? _setDND(1) : _setDND(2);
         break;
-      case '聊天置顶':
+      case 'topChat':
         _top = !_top;
         setState(() {});
         _top ? _setTop(1) : _setTop(2);
         break;
-      case '设置当前聊天背景':
+      case 'setChatBackground':
         routePush(new ChatBackgroundPage());
         break;
-      case '我在群里的昵称':
-        routePush(
-          new GroupRemarksPage(
-            groupInfoType: GroupInfoType.cardName,
-            text: cardName,
-            groupId: widget.peer,
-          ),
-        ).then((data) {
-          cardName = data ?? cardName;
-        });
-        break;
-      case '投诉':
-        routePush(new WebViewPage(helpUrl, '投诉'));
-        break;
-      case '清空聊天记录':
-        confirmAlert(
-          context,
-          (isOK) {
-            if (isOK) showToast('敬请期待');
-          },
-          title: '确定删除群的聊天记录吗？',
-          okBtn: '清空',
-        );
-        break;
+      case 'complaint':
+      // routePush(new WebViewPage(helpUrl, '投诉'));
+      // break;
+      // case '清空聊天记录':
+      //   confirmAlert(
+      //     context,
+      //     (isOK) {
+      //       if (isOK) showToast('敬请期待');
+      //     },
+      //     title: '确定删除群的聊天记录吗？',
+      //     okBtn: '清空',
+      //   );
+      // break;
     }
   }
 
   _setTop(int i) {}
-
-  functionBtn(
-    title, {
-    final String? detail,
-    final Widget? right,
-  }) {
-    return GroupItem(
-      detail: detail,
-      title: title,
-      right: right,
-      onPressed: () => handle(title),
-    );
-  }
 }
 
 class GroupItem extends StatelessWidget {
@@ -401,12 +389,16 @@ class GroupItem extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
   final Widget? right;
+  final bool noBorder;
+  final bool isSwitch;
 
   GroupItem({
     this.detail,
     required this.title,
     this.onPressed,
     this.right,
+    this.noBorder = false,
+    this.isSwitch = false,
   });
 
   @override
@@ -422,21 +414,15 @@ class GroupItem extends StatelessWidget {
       }
     }
 
-    bool isSwitch = title == '消息免打扰' ||
-        title == '聊天置顶' ||
-        title == '保存到通讯录' ||
-        title == '显示群成员昵称';
-    bool noBorder = title == '备注' ||
-        title == '查找聊天记录' ||
-        title == '保存到通讯录' ||
-        title == '显示群成员昵称' ||
-        title == '投诉' ||
-        title == '清空聊天记录';
+    // bool isSwitch = title == '消息免打扰' ||
+    //     title == '聊天置顶' ||
+    //     title == '保存到通讯录' ||
+    //     title == '显示群成员昵称';
 
     return FlatButton(
       padding: EdgeInsets.only(left: 15, right: 15.0),
       color: Colors.white,
-      onPressed: () => onPressed,
+      onPressed: onPressed,
       child: new Container(
         padding: EdgeInsets.only(
           top: isSwitch ? 10 : 15.0,
