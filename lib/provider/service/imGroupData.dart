@@ -40,4 +40,20 @@ class ImGroupData {
     var group = Group.fromJson(res);
     return ImDb.g().db.groupDao.insertGroup(group.toCompanion(true));
   }
+
+  Future<GroupMember> onGroupMem(TopicBean tb, res) async {
+    var mem = GroupMember.fromJson(res);
+    // ImDb.g().db.groupMemberDao
+    return mem;
+  }
+
+  static Future<Map<String, ChatUser>> getMembersUser(String groupId) async {
+    List<GroupMember> list =
+        await ImDb.g().db.groupMemberDao.queryGroupMember(groupId);
+    List<String> uids = [];
+    list.forEach((mem) {
+      uids.add(mem.uid);
+    });
+    return await ImData.get().getSyncChatUsers(uids);
+  }
 }

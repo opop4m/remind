@@ -12,6 +12,7 @@ class ContactView extends StatelessWidget {
   final List<Friend> contacts;
   final ClickType type;
   final Callback? callback;
+  final bool isDelete;
 
   ContactView({
     this.sC,
@@ -19,6 +20,7 @@ class ContactView extends StatelessWidget {
     this.contacts = const [],
     this.type = ClickType.open,
     this.callback,
+    this.isDelete = false,
   });
 
   @override
@@ -42,6 +44,7 @@ class ContactView extends StatelessWidget {
               _contact.nameIndex == contacts[_contactIndex + 1].nameIndex;
           if (_contact.name != contacts[contacts.length - 1].name) {
             return new ContactItem(
+              isDelete: isDelete,
               avatar: getAvatarUrl(_contact.avatar),
               title: _contact.name,
               id: _contact.id,
@@ -60,6 +63,7 @@ class ContactView extends StatelessWidget {
           } else {
             return new Column(children: <Widget>[
               new ContactItem(
+                isDelete: isDelete,
                 avatar: getAvatarUrl(_contact.avatar),
                 title: _contact.name,
                 id: _contact.id,
@@ -79,7 +83,7 @@ class ContactView extends StatelessWidget {
               new Container(
                 padding: EdgeInsets.symmetric(vertical: 10.0),
                 child: new Text(
-                  '${contacts.length}位联系人',
+                  '${contacts.length}位' + (isDelete ? "成员" : '联系人'),
                   style: TextStyle(color: mainTextColor, fontSize: 16),
                 ),
               )

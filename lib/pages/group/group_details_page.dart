@@ -10,8 +10,6 @@ import 'package:client/pages/group/group_billboard_page.dart';
 import 'package:client/pages/group/group_member_details.dart';
 import 'package:client/pages/group/group_members_page.dart';
 import 'package:client/pages/group/group_remarks_page.dart';
-import 'package:client/pages/mine/code_page.dart';
-import 'package:client/pages/settings/chat_background_page.dart';
 import 'package:client/tools/commom.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/confirm_alert.dart';
@@ -47,7 +45,6 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _getGroupMembers();
     _getGroupInfo();
   }
 
@@ -60,8 +57,10 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   // 获取群组信息
   _getGroupInfo() async {
     group = await ImData.get().getChatGroup(widget.peer);
+
     var my = Global.get().curUser;
-    isGroupOwner = my.id == group!.uid;
+    isGroupOwner = (my.id == group!.uid);
+    _getGroupMembers();
     if (mounted) setState(() {});
   }
 
@@ -69,14 +68,24 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   // 获取群成员列表
   _getGroupMembers() async {
     memberList = ["+"];
+    if (isGroupOwner) memberList.add("-");
+    var my = Global.get().curUser;
     Im.get().requestSystem(actAllGroupMem, {}, msgId: widget.peer);
     _subGroupMem =
         ImDb.g().db.groupMemberDao.watchGroupMember(widget.peer).listen((list) {
       memberList.clear();
-      for (var i = 0; i < (list.length >= 9 ? 9 : list.length); i++) {
-        memberList.add(list[i].uid);
+      for (var i = 0; i < list.length; i++) {
+        var mem = list[i];
+        if (mem.uid == my.id) {
+          _dnd = mem.isNotify ?? true;
+        }
+        int len = isGroupOwner ? 13 : 14;
+        int j = list.length >= len ? len : list.length;
+        if (i < j) memberList.add(list[i].uid);
       }
       memberList.add("+");
+      if (isGroupOwner) memberList.add("-");
+
       if (mounted) setState(() {});
     });
   }
@@ -96,7 +105,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
             width: 48.0,
           ),
         ),
-        onTap: () => routePush(new SelectMembersPage(memberList, widget.peer)),
+        onTap: () => handle(item),
       );
     }
     return new FutureBuilder(
@@ -153,8 +162,8 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
 
   // 设置消息免打扰
   _setDND(int type) {
-    // DimGroup.setReceiveMessageOptionModel(widget.peer, Data.user(), type,
-    //     callback: (_) {});
+    ImData.get().request(actGroupNotifySet, params: type, msgId: widget.peer);
+    // print("type:" + type.toString());
   }
 
   @override
@@ -240,7 +249,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                   onChanged: (bool value) {
                     _dnd = value;
                     setState(() {});
-                    value ? _setDND(1) : _setDND(2);
+                    value ? _setDND(1) : _setDND(0);
                   },
                 )),
             GroupItem(
@@ -336,7 +345,8 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
         });
         break;
       case 'groupQr':
-        routePush(new CodePage(true));
+        showToast("敬请期待");
+        // routePush(new CodePage(true));
         break;
       case 'notice':
         routePush(
@@ -355,15 +365,28 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
         break;
       case 'isNotify':
         _dnd = !_dnd;
-        _dnd ? _setDND(1) : _setDND(2);
+        _dnd ? _setDND(1) : _setDND(0);
         break;
       case 'topChat':
         _top = !_top;
         setState(() {});
         _top ? _setTop(1) : _setTop(2);
         break;
+      case '+':
+        routePush(new SelectMembersPage(memberList, widget.peer, '选择邀请的联系人'));
+        break;
+      case '-':
+        if (isGroupOwner)
+          routePush(new SelectMembersPage(
+            memberList,
+            widget.peer,
+            '选择要删除的成员',
+            isDelete: true,
+          ));
+        break;
       case 'setChatBackground':
-        routePush(new ChatBackgroundPage());
+        showToast("敬请期待");
+        // routePush(new ChatBackgroundPage());
         break;
       case 'complaint':
       // routePush(new WebViewPage(helpUrl, '投诉'));

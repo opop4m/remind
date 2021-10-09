@@ -35,16 +35,6 @@ class MqttLib {
     return _instance;
   }
 
-  // Map<String, OnMsgCallBack> _map = Map();
-
-  // setMsgListener(String topic, OnMsgCallBack? cb) {
-  //   if (cb == null) {
-  //     _map.remove(topic);
-  //   } else {
-  //     _map[topic] = cb;
-  //   }
-  // }
-
   bool hasInit = false;
   OnStateListener? mqLibState;
   late MqttClient client;
@@ -62,6 +52,9 @@ class MqttLib {
     client.onSubscribeFail = onSubscribeFail;
     client.pongCallback = pong;
     client.keepAlivePeriod = 20;
+    // client.clientEventBus!
+    //     .on<ConnectAckMessageAvailable>()
+    //     .listen(connectAckReceived);
     _log.info("accout: ${conf.account},passwd: ${conf.passwd}");
     final connMessage = MqttConnectMessage()
         .authenticateAs(conf.account, conf.passwd)
@@ -72,6 +65,13 @@ class MqttLib {
         .withWillQos(MqttQos.atLeastOnce);
 
     client.connectionMessage = connMessage;
+  }
+
+  void connectAckReceived(ConnectAckMessageAvailable event) {
+    var message = event.message! as MqttConnectAckMessage;
+
+    _log.info("connectAckReceived cleanStart:" +
+        message.variableHeader.connectFlags.cleanStart.toString());
   }
 
   Stream<MqttPublishMessage>? get published =>

@@ -24,6 +24,7 @@ class ContactItem extends StatefulWidget {
   final OnAdd? add;
   final OnCancel? cancel;
   final bool showBadge;
+  final bool isDelete;
 
   ContactItem({
     required this.avatar,
@@ -31,6 +32,7 @@ class ContactItem extends StatefulWidget {
     this.id,
     this.isLine = true,
     this.showBadge = false,
+    this.isDelete = false,
     this.groupTitle,
     this.type = ClickType.open,
     this.add,
@@ -117,7 +119,15 @@ class ContactItemState extends State<ContactItem> {
           child: Badge(
             showBadge: widget.showBadge,
             child: Text(widget.title,
-                style: TextStyle(fontWeight: FontWeight.w400), maxLines: 1),
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  decoration: widget.isDelete && isSelect
+                      ? TextDecoration.lineThrough
+                      : null,
+                  decorationColor:
+                      widget.isDelete && isSelect ? Colors.red : null,
+                ),
+                maxLines: 1),
           ),
         ),
       ),

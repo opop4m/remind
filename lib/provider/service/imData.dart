@@ -32,6 +32,9 @@ const actQuitGroup = "quitGroup";
 const actAllGroupMem = "allGroupMem";
 const actGroupInvite = "groupInvite";
 const actGroupUpdate = "groupUpdate";
+const actGroupNotifySet = "GroupNotifySet";
+const actGroupMem = "GroupMem";
+const actGroupMemDel = "GroupMemDel";
 
 class ImData {
   static ImData? _instance;
@@ -70,6 +73,7 @@ class ImData {
   Future dispatch(String topic, res) async {
     var tb = parserTopic(topic);
     _log.info("act: ${tb.act},dispatch message: $res");
+    var futureDone = null;
     // var data = res["data"];
     switch (tb.act) {
       case actChat:
@@ -120,10 +124,13 @@ class ImData {
       case actGroupUpdate:
         await groupData.onGroupUpdate(tb, res);
         break;
+      case actGroupMem:
+        futureDone = await groupData.onGroupMem(tb, res);
+        break;
     }
     var c = _cacheRequest.remove(tb.act);
     if (c != null) {
-      c.complete();
+      c.complete(futureDone);
     }
   }
 
@@ -445,6 +452,29 @@ class ImData {
         Notice.send(UcActions.chatUser());
         UcNotice.send(UcActions.chatUsersMap(), _converCharUsers(value));
       });
+    return res;
+  }
+
+  Future<Map<String, ChatUser>> getSyncChatUsers(
+    List<String> uids,
+  ) async {
+    List<ChatUser> list = await ImDb.g().db.chatUserDao.getChatUsers(uids);
+    var res = Map<String, ChatUser>();
+    res = _converCharUsers(list);
+    List<String> reqList = [];
+    for (var i = 0; i < uids.length; i++) {
+      var uid = uids[i];
+      if (res[uid] == null) {
+        reqList.add(uid);
+      }
+    }
+    if (reqList.length > 0) {
+      List<ChatUser> users = await ImApi.getChatUser(reqList);
+      for (var i = 0; i < users.length; i++) {
+        var u = users[i];
+        res[u.id] = u;
+      }
+    }
     return res;
   }
 
