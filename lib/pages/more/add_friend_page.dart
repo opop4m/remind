@@ -185,13 +185,13 @@ class _AddFriendPageState extends State<AddFriendPage> {
       var user = rsp.res!;
       ImDb.g().db.friendDao.queryFriend(user.id).then((friend) {
         routePush(ContactsDetailsPage(
-          avatar: getAvatarUrl(friend.avatar),
+          avatar: getAvatarUrl(friend!.avatar),
           title: friend.name,
           id: friend.id,
         ));
       }).catchError((err) {
-        routePush(new AddFriendsDetails('search', user.id,
-            getAvatarUrl(user.avatar), user.name, user.gender ?? genderMale));
+        routePush(new AddFriendsDetails(user.id, getAvatarUrl(user.avatar),
+            user.name, user.gender ?? genderMale));
       });
     } else {
       isResult = true;

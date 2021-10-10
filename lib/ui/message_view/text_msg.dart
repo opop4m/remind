@@ -18,7 +18,7 @@ class TextMsg extends StatelessWidget {
     // final globalModel = Provider.of<GlobalModel>(context);
     var my = Global.get().curUser;
     bool isSelf = msg.fromId == my.id;
-
+    var isGroup = (msg.type == typeGroup);
     Widget content;
     // if (msg.msgType == msgTypeVideoCall || msg.msgType == msgTypeVoiceCall) {
     //   content = Text("data");
@@ -26,7 +26,9 @@ class TextMsg extends StatelessWidget {
     content = TextItemContainer2(
       text: text,
       isMyself: isSelf,
+      isGroup: isGroup,
       msg: msg,
+      userName: user.name,
     );
     // }
 

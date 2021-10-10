@@ -31,7 +31,8 @@ class PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     // The menu can be at most the size of the overlay minus 8.0 pixels in each
     // direction.
     Size s = constraints.biggest -
-        const Offset(_kMenuScreenPadding * 2.0, _kMenuScreenPadding * 2.0) as Size;
+            const Offset(_kMenuScreenPadding * 2.0, _kMenuScreenPadding * 2.0)
+        as Size;
     return BoxConstraints.loose(s);
   }
 
@@ -43,14 +44,16 @@ class PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     // Find the ideal vertical position.
     double y;
-    if (selectedItemOffset == null) {
+    if (selectedItemOffset == 0) {
       y = position.top;
     } else {
-      y = position.bottom +
-          (size.height - position.top - position.bottom) / 2.0 -
-          selectedItemOffset;
+      // y = position.bottom +
+      //     (size.height - position.top - position.bottom) / 2.0 -
+      //     selectedItemOffset;
+      y = selectedItemOffset;
     }
 
+    // print("selectedItemOffset:$selectedItemOffset, y:$y");
     // Find the ideal horizontal position.
     double x;
 
@@ -82,6 +85,7 @@ class PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     else if (y < childSize.height * 2) {
       y = position.top + height;
     }
+    // print("end y:$y");
     return Offset(x, y);
   }
 

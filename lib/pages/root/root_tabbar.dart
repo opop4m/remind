@@ -71,7 +71,8 @@ class RootTabBarState extends State<RootTabBar> {
     } else if (v == '帮助与反馈') {
       routePush(new WebViewPage(helpUrl, '帮助与反馈'));
     } else {
-      routePush(new LanguagePage());
+      // routePush(new LanguagePage());
+      showToast("敬请期待");
     }
   }
 
@@ -82,8 +83,8 @@ class RootTabBarState extends State<RootTabBar> {
       {"title": '发起群聊', 'icon': 'assets/images/contacts_add_newmessage.png'},
       {"title": '添加朋友', 'icon': 'assets/images/ic_add_friend.webp'},
       {"title": '扫一扫', 'icon': ''},
-      {"title": '收付款', 'icon': ''},
-      {"title": '帮助与反馈', 'icon': ''},
+      // {"title": '收付款', 'icon': ''},
+      // {"title": '帮助与反馈', 'icon': ''},
     ];
 
     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
@@ -105,15 +106,17 @@ class RootTabBarState extends State<RootTabBar> {
       title: widget.pages[currentIndex].title,
       showShadow: false,
       rightDMActions: <Widget>[
-        new InkWell(
-          child: new Container(
-            width: 60.0,
-            child: new Image.asset('assets/images/search_black.webp'),
-          ),
-          onTap: () => routeFadePush(new SearchPage()),
-        ),
+        // new InkWell(
+        //   child: new Container(
+        //     width: 60.0,
+        //     child: new Image.asset('assets/images/search_black.webp'),
+        //   ),
+        //   onTap: () => routeFadePush(new SearchPage()),
+        // ),
         new WPopupMenu(
           menuWidth: winWidth(context) / 2.5,
+          menuHeight: actions.length * 50,
+          // menuHeight: 250,
           alignment: Alignment.center,
           onValueChanged: (String value) {
             if (!strNoEmpty(value)) return;

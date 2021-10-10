@@ -12,13 +12,16 @@ import 'package:client/ui/w_pop/magic_pop.dart';
 
 class TextItemContainer2 extends StatelessWidget {
   final String text;
-  final bool isMyself;
+  final bool isMyself, isGroup;
   final ChatMsg msg;
+  final String userName;
 
   TextItemContainer2({
     required this.text,
     this.isMyself = true,
+    required this.isGroup,
     required this.msg,
+    this.userName = "",
   });
 
   TextSpanBuilder _spanBuilder = TextSpanBuilder();
@@ -74,7 +77,8 @@ class TextItemContainer2 extends StatelessWidget {
         pressType: PressType.longPress,
         actions: ['复制', '转发', '收藏', '撤回', '删除'],
         child: ExtendedText(
-          text + (isMyself ? "          ".joinChar() : "          ".joinChar()),
+          text +
+              (isMyself ? "            ".joinChar() : "          ".joinChar()),
           maxLines: 99,
           overflow: TextOverflow.visible,
           specialTextSpanBuilder: _spanBuilder,
@@ -90,6 +94,16 @@ class TextItemContainer2 extends StatelessWidget {
         crossAxisAlignment:
             isMyself ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
+          Visibility(
+              visible: !isMyself && isGroup,
+              child: Container(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Text(
+                  userName,
+                  style: TextStyle(
+                      color: Color.fromRGBO(108, 108, 108, 0.8), fontSize: 11),
+                ),
+              )),
           Container(
             // width: text.length > 24 ? (winWidth(context) - 66) - 100 : null,
             padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
@@ -97,7 +111,8 @@ class TextItemContainer2 extends StatelessWidget {
               color: isMyself ? Color(0xff98E165) : Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(5.0)),
             ),
-            margin: EdgeInsets.only(right: 7.0, top: 8),
+            margin:
+                EdgeInsets.only(right: 7.0, top: !isMyself && isGroup ? 0 : 8),
             child: Stack(
               children: [
                 content,

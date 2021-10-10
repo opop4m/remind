@@ -7,14 +7,13 @@ import 'package:client/ui/orther/label_row.dart';
 import 'package:client/ui/orther/person_card.dart';
 
 class AddFriendsDetails extends StatefulWidget {
-  final String type;
-  final String imUser;
+  // final String type;
+  final String id;
   final String avatarImg;
   final String nickName;
   final int gender;
 
-  AddFriendsDetails(
-      this.type, this.imUser, this.avatarImg, this.nickName, this.gender);
+  AddFriendsDetails(this.id, this.avatarImg, this.nickName, this.gender);
 
   @override
   _AddFriendsDetailsState createState() => _AddFriendsDetailsState();
@@ -25,7 +24,7 @@ class _AddFriendsDetailsState extends State<AddFriendsDetails> {
     var content = [
       new PersonCard(
           imageUrl: widget.avatarImg,
-          name: strNoEmpty(widget.nickName) ? widget.nickName : widget.imUser,
+          name: strNoEmpty(widget.nickName) ? widget.nickName : widget.id,
           gender: 0,
           area: '北京 海淀'),
       new Container(
@@ -53,12 +52,12 @@ class _AddFriendsDetailsState extends State<AddFriendsDetails> {
           text: '添加到通讯录',
           onPressed: () {
             var my = Global.get().curUser;
-            if (widget.imUser == my.id) {
+            if (widget.id == my.id) {
               showToast("不可以添加自己");
               return;
             }
-            routePush(new VerificationPage(
-                nickName: widget.nickName, id: widget.imUser));
+            routePush(
+                new VerificationPage(nickName: widget.nickName, id: widget.id));
           })
     ];
 

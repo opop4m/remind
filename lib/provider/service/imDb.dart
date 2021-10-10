@@ -99,9 +99,9 @@ class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
     return q.write(FriendsCompanion(readTime: Value(readTime)));
   }
 
-  Future<Friend> queryFriend(String fUid) {
+  Future<Friend?> queryFriend(String fUid) {
     var q = select(friends)..where((tbl) => tbl.id.equals(fUid));
-    return q.getSingle();
+    return q.getSingleOrNull();
   }
 
   Future deleteFriend(String fUid) {

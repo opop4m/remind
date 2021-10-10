@@ -58,6 +58,7 @@ class _MenuPopWidgetState extends State<MenuPopWidget> {
       ),
       Offset.zero & overlay.size,
     );
+    print(position.toString());
   }
 
   @override

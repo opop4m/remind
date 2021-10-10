@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:client/pages/contacts/contacts_details_page.dart';
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +35,17 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
     start(true);
   }
 
+  @override
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // print("didUpdateWidget:" + widget.user.toString());
+    var isGroup = (widget.model.type == typeGroup);
+    var isSelf = widget.model.fromId == Global.get().curUser.id;
+    if (isGroup && !isSelf) {
+      setState(() {});
+    }
+  }
+
   start(bool isInit) {
     controller = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
@@ -48,6 +61,31 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
 
   Widget build(BuildContext context) {
     var my = Global.get().curUser;
+    var isGroup = (widget.model.type == typeGroup);
+    Widget img = ImageView(
+      img: widget.model.fromId == my.id
+          ? getAvatarUrl(my.avatar)
+          : getAvatarUrl(widget.user.avatar),
+      height: 50,
+      width: 50,
+      fit: BoxFit.cover,
+    );
+    // if (isGroup && widget.model.fromId != my.id) {
+    //   String? userAvatar;
+    //   img = FutureBuilder(
+    //       future: ImData.getUserInfo(widget.model.fromId, (data) {
+    //         ChatUser user = data;
+    //         userAvatar = user.avatar;
+    //       }),
+    //       builder: (ctx, snapshot) {
+    //         return ImageView(
+    //           img: getAvatarUrl(userAvatar),
+    //           height: 50,
+    //           width: 50,
+    //           fit: BoxFit.cover,
+    //         );
+    //       });
+    // }
     return new InkWell(
       child: AnimateWidget(
         animation: animation,
@@ -57,14 +95,7 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
             borderRadius: BorderRadius.all(Radius.circular(5.0)),
           ),
           margin: EdgeInsets.only(right: 10.0),
-          child: new ImageView(
-            img: widget.model.fromId == my.id
-                ? getAvatarUrl(my.avatar)
-                : getAvatarUrl(widget.user.avatar),
-            height: 50,
-            width: 50,
-            fit: BoxFit.cover,
-          ),
+          child: img,
         ),
       ),
       onDoubleTap: () {

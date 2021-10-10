@@ -1,6 +1,8 @@
 import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/chat/more_info_page.dart';
 import 'package:client/pages/chat/set_remark_page.dart';
+import 'package:client/pages/more/add_friend_details.dart';
+import 'package:client/pages/more/verification_page.dart';
 import 'package:client/pages/wechat_friends/page/wechat_friends_circle.dart';
 import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
@@ -26,7 +28,7 @@ class ContactsDetailsPage extends StatefulWidget {
 }
 
 class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
-  List<Widget> body(bool isSelf) {
+  List<Widget> body(bool isSelf, bool isFriend) {
     return [
       new ContactCard(
         img: widget.avatar,
@@ -48,28 +50,41 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         label: '朋友圈',
         isLine: true,
         lineWidth: 0.3,
-        onPressed: () => routePush(new WeChatFriendsCircle()),
+        // onPressed: () => routePush(new WeChatFriendsCircle()),
+        onPressed: () => showToast("敬请期待"),
       ),
       new LabelRow(
         label: '更多信息',
-        onPressed: () => routePush(new MoreInfoPage()),
+        // onPressed: () => routePush(new MoreInfoPage()),
+        onPressed: () => showToast("敬请期待"),
       ),
-      new ButtonRow(
-        margin: EdgeInsets.only(top: 10.0),
-        text: '发消息',
-        isBorder: true,
-        onPressed: () {
-          String key = Im.routeKey(widget.id, typePerson);
-          routePushReplace(
-              new ChatPage(
-                  id: widget.id, title: widget.title, type: typePerson),
-              arguments: key);
-        },
+      Visibility(
+        visible: !isSelf && !isFriend,
+        child: ButtonRow(
+          margin: EdgeInsets.only(top: 10.0),
+          text: '添加好友',
+          isBorder: !(!isSelf && isFriend),
+          onPressed: () {
+            routePush(VerificationPage(nickName: widget.title, id: widget.id));
+          },
+        ),
       ),
       new Visibility(
-        visible: !isSelf,
+        visible: !isSelf && isFriend,
         child: Column(
           children: [
+            ButtonRow(
+              margin: EdgeInsets.only(top: 10.0),
+              text: '发消息',
+              isBorder: true,
+              onPressed: () {
+                String key = Im.routeKey(widget.id, typePerson);
+                routePushReplace(
+                    new ChatPage(
+                        id: widget.id, title: widget.title, type: typePerson),
+                    arguments: key);
+              },
+            ),
             Divider(
               height: 1,
               thickness: 0.1,
@@ -135,7 +150,7 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         ),
       )
     ];
-
+    var isFriend = false;
     return new Scaffold(
       backgroundColor: chatBg,
       appBar: new ComMomBar(
@@ -143,8 +158,22 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
           backgroundColor: Colors.white,
           rightDMActions: isSelf ? [] : rWidget),
       body: new SingleChildScrollView(
-        child: new Column(children: body(isSelf)),
+        child: FutureBuilder(
+          future: _queryFiend((state) {
+            if (state != null) {
+              isFriend = true;
+            }
+          }),
+          builder: (ctx, snapshot) {
+            return Column(children: body(isSelf, isFriend));
+          },
+        ),
       ),
     );
+  }
+
+  Future _queryFiend(Callback cb) async {
+    var f = await ImDb.g().db.friendDao.queryFriend(widget.id);
+    cb(f);
   }
 }

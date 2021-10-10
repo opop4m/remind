@@ -1,4 +1,5 @@
 import 'package:client/http/api.dart';
+import 'package:client/pages/contacts/contacts_details_page.dart';
 import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
@@ -120,7 +121,14 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
         return new SizedBox(
           width: (winWidth(context) - 60) / 5,
           child: FlatButton(
-            onPressed: () => routePush(GroupMemberDetails(my.id == uId, uId)),
+            // onPressed: () => routePush(GroupMemberDetails(my.id == uId, uId)),
+            onPressed: () {
+              routePush(ContactsDetailsPage(
+                title: nickName,
+                avatar: uFace,
+                id: uId,
+              ));
+            },
             padding: EdgeInsets.all(0),
             highlightColor: Colors.transparent,
             child: Column(
