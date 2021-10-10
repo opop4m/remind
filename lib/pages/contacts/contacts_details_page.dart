@@ -39,7 +39,7 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         isBorder: true,
       ),
       new Visibility(
-        visible: !isSelf,
+        visible: !isSelf && isFriend,
         child: new LabelRow(
           label: '设置备注和标签',
           onPressed: () => routePush(new SetRemarkPage()),
@@ -134,8 +134,9 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isSelf = Global.get().curUser.account == widget.id;
-
+    bool isSelf = Global.get().curUser.id == widget.id;
+    print(
+        "isSelf: $isSelf, widget.id: ${widget.id}, myId: ${Global.get().curUser.id}");
     var rWidget = [
       new SizedBox(
         width: 60,

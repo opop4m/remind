@@ -62,10 +62,11 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var my = Global.get().curUser;
     var isGroup = (widget.model.type == typeGroup);
+    var isSelf = widget.model.fromId == my.id;
+    var avatar =
+        isSelf ? getAvatarUrl(my.avatar) : getAvatarUrl(widget.user.avatar);
     Widget img = ImageView(
-      img: widget.model.fromId == my.id
-          ? getAvatarUrl(my.avatar)
-          : getAvatarUrl(widget.user.avatar),
+      img: avatar,
       height: 50,
       width: 50,
       fit: BoxFit.cover,
@@ -103,9 +104,9 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
       },
       onTap: () {
         routePush(new ContactsDetailsPage(
-          title: widget.user.name,
-          avatar: widget.user.avatar ?? defIcon,
-          id: widget.user.id,
+          title: isSelf ? my.nickName : widget.user.name,
+          avatar: avatar,
+          id: isSelf ? my.id : widget.user.id,
         ));
       },
     );
