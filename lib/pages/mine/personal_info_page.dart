@@ -85,8 +85,16 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         isLine: true,
         isRight: true,
         rValue: Global.get().curUser.nickName,
-        onPressed: () =>
-            routePush(new ChangeNamePage(Global.get().curUser.nickName)),
+        onPressed: () {
+          routePush(new ChangeNamePage(Global.get().curUser.nickName))
+              .then((nickName) async {
+            var my = Global.get().curUser;
+            if (nickName != my.nickName) {
+              await model.logic.updateUser({"nickName": nickName});
+              if (mounted) setState(() {});
+            }
+          });
+        },
       ),
       new Column(
         children: data.map((item) => buildContent(item, model)).toList(),

@@ -20,7 +20,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
 
   String initContent = "";
 
-  void setInfoMethod(GlobalModel model) {
+  void setInfoMethod(GlobalModel model) async {
     if (!strNoEmpty(_tc.text)) {
       showToast('输入的内容不能为空');
       return;
@@ -29,7 +29,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
       showToast('输入的内容太长了');
       return;
     }
-
+    Navigator.of(context).pop(_tc.text);
     // setUsersProfileMethod(
     //   context,
     //   nickNameStr: _tc.text,
@@ -38,7 +38,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
     //     if (data.toString().contains('succ')) {
     //       showToast(context, '设置名字成功');
     //       model.refresh();
-    //       Navigator.of(context).pop();
+    //
     //     } else
     //       showToast(context, '设置名字失败');
     //   },

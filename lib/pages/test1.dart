@@ -5,6 +5,7 @@ import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/inputDialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -125,6 +126,10 @@ class _test extends State<Test> {
               onPressed: () => _showInputDialog(context),
               child: Text("showInputDialog"),
             ),
+            ElevatedButton(
+              onPressed: () => _showIosDialog(),
+              child: Text("showIosDialog"),
+            ),
           ]),
         ],
       ),
@@ -186,6 +191,27 @@ class _test extends State<Test> {
         UcNotice.send(UcActions.chatPop(), tt++);
         break;
     }
+  }
+
+  _showIosDialog() {
+    showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text('提示'),
+            content: Text('确认删除吗？'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('取消'),
+                onPressed: () {},
+              ),
+              CupertinoDialogAction(
+                child: Text('确认'),
+                onPressed: () {},
+              ),
+            ],
+          );
+        });
   }
 
   int tt = 0;

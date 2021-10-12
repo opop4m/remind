@@ -20,11 +20,11 @@ class MinePage extends StatefulWidget {
 class _MinePageState extends State<MinePage> {
   void action(name) {
     switch (name) {
-      case '设置':
+      case '退出':
         logout();
         break;
       case '支付':
-        routePush(new PayHomePage());
+        // routePush(new PayHomePage());
         break;
       default:
         routePush(new LanguagePage());
@@ -34,20 +34,23 @@ class _MinePageState extends State<MinePage> {
 
   Widget buildContent(item) {
     return new ListTileView(
-      border: item['label'] == '支付' ||
-              item['label'] == '设置' ||
-              item['label'] == '表情'
+      border: item['label'] == '银行卡' ||
+              item['label'] == '退出' ||
+              item['label'] == '语言'
           ? null
-          : Border(bottom: BorderSide(color: lineColor, width: 0.2)),
+          : Border(bottom: BorderSide(color: Colors.grey[400]!, width: 0.5)),
       title: item['label'],
       titleStyle: TextStyle(fontSize: 15.0),
       isLabel: false,
       padding: EdgeInsets.symmetric(vertical: 16.0),
       icon: item['icon'],
-      margin: EdgeInsets.symmetric(
-          vertical:
-              item['label'] == '支付' || item['label'] == '设置' ? 10.0 : 0.0),
-      onPressed: () => action(item['label']),
+      margin: item['label'] == '余额'
+          ? EdgeInsets.only(top: 10)
+          : EdgeInsets.symmetric(
+              vertical:
+                  item['label'] == '退出' || item['label'] == '语言' ? 10.0 : 0.0),
+      onPressed: item['label'] == '余额' ? null : () => action(item['label']),
+      // onPressed: null,
       width: 25.0,
       fit: BoxFit.cover,
       horizontal: 15.0,
@@ -64,12 +67,12 @@ class _MinePageState extends State<MinePage> {
 
   Widget body(GlobalModel model) {
     List data = [
-      {'label': '支付', 'icon': 'assets/images/mine/ic_pay.png'},
-      {'label': '收藏', 'icon': 'assets/images/favorite.webp'},
-      {'label': '相册', 'icon': 'assets/images/mine/ic_card_package.png'},
-      {'label': '卡片', 'icon': 'assets/images/mine/ic_card_package.png'},
-      {'label': '表情', 'icon': 'assets/images/mine/ic_emoji.png'},
-      {'label': '设置', 'icon': 'assets/images/mine/ic_setting.png'},
+      {'label': '余额', 'icon': 'assets/images/mine/ic_pay.png'},
+      {'label': '充值', 'icon': 'assets/images/favorite.webp'},
+      {'label': '提现', 'icon': 'assets/images/mine/ic_card_package.png'},
+      {'label': '银行卡', 'icon': 'assets/images/mine/ic_card_package.png'},
+      {'label': '语言', 'icon': 'assets/images/mine/ic_emoji.png'},
+      {'label': '退出', 'icon': 'assets/images/mine/ic_setting.png'},
     ];
 
     var row = [

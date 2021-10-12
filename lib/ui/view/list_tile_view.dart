@@ -67,23 +67,43 @@ class ListTileView extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: horizontal),
           child: new ImageView(img: icon, width: width, fit: fit),
         ),
-        new Container(
-          width: winWidth(context) - 60,
-          padding: padding,
-          decoration: BoxDecoration(border: border),
-          child: new Row(children: view),
+        Expanded(
+          child: Container(
+            // width: winWidth(context) - 60,
+            padding: padding,
+            decoration: BoxDecoration(border: border),
+            child: Column(
+              children: [
+                Row(children: view),
+              ],
+            ),
+          ),
         ),
       ],
     );
 
+    var rowLabel = Container(
+      color: Colors.white,
+      padding: EdgeInsets.all(0),
+      child: row,
+    );
     return new Container(
       margin: margin,
-      child: new FlatButton(
-        color: Colors.white,
-        padding: EdgeInsets.all(0),
-        onPressed: onPressed ?? () {},
-        child: row,
-      ),
+      child: onPressed == null
+          ? rowLabel
+          // : InkWell(
+          //     child: rowLabel,
+          //     onTap: onPressed,
+          //   ),
+          : TextButton(
+              // color: Colors.white,
+              // padding: EdgeInsets.all(0),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+              ),
+              onPressed: onPressed!,
+              child: row,
+            ),
     );
   }
 }
