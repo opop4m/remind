@@ -4,6 +4,7 @@ import 'package:badges/badges.dart';
 import 'package:client/pages/contacts/group_launch_page.dart';
 import 'package:client/pages/home/search_page.dart';
 import 'package:client/pages/settings/language_page.dart';
+import 'package:client/provider/service/im.dart';
 import 'package:client/tools/utils.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,12 +32,32 @@ class RootTabBarState extends State<RootTabBar> {
   late int currentIndex;
   List<Offstage> contents = [];
   late PageController pageController;
+  late StreamSubscription<ConnectState> _connectSub;
 
+  String connectTips = "";
   @override
   void initState() {
     super.initState();
     currentIndex = widget.currentIndex;
     pageController = PageController(initialPage: currentIndex);
+
+    _connectSub = Im.get().statusStream.listen((state) {
+      if (state == ConnectState.networkErr) {
+        connectTips = "(未连接)";
+      } else if (state == ConnectState.connecting) {
+        connectTips = "(连接中)";
+      } else {
+        connectTips = "";
+      }
+      // print("tabbar connect: $state");
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _connectSub.cancel();
   }
 
   List<BottomNavigationBarItem> getBottomNavigationBarItem() {
@@ -102,8 +123,12 @@ class RootTabBarState extends State<RootTabBar> {
       elevation: 0,
     );
 
+    String appTitle = widget.pages[currentIndex].title;
+    if (currentIndex == 0) {
+      appTitle = appTitle + connectTips;
+    }
     var appBar = new ComMomBar(
-      title: widget.pages[currentIndex].title,
+      title: appTitle,
       showShadow: false,
       rightDMActions: <Widget>[
         // new InkWell(

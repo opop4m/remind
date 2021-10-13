@@ -22,8 +22,6 @@ final _log = Logger("im");
 class Im {
   static Im? _instance;
 
-  /// 内部构造方法，可避免外部暴露构造函数，进行实例化
-  Im._internal();
   factory Im.get() => _getInstance();
   static _getInstance() {
     // 只能有一个实例
@@ -31,6 +29,14 @@ class Im {
       _instance = Im._internal();
     }
     return _instance;
+  }
+
+  Im._internal() {
+    _stateStreamC = StreamController.broadcast(
+      onListen: () {
+        _stateStreamC.add(currentState);
+      },
+    );
   }
 
   static final String topicSystem = "im/system";
@@ -83,7 +89,7 @@ class Im {
     });
   }
 
-  StreamController<ConnectState> _stateStreamC = StreamController.broadcast();
+  late StreamController<ConnectState> _stateStreamC;
   Stream<ConnectState> get statusStream => _stateStreamC.stream;
 
   void onStateChange(ConnectState state) {
@@ -110,6 +116,7 @@ class Im {
   }
 
   void connect() async {
+    reconnect = true;
     var connectStatus = await MqttLib.get().connect();
     // _log.info("after connect: ${connectStatus?.returnCode}");
     if (connectStatus!.returnCode != null &&

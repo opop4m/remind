@@ -98,7 +98,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
         setupInteractedMessage();
         initWebRtc();
         Im.get().initData();
-      }
+      } else if (state == ConnectState.networkErr) {}
     });
     Im.get().connect();
   }

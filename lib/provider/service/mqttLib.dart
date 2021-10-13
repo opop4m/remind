@@ -103,6 +103,7 @@ class MqttLib {
     MqttClientConnectionStatus? res;
     try {
       _log.info("go connect...");
+      mqLibState?.call(ConnectState.connecting);
       res = await client.connect();
       if (res!.returnCode == MqttConnectReturnCode.connectionAccepted) {
         client.updates!.listen(onMessageArrive);
