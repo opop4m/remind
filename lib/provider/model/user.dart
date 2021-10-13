@@ -50,16 +50,16 @@ class LoginRsp extends FromJson {
 }
 
 class ChatConf extends FromJson {
-  String host = "";
-  String port = "";
+  String wsHost = "";
+  String wsPort = "";
   String stun = "";
   String turn = "";
   String fileHost = "";
   String uploadHost = "";
   ChatConf();
   ChatConf fromJson(dynamic json) {
-    host = json["host"];
-    port = json["port"];
+    wsHost = json["wsHost"];
+    wsPort = json["wsPort"];
     stun = json["stun"];
     turn = json["turn"];
     fileHost = json["fileHost"];
@@ -69,8 +69,8 @@ class ChatConf extends FromJson {
 
   Map toJson() {
     return {
-      "host": host,
-      "port": port,
+      "wsHost": wsHost,
+      "wsPort": wsPort,
       "stun": stun,
       "turn": turn,
       "fileHost": fileHost,

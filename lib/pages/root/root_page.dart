@@ -85,8 +85,8 @@ class _RootPageState extends State<RootPage> with RouteAware {
     await Im.get().init(
       user.id,
       uuid,
-      host: chatConf.host,
-      port: chatConf.port,
+      host: chatConf.wsHost,
+      port: chatConf.wsPort,
       account: user.id,
       passwd: user.accessToken,
       // passwd: "useraccessToken",

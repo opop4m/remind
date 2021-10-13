@@ -55,13 +55,13 @@ class Im {
   init(
     String selfId,
     String uuid, {
-    String host = "127.0.0.1",
+    String host = "ws://127.0.0.1/mqtt",
     String port = "4083",
     String account = "",
     String passwd = "",
   }) async {
     var mqttConf = MqttConf();
-    mqttConf.host = "ws://$host/mqtt";
+    mqttConf.host = host;
     mqttConf.port = int.parse(port);
     mqttConf.clientId = uuid;
     mqttConf.account = account;
