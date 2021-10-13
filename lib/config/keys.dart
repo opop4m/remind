@@ -1,6 +1,7 @@
 class Keys {
+  Keys._();
   static final String currentLanguageCode = "current_language_code";
-  static final String currentLanguage = "current_language";
+  static final String devicesLanguageCode = "current_language";
   static final String appName = "app_name";
   static final String user = "user";
   static final String area = "area";

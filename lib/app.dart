@@ -109,6 +109,10 @@ class _MyApp extends State<MyApp> {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       locale: model.currentLocale,
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        print('deviceLocale: $deviceLocale');
+        model.logic.saveDeviceLocale(deviceLocale);
+      },
       navigatorObservers: [routeObserver],
       // routes: {
       //   '/': (context) {

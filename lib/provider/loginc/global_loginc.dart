@@ -96,9 +96,10 @@ class GlobalLogic {
     }
     API.fileHost = Global.get().chatConf.fileHost;
     API.uploadHost = Global.get().chatConf.uploadHost;
-    var lcode = await SharedUtil.instance.getString(Keys.currentLanguageCode);
-    if (lcode != "") {
-      _model.currentLocale = Locale(lcode);
+    var lcode =
+        await SharedUtil.instance.getStringList(Keys.currentLanguageCode);
+    if (lcode.length > 0) {
+      _model.currentLocale = Locale(lcode[0]);
     }
     await Global.get().init();
     if (hasLogin) {
@@ -124,6 +125,16 @@ class GlobalLogic {
       SharedUtil.instance.saveInt(Keys.loggedTime, Utils.getTimestampSecond());
       API.fileHost = Global.get().chatConf.fileHost;
       API.uploadHost = Global.get().chatConf.uploadHost;
+    }
+  }
+
+  void saveDeviceLocale(Locale? deviceLocale) async {
+    if (deviceLocale != null) {
+      var q = await SharedUtil.instance.getStringList(Keys.devicesLanguageCode);
+      if (q.length == 0) {
+        SharedUtil.instance.saveStringList(Keys.devicesLanguageCode,
+            [deviceLocale.languageCode, deviceLocale.countryCode ?? ""]);
+      }
     }
   }
 }

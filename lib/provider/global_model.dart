@@ -8,7 +8,7 @@ class GlobalModel extends ChangeNotifier {
   BuildContext? context;
 
   ///app的名字
-  String appName = "微信flutter";
+  String appName = "unicorn";
 
   /// 用户信息
   // String account = '';
@@ -29,7 +29,6 @@ class GlobalModel extends ChangeNotifier {
 
   GlobalModel() {
     logic = GlobalLogic(this);
-    currentLocale = AppLocalizations.supportedLocales[1];
   }
 
   void setContext(BuildContext context) {

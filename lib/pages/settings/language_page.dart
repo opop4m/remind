@@ -11,10 +11,22 @@ class LanguagePage extends StatefulWidget {
 }
 
 class _LanguagePageState extends State<LanguagePage> {
-  final List<LanguageData> languageDatas = [
-    LanguageData("中文", "zh", "CN", "微信-flutter"),
-    LanguageData("English", "en", "US", "Wechat-flutter"),
-  ];
+  final List<LanguageData> languageDatas = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    languageDatas.clear();
+    languageDatas.addAll([
+      LanguageData("中文", "zh", "CN", S.of(context).appName),
+      LanguageData("English", "en", "US", S.of(context).appName),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +39,8 @@ class _LanguagePageState extends State<LanguagePage> {
         final String language = languageDatas[index].language;
         final String appName = languageDatas[index].appName;
         return new RadioListTile(
-          value: language,
-          groupValue: model.currentLocale?.countryCode,
+          value: languageCode,
+          groupValue: model.currentLocale?.languageCode,
           onChanged: (value) {
             // model.currentLanguageCode = [languageCode, countryCode];
             // model.currentLanguage = language;
@@ -38,10 +50,10 @@ class _LanguagePageState extends State<LanguagePage> {
             model.refresh();
             SharedUtil.instance.saveStringList(
                 Keys.currentLanguageCode, [languageCode, countryCode]);
-            SharedUtil.instance.saveString(Keys.currentLanguage, language);
+            // SharedUtil.instance.saveString(Keys.currentLanguage, language);
             SharedUtil.instance.saveString(Keys.appName, appName);
           },
-          title: new Text(languageDatas[index].language),
+          title: new Text(language),
         );
       }),
     );

@@ -169,7 +169,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     Provider.of<GlobalModel>(context)..setContext(context);
     List<TabBarModel> pages = <TabBarModel>[
       new TabBarModel(
-        title: S.of(context).message,
+        title: S.of(context).appName,
         icon: LoadImage("assets/images/tabbar_chat_c.webp"),
         selectIcon: new LoadImage("assets/images/tabbar_chat_s.webp"),
         page: new HomePage(),
