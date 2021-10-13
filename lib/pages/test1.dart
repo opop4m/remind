@@ -167,9 +167,10 @@ class _test extends State<Test> {
         _streamSubscription?.cancel();
         break;
       case "test":
-        Im.get().requestSystem(API.actChatUser, {
-          "uids": [inputC.text]
-        });
+        // Im.get().requestSystem(API.actChatUser, {
+        //   "uids": [inputC.text]
+        // });
+        showToast("test");
         break;
       case "badge":
         if (PlatformUtils.isAndroid || PlatformUtils.isIOS) {
@@ -179,14 +180,12 @@ class _test extends State<Test> {
         }
         break;
       case "showLoading":
-        EasyLoading.show(
-            status: 'loading...', maskType: EasyLoadingMaskType.black);
+        showLoading();
         Future.delayed(Duration(seconds: 3), () {
           EasyLoading.dismiss();
         });
         break;
       case "dismissLoading":
-        ImDb.g().init("6157e2be54761c05d2127743");
         break;
       case "sub":
         _sub = UcNotice.addListener(UcActions.chatPop()).listen((event) {

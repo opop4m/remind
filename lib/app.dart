@@ -78,7 +78,6 @@ class _MyApp extends State<MyApp> {
   void initState() {
     initializeFlutterFire();
     super.initState();
-    EasyLoading.instance.userInteractions = false;
   }
 
   @override
