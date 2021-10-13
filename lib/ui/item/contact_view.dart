@@ -1,3 +1,4 @@
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/view/indicator_page_view.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class ContactView extends StatelessWidget {
           if (_contact.name != contacts[contacts.length - 1].name) {
             return new ContactItem(
               isDelete: isDelete,
+              gender: _contact.gender,
               avatar: getAvatarUrl(_contact.avatar),
               title: _contact.name,
               id: _contact.id,
@@ -63,6 +65,7 @@ class ContactView extends StatelessWidget {
           } else {
             return new Column(children: <Widget>[
               new ContactItem(
+                gender: _contact.gender,
                 isDelete: isDelete,
                 avatar: getAvatarUrl(_contact.avatar),
                 title: _contact.name,

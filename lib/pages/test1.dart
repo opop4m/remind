@@ -4,6 +4,7 @@ import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
+import 'package:client/ui/dialog/bottomOption.dart';
 import 'package:client/ui/dialog/inputDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -131,6 +132,14 @@ class _test extends State<Test> {
               child: Text("showIosDialog"),
             ),
           ]),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () => _showModalBottomSheet(context),
+                child: Text("showIosDialog"),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -193,6 +202,12 @@ class _test extends State<Test> {
     }
   }
 
+  _showModalBottomSheet(BuildContext ctx) {
+    showSimpleBottomOptions(ctx, ["test1", "test2"]).then((value) {
+      print(value);
+    });
+  }
+
   _showIosDialog() {
     showCupertinoDialog(
         context: context,
@@ -203,7 +218,9 @@ class _test extends State<Test> {
             actions: <Widget>[
               CupertinoDialogAction(
                 child: Text('取消'),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
               CupertinoDialogAction(
                 child: Text('确认'),

@@ -1,11 +1,11 @@
 import 'package:client/http/api.dart';
 import 'package:client/pages/mine/code_page.dart';
-import 'package:client/tools/adapter/imagePickerApi.dart';
+import 'package:client/provider/model/msgEnum.dart';
+import 'package:client/provider/service/im.dart';
 import 'package:client/tools/library.dart';
-import 'package:client/tools/mimeType.dart';
+import 'package:client/ui/dialog/bottomOption.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:client/pages/mine/change_name_page.dart';
 import 'package:client/provider/global_model.dart';
@@ -80,7 +80,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         ),
         onPressed: () => _openGallery(),
       ),
-      new LabelRow(
+      LabelRow(
         label: '昵称',
         isLine: true,
         isRight: true,
@@ -93,6 +93,24 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               await model.logic.updateUser({"nickName": nickName});
               if (mounted) setState(() {});
             }
+          });
+        },
+      ),
+      LabelRow(
+        label: '性别',
+        isLine: true,
+        isRight: true,
+        rValue: genderFromEnum(Global.get().curUser.gender),
+        onPressed: () {
+          showSimpleBottomOptions(context, ["男", "女"]).then((value) {
+            var gender = genderFemale;
+            if (value == "男") {
+              gender = genderMale;
+            }
+            var params = {"gender": gender};
+            model.logic.updateUser(params).then((value) {
+              if (mounted) setState(() {});
+            });
           });
         },
       ),

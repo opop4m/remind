@@ -1,6 +1,7 @@
 import 'package:client/http/api.dart';
 import 'package:client/pages/contacts/contacts_details_page.dart';
 import 'package:client/provider/global_cache.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
@@ -96,6 +97,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     String uId = "";
     String uFace = '';
     String nickName = "";
+    int gender = genderMale;
     if (item == "+" || item == '-') {
       return new InkWell(
         child: new SizedBox(
@@ -115,6 +117,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
         uId = u.id;
         uFace = u.avatar ?? "";
         nickName = u.name;
+        gender = u.gender;
       }),
       builder: (context, snap) {
         var my = Global.get().curUser;
@@ -127,6 +130,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                 title: nickName,
                 avatar: uFace,
                 id: uId,
+                gender: gender,
               ));
             },
             padding: EdgeInsets.all(0),

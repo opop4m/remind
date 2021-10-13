@@ -19,9 +19,13 @@ import 'package:client/tools/library.dart';
 class ContactsDetailsPage extends StatefulWidget {
   final String title, id;
   final String avatar;
+  final int gender;
 
   ContactsDetailsPage(
-      {required this.avatar, required this.title, required this.id});
+      {required this.avatar,
+      required this.title,
+      required this.id,
+      required this.gender});
 
   @override
   _ContactsDetailsPageState createState() => _ContactsDetailsPageState();
@@ -35,6 +39,7 @@ class _ContactsDetailsPageState extends State<ContactsDetailsPage> {
         id: widget.id,
         title: widget.title,
         nickName: widget.title,
+        gender: widget.gender,
         area: '北京 海淀',
         isBorder: true,
       ),

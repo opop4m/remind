@@ -51,7 +51,8 @@ class _SelectMembersPageState extends State<SelectMembersPage> {
             id: user.id,
             nickname: user.name,
             nameIndex: nameIndex,
-            name: user.name);
+            name: user.name,
+            gender: user.gender);
         _contacts.add(f);
       });
       _contacts.sort((a, b) => a.nameIndex.compareTo(b.nameIndex));

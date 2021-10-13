@@ -1,4 +1,3 @@
-import 'package:client/app.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:client/pages/mine/personal_info_page.dart';
 import 'package:client/pages/settings/language_page.dart';
-import 'package:client/pages/wallet/pay_home_page.dart';
 import 'package:client/provider/global_model.dart';
 
 import 'package:client/tools/library.dart';

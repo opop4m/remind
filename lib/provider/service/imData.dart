@@ -444,7 +444,7 @@ class ImData {
       var uid = uids[i];
       if (res[uid] == null) {
         needUpdate = true;
-        res[uid] = ChatUser(id: uid, name: "loading...");
+        res[uid] = ChatUser(id: uid, name: "loading...", gender: genderMale);
       }
     }
     if (update || needUpdate)
@@ -489,7 +489,7 @@ class ImData {
   }
 
   Future<ChatUser> getChatUser(String uid, {bool update = false}) async {
-    ChatUser res = ChatUser(id: uid, name: "loading...");
+    ChatUser res = ChatUser(id: uid, name: "loading...", gender: genderMale);
     List<ChatUser> list = await ImDb.g().db.chatUserDao.getChatUsers([uid]);
     if (list.length == 0) {
       var rsp = await ImApi.getChatUser([uid]);
@@ -563,7 +563,7 @@ class ImData {
   }
 
   static ChatUser defaultUser(String uid) {
-    return ChatUser(id: uid, name: "loading...");
+    return ChatUser(id: uid, name: "loading...", gender: genderMale);
   }
 
   static Future getUserInfo(String uid, Callback cb) async {

@@ -493,8 +493,12 @@ class ChatUser extends DataClass implements Insertable<ChatUser> {
   final String id;
   final String name;
   final String? avatar;
-  final int? gender;
-  ChatUser({required this.id, required this.name, this.avatar, this.gender});
+  final int gender;
+  ChatUser(
+      {required this.id,
+      required this.name,
+      this.avatar,
+      required this.gender});
   factory ChatUser.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -506,7 +510,7 @@ class ChatUser extends DataClass implements Insertable<ChatUser> {
       avatar: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}avatar']),
       gender: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}gender']),
+          .mapFromDatabaseResponse(data['${effectivePrefix}gender'])!,
     );
   }
   @override
@@ -517,9 +521,7 @@ class ChatUser extends DataClass implements Insertable<ChatUser> {
     if (!nullToAbsent || avatar != null) {
       map['avatar'] = Variable<String?>(avatar);
     }
-    if (!nullToAbsent || gender != null) {
-      map['gender'] = Variable<int?>(gender);
-    }
+    map['gender'] = Variable<int>(gender);
     return map;
   }
 
@@ -529,8 +531,7 @@ class ChatUser extends DataClass implements Insertable<ChatUser> {
       name: Value(name),
       avatar:
           avatar == null && nullToAbsent ? const Value.absent() : Value(avatar),
-      gender:
-          gender == null && nullToAbsent ? const Value.absent() : Value(gender),
+      gender: Value(gender),
     );
   }
 
@@ -541,7 +542,7 @@ class ChatUser extends DataClass implements Insertable<ChatUser> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       avatar: serializer.fromJson<String?>(json['avatar']),
-      gender: serializer.fromJson<int?>(json['gender']),
+      gender: serializer.fromJson<int>(json['gender']),
     );
   }
   @override
@@ -551,7 +552,7 @@ class ChatUser extends DataClass implements Insertable<ChatUser> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'avatar': serializer.toJson<String?>(avatar),
-      'gender': serializer.toJson<int?>(gender),
+      'gender': serializer.toJson<int>(gender),
     };
   }
 
@@ -590,7 +591,7 @@ class ChatUsersCompanion extends UpdateCompanion<ChatUser> {
   final Value<String> id;
   final Value<String> name;
   final Value<String?> avatar;
-  final Value<int?> gender;
+  final Value<int> gender;
   const ChatUsersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -608,7 +609,7 @@ class ChatUsersCompanion extends UpdateCompanion<ChatUser> {
     Expression<String>? id,
     Expression<String>? name,
     Expression<String?>? avatar,
-    Expression<int?>? gender,
+    Expression<int>? gender,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -622,7 +623,7 @@ class ChatUsersCompanion extends UpdateCompanion<ChatUser> {
       {Value<String>? id,
       Value<String>? name,
       Value<String?>? avatar,
-      Value<int?>? gender}) {
+      Value<int>? gender}) {
     return ChatUsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -644,7 +645,7 @@ class ChatUsersCompanion extends UpdateCompanion<ChatUser> {
       map['avatar'] = Variable<String?>(avatar.value);
     }
     if (gender.present) {
-      map['gender'] = Variable<int?>(gender.value);
+      map['gender'] = Variable<int>(gender.value);
     }
     return map;
   }
@@ -680,7 +681,7 @@ class $ChatUsersTable extends ChatUsers
       typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _genderMeta = const VerificationMeta('gender');
   late final GeneratedColumn<int?> gender = GeneratedColumn<int?>(
-      'gender', aliasedName, true,
+      'gender', aliasedName, false,
       typeName: 'INTEGER',
       requiredDuringInsert: false,
       defaultValue: const Constant(0));
@@ -1217,7 +1218,7 @@ class Friend extends DataClass implements Insertable<Friend> {
   final String? alias;
   final String nickname;
   final String? avatar;
-  final int? gender;
+  final int gender;
   final String nameIndex;
   final String name;
   final int? readTime;
@@ -1226,7 +1227,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       this.alias,
       required this.nickname,
       this.avatar,
-      this.gender,
+      required this.gender,
       required this.nameIndex,
       required this.name,
       this.readTime});
@@ -1243,7 +1244,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       avatar: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}avatar']),
       gender: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}gender']),
+          .mapFromDatabaseResponse(data['${effectivePrefix}gender'])!,
       nameIndex: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name_index'])!,
       name: const StringType()
@@ -1263,9 +1264,7 @@ class Friend extends DataClass implements Insertable<Friend> {
     if (!nullToAbsent || avatar != null) {
       map['avatar'] = Variable<String?>(avatar);
     }
-    if (!nullToAbsent || gender != null) {
-      map['gender'] = Variable<int?>(gender);
-    }
+    map['gender'] = Variable<int>(gender);
     map['name_index'] = Variable<String>(nameIndex);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || readTime != null) {
@@ -1282,8 +1281,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       nickname: Value(nickname),
       avatar:
           avatar == null && nullToAbsent ? const Value.absent() : Value(avatar),
-      gender:
-          gender == null && nullToAbsent ? const Value.absent() : Value(gender),
+      gender: Value(gender),
       nameIndex: Value(nameIndex),
       name: Value(name),
       readTime: readTime == null && nullToAbsent
@@ -1300,7 +1298,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       alias: serializer.fromJson<String?>(json['alias']),
       nickname: serializer.fromJson<String>(json['nickname']),
       avatar: serializer.fromJson<String?>(json['avatar']),
-      gender: serializer.fromJson<int?>(json['gender']),
+      gender: serializer.fromJson<int>(json['gender']),
       nameIndex: serializer.fromJson<String>(json['nameIndex']),
       name: serializer.fromJson<String>(json['name']),
       readTime: serializer.fromJson<int?>(json['readTime']),
@@ -1314,7 +1312,7 @@ class Friend extends DataClass implements Insertable<Friend> {
       'alias': serializer.toJson<String?>(alias),
       'nickname': serializer.toJson<String>(nickname),
       'avatar': serializer.toJson<String?>(avatar),
-      'gender': serializer.toJson<int?>(gender),
+      'gender': serializer.toJson<int>(gender),
       'nameIndex': serializer.toJson<String>(nameIndex),
       'name': serializer.toJson<String>(name),
       'readTime': serializer.toJson<int?>(readTime),
@@ -1387,7 +1385,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
   final Value<String?> alias;
   final Value<String> nickname;
   final Value<String?> avatar;
-  final Value<int?> gender;
+  final Value<int> gender;
   final Value<String> nameIndex;
   final Value<String> name;
   final Value<int?> readTime;
@@ -1419,7 +1417,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
     Expression<String?>? alias,
     Expression<String>? nickname,
     Expression<String?>? avatar,
-    Expression<int?>? gender,
+    Expression<int>? gender,
     Expression<String>? nameIndex,
     Expression<String>? name,
     Expression<int?>? readTime,
@@ -1441,7 +1439,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
       Value<String?>? alias,
       Value<String>? nickname,
       Value<String?>? avatar,
-      Value<int?>? gender,
+      Value<int>? gender,
       Value<String>? nameIndex,
       Value<String>? name,
       Value<int?>? readTime}) {
@@ -1473,7 +1471,7 @@ class FriendsCompanion extends UpdateCompanion<Friend> {
       map['avatar'] = Variable<String?>(avatar.value);
     }
     if (gender.present) {
-      map['gender'] = Variable<int?>(gender.value);
+      map['gender'] = Variable<int>(gender.value);
     }
     if (nameIndex.present) {
       map['name_index'] = Variable<String>(nameIndex.value);
@@ -1525,10 +1523,10 @@ class $FriendsTable extends Friends with TableInfo<$FriendsTable, Friend> {
       typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _genderMeta = const VerificationMeta('gender');
   late final GeneratedColumn<int?> gender = GeneratedColumn<int?>(
-      'gender', aliasedName, true,
+      'gender', aliasedName, false,
       typeName: 'INTEGER',
       requiredDuringInsert: false,
-      defaultValue: const Constant(0));
+      defaultValue: const Constant(1));
   final VerificationMeta _nameIndexMeta = const VerificationMeta('nameIndex');
   late final GeneratedColumn<String?> nameIndex = GeneratedColumn<String?>(
       'name_index', aliasedName, false,

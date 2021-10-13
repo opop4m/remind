@@ -24,6 +24,14 @@ const int genderUnknow = 0;
 const int genderMale = 1;
 const int genderFemale = 2;
 
+String genderFromEnum(int i) {
+  if (i == genderMale) {
+    return "男";
+  } else {
+    return "女";
+  }
+}
+
 const int PopTypeP2P = 1;
 const int PopTypeGroup = 2;
 const int PopTypeNewFriend = 3;

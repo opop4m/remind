@@ -188,10 +188,11 @@ class _AddFriendPageState extends State<AddFriendPage> {
           avatar: getAvatarUrl(friend!.avatar),
           title: friend.name,
           id: friend.id,
+          gender: friend.gender,
         ));
       }).catchError((err) {
-        routePush(new AddFriendsDetails(user.id, getAvatarUrl(user.avatar),
-            user.name, user.gender ?? genderMale));
+        routePush(new AddFriendsDetails(
+            user.id, getAvatarUrl(user.avatar), user.name, user.gender));
       });
     } else {
       isResult = true;

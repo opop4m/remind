@@ -1,3 +1,4 @@
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/view/image_view.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,11 @@ class ContactCard extends StatelessWidget {
   final String? id, area, title, nickName;
   final bool isBorder;
   final double lineWidth;
+  final int gender;
 
   ContactCard({
     required this.img,
+    this.gender = genderMale,
     this.title,
     this.id,
     this.nickName,
@@ -22,6 +25,11 @@ class ContactCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle labelStyle = TextStyle(fontSize: 14, color: mainTextColor);
+    var genderImg = 'assets/images/Contact_Female.webp';
+    if (gender == genderMale) {
+      genderImg = 'assets/images/Contact_Male.webp';
+    }
+    // print("ContactCard gender: $gender");
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -69,8 +77,7 @@ class ContactCard extends StatelessWidget {
                     ),
                   ),
                   new Space(width: mainSpace / 3),
-                  new Image.asset('assets/images/Contact_Female.webp',
-                      width: 20.0, fit: BoxFit.fill),
+                  new Image.asset(genderImg, width: 20.0, fit: BoxFit.fill),
                 ],
               ),
               new Padding(

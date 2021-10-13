@@ -1,4 +1,5 @@
 import 'package:client/config/dictionary.dart';
+import 'package:client/provider/model/msgEnum.dart';
 import 'package:client/provider/service/imData.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/ui/item/contact_view.dart';
@@ -134,8 +135,13 @@ class _ContactsPageState extends State<ContactsPage>
             avatar: contactAssets + 'ic_new_friend.webp',
             title: '新的朋友',
             showBadge: newFriendPop > 0,
+            gender: genderMale,
           ),
-          new ContactItem(avatar: contactAssets + 'ic_group.webp', title: '群聊'),
+          new ContactItem(
+            avatar: contactAssets + 'ic_group.webp',
+            title: '群聊',
+            gender: genderMale,
+          ),
           // new ContactItem(avatar: contactAssets + 'ic_tag.webp', title: '标签'),
           // new ContactItem(avatar: contactAssets + 'ic_no_public.webp', title: '公众号'),
         ],

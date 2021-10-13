@@ -39,7 +39,7 @@ class ChatUsers extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get avatar => text().nullable()();
-  IntColumn get gender => integer().nullable().withDefault(const Constant(0))();
+  IntColumn get gender => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -50,7 +50,7 @@ class Friends extends Table {
   TextColumn get alias => text().nullable()();
   TextColumn get nickname => text()();
   TextColumn get avatar => text().nullable()();
-  IntColumn get gender => integer().nullable().withDefault(const Constant(0))();
+  IntColumn get gender => integer().withDefault(const Constant(1))();
   TextColumn get nameIndex => text()();
   TextColumn get name => text()();
   IntColumn get readTime =>

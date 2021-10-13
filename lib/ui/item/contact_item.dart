@@ -18,6 +18,7 @@ class ContactItem extends StatefulWidget {
   final String avatar;
   final String title;
   final String? id;
+  final int gender;
   final String? groupTitle;
   final bool isLine;
   final ClickType type;
@@ -29,6 +30,7 @@ class ContactItem extends StatefulWidget {
   ContactItem({
     required this.avatar,
     required this.title,
+    required this.gender,
     this.id,
     this.isLine = true,
     this.showBadge = false,
@@ -168,7 +170,11 @@ class ContactItemState extends State<ContactItem> {
           routePush(new PublicPage());
         } else {
           routePush(new ContactsDetailsPage(
-              id: widget.id!, avatar: widget.avatar, title: widget.title));
+            id: widget.id!,
+            avatar: widget.avatar,
+            title: widget.title,
+            gender: widget.gender,
+          ));
         }
       },
       child: new Row(children: content),

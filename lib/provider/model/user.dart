@@ -86,7 +86,9 @@ class User extends FromJson {
   String email = "";
   String id = "";
   int showId = 0;
+  int gender = 1;
   String? avatar;
+
   User();
   User fromJson(json) {
     this.avatar = json["avatar"];
@@ -96,6 +98,7 @@ class User extends FromJson {
     this.email = json["email"] ?? "";
     this.id = json["id"] ?? "";
     this.showId = json["showId"] ?? 0;
+    this.gender = json["gender"] ?? 1;
     return this;
   }
 
@@ -108,6 +111,7 @@ class User extends FromJson {
       "email": email,
       "id": id,
       "showId": showId,
+      "gender": gender,
     };
     return map;
   }

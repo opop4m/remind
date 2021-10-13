@@ -106,6 +106,7 @@ class _MsgAvatarState extends State<MsgAvatar> with TickerProviderStateMixin {
         routePush(new ContactsDetailsPage(
           title: isSelf ? my.nickName : widget.user.name,
           avatar: avatar,
+          gender: isSelf ? my.gender : widget.user.gender,
           id: isSelf ? my.id : widget.user.id,
         ));
       },
