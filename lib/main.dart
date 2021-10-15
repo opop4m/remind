@@ -1,4 +1,5 @@
 import 'package:client/config/provider_config.dart';
+import 'package:client/tools/library.dart';
 import 'package:client/tools/utils.dart';
 import 'package:flutter/material.dart';
 // import 'dart:io';
@@ -17,11 +18,10 @@ void main() async {
     print(format);
   });
 
-  /// 确保初始化
+  // 确保初始化
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// 数据初始化
-  // await Data.initData();
+  API.init("prod");
 
   /// 配置初始化
   await StorageManager.init();

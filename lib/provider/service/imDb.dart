@@ -109,6 +109,11 @@ class FriendDao extends DatabaseAccessor<UcDatabase> with _$FriendDaoMixin {
     q.where((tbl) => tbl.id.equals(fUid));
     return q.go();
   }
+
+  Future deleteAll() {
+    var q = delete(friends);
+    return q.go();
+  }
 }
 
 @UseDao(tables: [ChatRecents])

@@ -121,6 +121,7 @@ class ImApi {
         List? list = res.data!["friends"];
         if (list != null) {
           res.res = [];
+          await ImDb.g().db.friendDao.deleteAll();
           for (var i = 0; i < list.length; i++) {
             var fJson = parserFriendName(list[i]);
             var friend = Friend.fromJson(fJson);

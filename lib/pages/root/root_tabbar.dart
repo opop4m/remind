@@ -42,7 +42,8 @@ class RootTabBarState extends State<RootTabBar> {
     pageController = PageController(initialPage: currentIndex);
 
     _connectSub = Im.get().statusStream.listen((state) {
-      if (state == ConnectState.networkErr) {
+      if (state == ConnectState.networkErr ||
+          state == ConnectState.disconnect) {
         connectTips = "(未连接)";
       } else if (state == ConnectState.connecting) {
         connectTips = "(连接中)";

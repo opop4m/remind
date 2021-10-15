@@ -103,7 +103,7 @@ Future<String> uploadMediaApi(
   }
 
   params = {
-    "scene": scene,
+    "scene": "remind/" + scene,
     "filename": md + ext,
     "output": "json2",
     "auth_token": Global.get().curUser.accessToken,
