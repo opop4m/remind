@@ -20,7 +20,9 @@ class GlobalLogic {
   GlobalLogic(this._model);
 
   Future<Rsp<LoginRsp>> register(dynamic params) async {
+    showLoading();
     var rsp = await Req.g().post(API.userRegister, params);
+    dismissLoading();
     Rsp<LoginRsp> res = new Rsp<LoginRsp>();
     if (rsp.data != null) {
       res.fromJson(rsp.data, new LoginRsp());
@@ -40,7 +42,9 @@ class GlobalLogic {
   }
 
   Future<Rsp<LoginRsp>> login(dynamic params) async {
+    showLoading();
     var rsp = await Req.g().post(API.userLogin, params);
+    dismissLoading();
     Rsp<LoginRsp> res = new Rsp<LoginRsp>();
     if (rsp.data != null) {
       res.fromJson(rsp.data, new LoginRsp());
