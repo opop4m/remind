@@ -28,6 +28,7 @@ class ImageView extends StatelessWidget {
         height: height,
         fit: fit,
         cacheManager: cacheManager,
+        cacheKey: img,
       );
     } else if (isAssetsImg(img)) {
       if (isAssetsSvg(img)) {

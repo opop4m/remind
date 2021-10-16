@@ -318,9 +318,9 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   // late GlobalModel _model;
 
   _openGallery({type = ImageSource.gallery}) async {
-    var avatarPath = await openGallery();
-    if (strNoEmpty(avatarPath)) {
-      var params = {"avatar": avatarPath};
+    var pickerPath = await openGallery();
+    if (pickerPath != null) {
+      var params = {"avatar": pickerPath.path};
       _updateGroup(params);
       // await _model.logic.updateUser({"avatar": avatarPath});
       // if (mounted) setState(() {});

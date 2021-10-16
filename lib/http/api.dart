@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:client/http/req.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/tools/adapter/imagePickerApi.dart';
+import 'package:client/tools/adapter/imagePicker_model.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/tools/mimeType.dart';
 import 'package:dio/dio.dart';
@@ -121,19 +122,19 @@ Future<String> uploadMediaApi(
   return path;
 }
 
-Future<String?> openGallery({type = ImageSource.gallery}) async {
-  var avatarImgBytes = await UcImagePicker.image();
-  if (avatarImgBytes == null) {
+Future<PickerPath?> openGallery({type = ImageSource.gallery}) async {
+  var pickerRes = await UcImagePicker.image();
+  if (pickerRes == null) {
     _log.info("did not choose any file");
     return null;
   }
-  var mime = lookupMimeType('', headerBytes: avatarImgBytes.sublist(0, 10));
+  var mime = lookupMimeType('', headerBytes: pickerRes.bytes!.sublist(0, 10));
   if (mime == null) {
     _log.info("unknow file type");
     return null;
   }
   var ext = findExtFromMime(mime);
   _log.info("mime type: $mime, ext: $ext");
-  var avatarPath = await uploadMediaApi(avatarImgBytes, ext, "avatar");
-  return avatarPath;
+  var avatarPath = await uploadMediaApi(pickerRes.bytes!, ext, "avatar");
+  return PickerPath(avatarPath, pickerRes.size);
 }

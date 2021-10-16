@@ -12,3 +12,7 @@ native:
 .PHONY: web
 web:
 	flutter run -d web-server --web-renderer html
+	
+.PHONY: buildapk
+buildapk:
+	flutter build apk --target-platform android-arm64 --split-per-abi

@@ -47,14 +47,16 @@ class ContactCard extends StatelessWidget {
           new GestureDetector(
             child: new ImageView(
                 img: img, width: 55, height: 55, fit: BoxFit.cover),
-            onTap: () {
+            onTap: () async {
               if (isNetWorkImg(img)) {
+                final file = await cacheManager.getSingleFile(img);
+                var image = FileImage(file);
                 routePush(
                   new PhotoView(
-                    imageProvider: NetworkImage(img),
+                    imageProvider: image,
                     onTapUp: (c, f, s) => Navigator.of(context).pop(),
                     maxScale: 3.0,
-                    minScale: 1.0,
+                    minScale: PhotoViewComputedScale.contained,
                   ),
                 );
               } else {

@@ -16,11 +16,20 @@ class ImgMsg extends StatelessWidget {
 
   ImgMsg(this.msg, this.user);
 
+  // double holdW = 100;
+  // double holdH = 100;
+
   @override
   Widget build(BuildContext context) {
     // if (msg.status == msgStateSending) return Text('发送中');
     var my = Global.get().curUser;
-    var url = getMediaUrl(msg.ext)!;
+    var ext = Utils.removeEmptyItem(msg.ext!.split(","));
+
+    // if (ext.length > 2) {
+    //   h = double.parse(ext[2]) / 2; 实际像素无法使用
+    // }
+    // print("h: $h");
+    var url = getMediaUrl(ext[0])!;
     var isFile = false;
     if (!PlatformUtils.isWeb && url.startsWith("http")) {
       isFile = File(url).existsSync();
@@ -30,10 +39,11 @@ class ImgMsg extends StatelessWidget {
     var body = [
       new MsgAvatar(model: msg, user: user),
       new Space(width: mainSpace),
+      // new Flexible(
       new Expanded(
         child: new GestureDetector(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 200, minHeight: 100),
+            constraints: BoxConstraints(maxHeight: 200, minHeight: 10),
             child: new Container(
               padding: EdgeInsets.all(5.0),
               decoration: BoxDecoration(
@@ -42,20 +52,56 @@ class ImgMsg extends StatelessWidget {
               ),
               child: new ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                // child: Container(
+                //   color: Colors.red,
+                //   width: 10,
+                //   height: 10,
+                // ),
                 child: isFile
                     ? new Image.file(File(url))
                     : new CachedNetworkImage(
-                        imageUrl: url, height: null, fit: BoxFit.cover),
+                        imageUrl: url,
+                        height: null,
+                        fit: BoxFit.cover,
+                        cacheManager: cacheManager,
+                        cacheKey: url,
+                        // placeholder: (context, url) {
+                        //   return Container(
+                        //     height: 100,
+                        //   );
+                        // },
+                        imageBuilder: (context, imageProvider) {
+                          return Image(image: imageProvider);
+                        },
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.error, size: 100),
+                        progressIndicatorBuilder: (context, url, progress) {
+                          // print(
+                          //     "progressIndicatorBuilder: ${progress.progress}");
+                          return Container(
+                            height: 100,
+                            width: 100,
+                            alignment: Alignment(0, 0),
+                            child: CircularProgressIndicator(
+                              backgroundColor: Colors.grey[200],
+                              valueColor: AlwaysStoppedAnimation(Colors.blue),
+                              value: progress.progress,
+                            ),
+                          );
+                        },
+                      ),
               ),
             ),
           ),
-          onTap: () {
+          onTap: () async {
             ImageProvider image;
             if (isFile) {
               image = FileImage(File(url));
             } else {
-              image = NetworkImage(url);
+              final file = await cacheManager.getSingleFile(url);
+              image = FileImage(file);
             }
+
             routePush(
               new PhotoView(
                 imageProvider: image,

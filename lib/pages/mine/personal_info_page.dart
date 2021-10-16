@@ -35,8 +35,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   _openGallery({type = ImageSource.gallery}) async {
     var avatarPath = await openGallery();
-    if (strNoEmpty(avatarPath)) {
-      await _model.logic.updateUser({"avatar": avatarPath});
+    if (avatarPath != null) {
+      await _model.logic.updateUser({"avatar": avatarPath.path});
       if (mounted) setState(() {});
     }
   }

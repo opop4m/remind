@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import 'imagePicker_model.dart';
+
 final _log = Logger("imgPicker");
 
-Future<List<Uint8List>> getMultiImages(BuildContext ctx) async {
-  List<Uint8List> list = [];
+Future<List<PickerResult>> getMultiImages(BuildContext ctx) async {
+  List<PickerResult> list = [];
   List<AssetEntity> assets = <AssetEntity>[];
   var result = await AssetPicker.pickAssets(
     ctx,
@@ -31,20 +33,26 @@ Future<List<Uint8List>> getMultiImages(BuildContext ctx) async {
     var element = _list[i];
     var f = await element.file;
     var bytes = await f?.readAsBytes();
+    if (bytes != null) {
+      var res = await getImageSizeFromMem(bytes);
+      list.add(res);
+    }
     _log.info("get bytes: ${bytes?.length}");
-    if (bytes != null) list.add(bytes);
   }
+
   return list;
 }
 
-Future<Uint8List?> getImage() async {
+Future<PickerResult?> getImage() async {
+  PickerResult? result;
   Uint8List? imgBytes;
   final ImagePicker _picker = ImagePicker();
   XFile? img = await _picker.pickImage(source: ImageSource.gallery);
   if (img != null) {
     imgBytes = await img.readAsBytes();
+    result = await getImageSizeFromMem(imgBytes);
   }
-  return imgBytes;
+  return result;
 }
 
 Future<String?> getImagePath() async {
@@ -52,7 +60,7 @@ Future<String?> getImagePath() async {
   final ImagePicker _picker = ImagePicker();
   XFile? img = await _picker.pickImage(source: ImageSource.gallery);
   if (img != null) {
-    imgPath = await img.path;
+    imgPath = img.path;
   }
   return imgPath;
 }

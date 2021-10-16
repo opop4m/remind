@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Remind</title>
+  </head>
+  <body>
+    <div>
+        <div>IM 工具聊天测试版：</div>
+        <button onclick="h5()">h5版</button>
+        <button onclick="android()">android版</button>
+        <button onclick="ios()">ios超级签名</button>
+        
+    </div>
+    <script>
+
+      var iosUrl = "https://nimpapps.com/vzsr.app";
+      var androidUrl = "http://im.vngame888.com/a/remind-release101517.apk";
+      var h5Url = "http://im.vngame888.com";
+      function h5(){
+        window.location.href = h5Url;
+      }
+      function android(){
+        window.location.href = androidUrl;
+      }
+      function ios(){
+        window.location.href = iosUrl;
+      }
+    </script>
+  </body>
+</html>

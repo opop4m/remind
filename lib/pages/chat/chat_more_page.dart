@@ -53,10 +53,10 @@ class _ChatMorePageState extends State<ChatMorePage> {
       _log.info("choose list len: ${list.length}");
 
       for (var i = 0; i < list.length; i++) {
-        var bytes = list[i];
-        _log.info("choose 1111");
-        Im.sendMediaMsg(
-            widget.type ?? typePerson, msgTypeImage, widget.id!, bytes);
+        var pickerRes = list[i];
+        Im.sendMediaMsg(widget.type ?? typePerson, msgTypeImage, widget.id!,
+            pickerRes.bytes!,
+            size: pickerRes.size);
       }
     } else if (name == '拍摄') {
       try {

@@ -38,7 +38,8 @@ class _RegisterPageState extends State<RegisterPage> {
   String registType = "email";
 
   _openGallery() async {
-    avatarImgBytes = await UcImagePicker.image();
+    var picker = await UcImagePicker.image();
+    avatarImgBytes = picker?.bytes;
     if (mounted) setState(() {});
   }
 

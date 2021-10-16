@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:client/tools/library.dart';
 import 'package:flutter/foundation.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
@@ -83,6 +84,18 @@ class Utils {
       var hh = h < 10 ? "0$h" : h.toString();
       return "$hh:$mm:$ss";
     }
+  }
+
+  static List removeEmptyItem(List list) {
+    List newList = [];
+    list.forEach((e) {
+      if (e is String && strNoEmpty(e)) {
+        newList.add(e);
+      } else if ((e is int || e is double) && e != 0) {
+        newList.add(e);
+      }
+    });
+    return newList;
   }
 }
 

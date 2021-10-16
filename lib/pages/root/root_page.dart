@@ -182,13 +182,13 @@ class _RootPageState extends State<RootPage> with RouteAware {
         page: new ContactsPage(),
         pop: friendPopSum,
       ),
-      new TabBarModel(
-        title: S.of(context).discover,
-        icon: new LoadImage("assets/images/tabbar_discover_c.webp"),
-        selectIcon: new LoadImage("assets/images/tabbar_discover_s.webp"),
-        // page: new DiscoverPage(),
-        page: new Test(),
-      ),
+      // new TabBarModel(
+      //   title: S.of(context).discover,
+      //   icon: new LoadImage("assets/images/tabbar_discover_c.webp"),
+      //   selectIcon: new LoadImage("assets/images/tabbar_discover_s.webp"),
+      //   // page: new DiscoverPage(),
+      //   page: new Test(),
+      // ),
       new TabBarModel(
         title: S.of(context).me,
         icon: new LoadImage("assets/images/tabbar_me_c.webp"),

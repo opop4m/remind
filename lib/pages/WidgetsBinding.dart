@@ -25,6 +25,7 @@ class WidgetsBind with WidgetsBindingObserver {
         //  应用程序处于可见状态，并且可以响应用户的输入事件。它相当于 Android 中Activity的onResume。
         print('YM----->AppLifecycleState.resumed');
         Im.get().requestSystem(actOnline, {}, msgId: UcNavigation.curPage);
+        Im.get().onResume();
         break;
       case AppLifecycleState.detached:
         //当前页面即将退出

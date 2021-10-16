@@ -1,14 +1,13 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import './imagePicker.dart' if (dart.library.js) './imagePicker_web.dart';
+import 'imagePicker_model.dart';
 
 class UcImagePicker {
-  static Future<List<Uint8List>> multiImages(BuildContext ctx) {
+  static Future<List<PickerResult>> multiImages(BuildContext ctx) {
     return getMultiImages(ctx);
   }
 
-  static Future<Uint8List?> image() {
+  static Future<PickerResult?> image() {
     return getImage();
   }
 

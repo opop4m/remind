@@ -165,8 +165,8 @@ class Im {
     MqttLib.get().publish(topic, msgStr);
   }
 
-  static sendMediaMsg(
-      int type, int msgType, String peerId, Uint8List bytes) async {
+  static sendMediaMsg(int type, int msgType, String peerId, Uint8List bytes,
+      {Size? size}) async {
     _log.info("sendMediaMsg bytes len: ${bytes.length}");
     var mime = lookupMimeType('', headerBytes: bytes.sublist(0, 10));
     if (mime == null) {
@@ -174,10 +174,14 @@ class Im {
       return;
     }
     var ext = findExtFromMime(mime);
-    var imgPath = await uploadMediaApi(bytes, ext, "chat");
-    _log.info("imgPath: $imgPath");
-    if (strNoEmpty(imgPath)) {
-      var msg = Im.newMsg(type, msgTypeImage, peerId, ext: imgPath);
+    var filePath = await uploadMediaApi(bytes, ext, "chat");
+    _log.info("imgPath: $filePath");
+    if (strNoEmpty(filePath)) {
+      var ext = filePath;
+      if (size != null) {
+        ext = ext + ",${size.width},${size.height}";
+      }
+      var msg = Im.newMsg(type, msgTypeImage, peerId, ext: ext);
       Im.get().sendChatMsg(msg);
     }
   }
@@ -244,5 +248,11 @@ class Im {
   static String routeKey(String targetId, int type) {
     String key = type.toString() + "-" + targetId;
     return key;
+  }
+
+  void onResume() {
+    if (currentState != ConnectState.connected) {
+      connect();
+    }
   }
 }

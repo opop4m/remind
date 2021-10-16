@@ -5,15 +5,23 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'dart:html' as html;
 import '../utils.dart';
+import 'imagePicker_model.dart';
 
-Future<List<Uint8List>> getMultiImages(BuildContext ctx) async {
-  List<Uint8List> list =
+Future<List<PickerResult>> getMultiImages(BuildContext ctx) async {
+  List<PickerResult> list = [];
+  List<Uint8List> bytesList =
       await ImagePickerWeb.getMultiImages(outputType: ImageType.bytes)
           as List<Uint8List>;
+  for (var i = 0; i < bytesList.length; i++) {
+    var bytes = bytesList[i];
+    var res = await getImageSizeFromMem(bytes);
+    list.add(res);
+  }
   return list;
 }
 
-Future<Uint8List?> getImage() async {
+Future<PickerResult?> getImage() async {
+  PickerResult? result;
   Uint8List? imgBytes;
   if (!PlatformUtils.isWeb) {
     final ImagePicker _picker = ImagePicker();
@@ -30,7 +38,10 @@ Future<Uint8List?> getImage() async {
       imgBytes = _imgBytes;
     }
   }
-  return imgBytes;
+  if (imgBytes != null) {
+    result = await getImageSizeFromMem(imgBytes);
+  }
+  return result;
 }
 
 Future<String?> getImagePath() async {

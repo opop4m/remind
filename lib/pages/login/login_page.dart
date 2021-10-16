@@ -130,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
         showToast('请输入正确的邮箱');
         return;
       }
-      ;
     }
     var params = {"email": emailC.text, "passwd": pWC.text, "type": actType};
     var u = await gModel.logic.login(params);
