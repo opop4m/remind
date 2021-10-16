@@ -14,6 +14,7 @@ class ChatDetailsRow extends StatefulWidget {
   final Widget? more;
   final String? id;
   final int type;
+  final bool showMore, showEmoji;
 
   ChatDetailsRow({
     this.voiceOnTap,
@@ -23,6 +24,8 @@ class ChatDetailsRow extends StatefulWidget {
     this.id,
     this.type = 0,
     this.onEmojio,
+    this.showMore = false,
+    this.showEmoji = false,
   });
 
   ChatDetailsRowState createState() => ChatDetailsRowState();
@@ -49,11 +52,26 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
   }
 
   @override
+  void didUpdateWidget(covariant ChatDetailsRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print("didUpdateWidget");
+  }
+
+  double bottom = 10;
+
+  @override
   Widget build(BuildContext context) {
+    double _bottom = 0;
+    if (!widget.showEmoji && !widget.showMore) {
+      _bottom = bottom;
+    }
+    print("build bottom: $_bottom");
     return new GestureDetector(
       child: new Container(
-        height: 50.0,
-        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        height: 50.0 + _bottom,
+        // padding: EdgeInsets.symmetric(horizontal: 8.0),
+        // margin: EdgeInsets.only(bottom: 18),
+        padding: EdgeInsets.only(left: 8, right: 8, bottom: _bottom),
         decoration: BoxDecoration(
           color: Color(AppColors.ChatBoxBg),
           border: Border(

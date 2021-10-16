@@ -214,6 +214,8 @@ class _ChatPageState extends State<ChatPage> {
             )
           : new Spacer(),
       new ChatDetailsRow(
+        showEmoji: _emojiState,
+        showMore: _isMore,
         voiceOnTap: () => onTapHandle(ButtonType.voice),
         onEmojio: () {
           if (_isMore) {
