@@ -81,6 +81,12 @@ class _RootPageState extends State<RootPage> with RouteAware {
     var user = Global.get().curUser;
     _log.info("go connect: ${chatConf.toJson()}");
     String uuid = Global.get().uuid;
+    if (!Global.get().hasLogin || !strNoEmpty(chatConf.wsPort)) {
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {});
+      });
+      return;
+    }
     if (API.env == "dev") uuid = user.id;
     await Im.get().init(
       user.id,

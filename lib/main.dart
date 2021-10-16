@@ -21,7 +21,7 @@ void main() async {
   // 确保初始化
   WidgetsFlutterBinding.ensureInitialized();
 
-  API.init("prod");
+  // API.init("prod");
 
   /// 配置初始化
   await StorageManager.init();

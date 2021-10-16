@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:client/config/const.dart';
@@ -12,6 +13,7 @@ class ComMomBar extends StatelessWidget implements PreferredSizeWidget {
       this.titleW,
       this.bottom,
       this.leadingImg = '',
+      this.unread = 0,
       this.leadingW});
 
   final String title;
@@ -23,6 +25,7 @@ class ComMomBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leadingW;
   final PreferredSizeWidget? bottom;
   final String leadingImg;
+  final int unread;
 
   @override
   Size get preferredSize => new Size(100, 50);
@@ -36,7 +39,16 @@ class ComMomBar extends StatelessWidget implements PreferredSizeWidget {
           height: 28,
           child: leadingImg != ''
               ? new Image.asset(leadingImg)
-              : new Icon(CupertinoIcons.back, color: mainColor),
+              : Badge(
+                  position: BadgePosition.bottomEnd(bottom: 13, end: 0),
+                  showBadge: unread > 0,
+                  badgeContent: Text(unread > 99 ? "99" : unread.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                      )),
+                  child: Icon(CupertinoIcons.back, color: mainColor),
+                ),
         ),
         onTap: () {
           if (Navigator.canPop(context)) {

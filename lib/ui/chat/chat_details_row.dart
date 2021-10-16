@@ -37,7 +37,6 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
   @override
   void initState() {
     super.initState();
-
     // Notice.addListener(UcActions.voiceImg(), (v) {
     //   if (!v) return;
     //   if (!strNoEmpty(path)) return;
@@ -54,18 +53,18 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
   @override
   void didUpdateWidget(covariant ChatDetailsRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print("didUpdateWidget");
+    // print("didUpdateWidget");
   }
 
-  double bottom = 10;
+  double bottom = 25;
 
   @override
   Widget build(BuildContext context) {
     double _bottom = 0;
-    if (!widget.showEmoji && !widget.showMore) {
+    if (!widget.showEmoji && !widget.showMore && PlatformUtils.isMobile) {
       _bottom = bottom;
     }
-    print("build bottom: $_bottom");
+    // print("build bottom: $_bottom");
     return new GestureDetector(
       child: new Container(
         height: 50.0 + _bottom,

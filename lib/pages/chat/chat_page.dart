@@ -49,6 +49,8 @@ class _ChatPageState extends State<ChatPage> {
   PageController pageC = new PageController();
   Stream? _route;
 
+  late StreamSubscription<int?> _popSub;
+  int chatPopSum = 0;
   late ChatUser peer;
 
   @override
@@ -103,7 +105,11 @@ class _ChatPageState extends State<ChatPage> {
     } else {
       peer = ImData.defaultUser(widget.id);
     }
-
+    _popSub = ImDb.g().db.popsDao.queryChatPopSum().listen((event) {
+      // _log.info("imdb update pop: $event");
+      chatPopSum = event ?? 0;
+      if (mounted) setState(() {});
+    });
     if (mounted) setState(() {});
   }
 
@@ -144,6 +150,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void canCelListener() {
     _msgStreamSubs.cancel();
+    _popSub.cancel();
   }
 
   _handleSubmittedData(String text) async {
@@ -275,7 +282,10 @@ class _ChatPageState extends State<ChatPage> {
 
     return Scaffold(
       appBar: new ComMomBar(
-          title: newGroupName ?? widget.title, rightDMActions: rWidget),
+        title: newGroupName ?? widget.title,
+        rightDMActions: rWidget,
+        unread: chatPopSum,
+      ),
       body: new MainInputBody(
         onTap: () => setState(
           () {
