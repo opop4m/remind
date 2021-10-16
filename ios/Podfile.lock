@@ -383,7 +383,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
-  image_picker: e06f7a68f000bd36f552c1847e33cda96ed31f1f
+  image_picker: 9aa50e1d8cdacdbed739e925b7eea16d014367e6
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   Libyuv: 5f79ced0ee66e60a612ca97de1e6ccacd187a437
   Mantle: 4c0ed6ce47c96eccc4dc3bb071deb3def0e2c3be

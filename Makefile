@@ -16,3 +16,7 @@ web:
 .PHONY: buildapk
 buildapk:
 	flutter build apk --target-platform android-arm64 --split-per-abi
+
+.PHONY: emulator
+emulator:
+	/Users/john/Library/Android/sdk/emulator/emulator -avd Nexus_4_API_30 -netdelay none -netspeed full

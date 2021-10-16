@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imDb.dart';
+import 'package:client/tools/adapter/imagePicker.dart';
 import 'package:client/tools/bus/notice2.dart';
 import 'package:client/tools/library.dart';
 import 'package:client/ui/dialog/bottomOption.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:proximity_sensor/proximity_sensor.dart';
 // import 'package:proximity_sensor/proximity_sensor.dart';
 // import 'package:wakelock/wakelock.dart';
@@ -138,6 +140,10 @@ class _test extends State<Test> {
                 onPressed: () => _showModalBottomSheet(context),
                 child: Text("showIosDialog"),
               ),
+              ElevatedButton(
+                onPressed: () => _chooseImg(context),
+                child: Text("chooseImg"),
+              ),
             ],
           )
         ],
@@ -233,4 +239,13 @@ class _test extends State<Test> {
   int tt = 0;
 
   StreamSubscription? _sub;
+
+  _chooseImg(BuildContext context) async {
+    final ImagePicker _picker = ImagePicker();
+    XFile? img = await _picker.pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      // imgBytes = await img.readAsBytes();
+      // result = await getImageSizeFromMem(imgBytes);
+    }
+  }
 }
