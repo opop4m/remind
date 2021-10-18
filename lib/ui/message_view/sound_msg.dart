@@ -93,8 +93,6 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     //控制语音动画
     controller = AnimationController(
         duration: Duration(milliseconds: 1000), vsync: this);
-    // final Animation<double> curve =
-    //     CurvedAnimation(parent: controller, curve: Curves.easeOut);
     animation = IntTween(begin: 0, end: 3).animate(controller)
       ..addListener(() {
         // _log.info("animation value: ${animation.value}");
