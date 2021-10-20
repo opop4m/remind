@@ -1,6 +1,7 @@
 # Remind
 
 一款IM社交通讯 APP
+
 支持 h5, android, ios 三个平台。
 
 个人兴趣研发，仅供学术研究。
