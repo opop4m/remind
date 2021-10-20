@@ -12,6 +12,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:logging/logging.dart';
 import 'package:proximity_sensor/proximity_sensor.dart';
 import 'package:flutter_audio_manager/flutter_audio_manager.dart';
+import 'package:wakelock/wakelock.dart';
 
 final _log = Logger("VideoCallView");
 bool _isNear = false;
@@ -43,6 +44,7 @@ class _VideoCall extends State<VideoCallView> {
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   bool isMuteMic = false;
   bool isSpeaker = false;
+  bool isBackgroudCamera = false;
   bool isWasCall = false;
   bool isPeerHandup = false;
   int startSecond = 0;
@@ -52,6 +54,7 @@ class _VideoCall extends State<VideoCallView> {
   @override
   void initState() {
     super.initState();
+    Wakelock.enable();
     VideoCallView.inCalling = true;
     if (widget.session == null) {
       curCallStatus = callStatusDoCalling;
@@ -177,6 +180,7 @@ class _VideoCall extends State<VideoCallView> {
   @override
   void dispose() async {
     super.dispose();
+    Wakelock.disable();
     if (!isWasCall) {
       sendCallMsg();
     }
@@ -209,6 +213,7 @@ class _VideoCall extends State<VideoCallView> {
         body = bodyInVideoCall();
         break;
       default:
+        // body = bodyInVideoCall();
         body = bodyDoCall();
       // body = bodyInVideoCall();
     }
@@ -228,6 +233,15 @@ class _VideoCall extends State<VideoCallView> {
               tooltip: 'Hangup',
               child: Icon(Icons.call_end),
               backgroundColor: Colors.pink,
+            ),
+            FloatingActionButton(
+              heroTag: UniqueKey(),
+              child: Icon(
+                Icons.switch_camera,
+                color: isBackgroudCamera ? Colors.black : Colors.white,
+              ),
+              onPressed: _switchCamera,
+              backgroundColor: isBackgroudCamera ? Colors.white : Colors.blue,
             ),
           ],
         ),
@@ -457,7 +471,12 @@ class _VideoCall extends State<VideoCallView> {
     Navigator.of(context).pop();
   }
 
-  _switchCamera() {
+  _switchCamera() async {
+    isBackgroudCamera = !isBackgroudCamera;
+    // var cameras = await Helper.cameras;
+    // cameras.forEach((device) {
+    //   print(device.label);
+    // });
     if (_localStream != null) {
       Helper.switchCamera(_localStream!.getVideoTracks()[0]);
     }
