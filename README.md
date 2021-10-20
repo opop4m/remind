@@ -11,7 +11,8 @@ Android: http://18.162.124.212:8049/a/remind-release101517.apk
 
 H5: http://18.162.124.212:8049
 
-服务端未开源，有需要可联系 
+服务端未开源，有需要可发邮件给我:
+
 vr2m@protonmail.com
 
 
