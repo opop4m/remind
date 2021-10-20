@@ -33,6 +33,7 @@ const int callStatusWasCalling = 1;
 const int callStatusDoCalling = 2;
 const int callStatusInVoiceCalling = 3;
 const int callStatusInVideoCalling = 4;
+const int callStatusConnecting = 5;
 
 class _VideoCall extends State<VideoCallView> {
   WebRtcCtr chat = WebRtcCtr.get();
@@ -151,6 +152,8 @@ class _VideoCall extends State<VideoCallView> {
   }
 
   void acceptCall() {
+    if (curCallStatus == callStatusConnecting) return;
+    curCallStatus = callStatusConnecting;
     widget.session!.onAddRemoteStream = (session, remoteSteam) {
       _log.info("onAddRemoteStream $remoteSteam");
       try {
@@ -234,15 +237,6 @@ class _VideoCall extends State<VideoCallView> {
               child: Icon(Icons.call_end),
               backgroundColor: Colors.pink,
             ),
-            FloatingActionButton(
-              heroTag: UniqueKey(),
-              child: Icon(
-                Icons.switch_camera,
-                color: isBackgroudCamera ? Colors.black : Colors.white,
-              ),
-              onPressed: _switchCamera,
-              backgroundColor: isBackgroudCamera ? Colors.white : Colors.blue,
-            ),
           ],
         ),
       );
@@ -307,6 +301,14 @@ class _VideoCall extends State<VideoCallView> {
           ],
         ),
       );
+    } else if (curCallStatus == callStatusConnecting) {
+      buttons = SizedBox(
+        width: 250,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [],
+        ),
+      );
     } else {
       //callStatusInVideoCalling
       buttons = SizedBox(
@@ -320,8 +322,13 @@ class _VideoCall extends State<VideoCallView> {
               children: <Widget>[
                 FloatingActionButton(
                   heroTag: UniqueKey(),
-                  child: const Icon(Icons.switch_camera),
+                  child: Icon(
+                    Icons.switch_camera,
+                    color: isBackgroudCamera ? Colors.black : Colors.white,
+                  ),
                   onPressed: _switchCamera,
+                  backgroundColor:
+                      isBackgroudCamera ? Colors.white : Colors.blue,
                 ),
                 FloatingActionButton(
                   heroTag: UniqueKey(),
@@ -332,9 +339,14 @@ class _VideoCall extends State<VideoCallView> {
                 ),
                 FloatingActionButton(
                   heroTag: UniqueKey(),
-                  child: const Icon(Icons.mic_off),
                   onPressed: _muteMic,
-                )
+                  tooltip: 'MuteMic',
+                  child: Icon(
+                    Icons.mic_off,
+                    color: isMuteMic ? Colors.black : Colors.white,
+                  ),
+                  backgroundColor: isMuteMic ? Colors.white : Colors.black,
+                ),
               ],
             )
           ],
@@ -446,7 +458,8 @@ class _VideoCall extends State<VideoCallView> {
                     // height: orientation == Orientation.portrait ? 120.0 : 90.0,
                     width: 90,
                     height: 120,
-                    child: RTCVideoView(_localRenderer, mirror: true),
+                    child: RTCVideoView(_localRenderer,
+                        mirror: !isBackgroudCamera),
                     decoration: BoxDecoration(color: Colors.black54),
                   )),
             ]),
@@ -480,6 +493,7 @@ class _VideoCall extends State<VideoCallView> {
     if (_localStream != null) {
       Helper.switchCamera(_localStream!.getVideoTracks()[0]);
     }
+    if (mounted) setState(() {});
   }
 
   _muteMic() {
