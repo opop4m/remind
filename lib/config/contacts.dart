@@ -103,7 +103,7 @@ class Constants {
   static const ConversationMuteIconSize = 18.0;
   static const ContactAvatarSize = 42.0;
   static const TitleTextSize = 16.0;
-  static const ContentTextSize = 20.0;
+  static const ContentTextSize = 16.0;
   static const DesTextSize = 13.0;
   static const IndexBarWidth = 24.0;
   static const IndexLetterBoxSize = 64.0;

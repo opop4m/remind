@@ -94,6 +94,7 @@ class ChatDetailsRowState extends State<ChatDetailsRow> {
             ),
             new Expanded(
               child: new Container(
+                alignment: Alignment(-1, 0),
                 margin: const EdgeInsets.only(
                     top: 7.0, bottom: 7.0, left: 8.0, right: 8.0),
                 decoration: BoxDecoration(

@@ -179,15 +179,25 @@ class _ChatPageState extends State<ChatPage> {
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.left);
     _tp.layout(maxWidth: size.maxWidth);
-
+    ScrollController scrollController = ScrollController();
     return ExtendedTextField(
+      scrollController: scrollController,
       specialTextSpanBuilder: TextSpanBuilder(showAtBackground: true),
       onTap: () => setState(() {
         if (_focusNode.hasFocus) _emojiState = false;
       }),
-      onChanged: (v) => setState(() {}),
+      onChanged: (v) {
+        // _log.info("onChanged: $v");
+        Future.delayed(Duration(milliseconds: 100), () {
+          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+        });
+        // setState(() {});
+      },
+      // onChanged: (v) => setState(() {}),
       decoration: InputDecoration(
-          border: InputBorder.none, contentPadding: const EdgeInsets.all(5.0)),
+          border: InputBorder.none,
+          contentPadding:
+              const EdgeInsets.only(left: 5, top: 5, right: 5, bottom: 12)),
       controller: _textController,
       focusNode: _focusNode,
       maxLines: 99,
