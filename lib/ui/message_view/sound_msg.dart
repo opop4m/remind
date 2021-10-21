@@ -67,7 +67,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _log.info("initState");
+    // _log.info("initState");
     // if (_myPlayer == null) {
     //   _myPlayer = new UcSoundPlayer();
     //   _myPlayer!
@@ -318,7 +318,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     if (_playerSubscription != null) {
       _playerSubscription?.cancel();
     }
-    _log.info("dispose");
+    // _log.info("dispose");
     // playProcessC.dispose();
     controller.dispose();
     _subProximity?.cancel();
