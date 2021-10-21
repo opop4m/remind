@@ -1,8 +1,9 @@
-import 'package:client/provider/model/user.dart';
 import 'package:client/tools/library.dart';
 import 'package:flutter/material.dart';
 // import 'package:wechat_flutter/im/info_handle.dart';
 import 'package:client/provider/loginc/global_loginc.dart';
+
+final _log = Logger("GlobalModel");
 
 class GlobalModel extends ChangeNotifier {
   BuildContext? context;
@@ -50,6 +51,7 @@ class GlobalModel extends ChangeNotifier {
   }
 
   void refresh() {
+    _log.info("refresh");
     // if (!hasLogin) logic.saveInfo();
     notifyListeners();
   }

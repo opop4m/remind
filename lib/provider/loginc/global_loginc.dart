@@ -43,7 +43,7 @@ class GlobalLogic {
       ImApi.appStart(),
       _model.saveInfo(),
     ]);
-    _model.refresh();
+    // _model.refresh();
   }
 
   Future<Rsp<LoginRsp>> login(dynamic params) async {

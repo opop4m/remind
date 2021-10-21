@@ -45,11 +45,8 @@ class _RootPageState extends State<RootPage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    Notice.addListener(UcActions.routePop(), (data) {
-      if (data == "RootPage" && mounted) {
-        setState(() {});
-      }
-    });
+    _log.info("initState");
+
     WidgetsBinding.instance?.addObserver(bind);
     // ifBrokenNetwork();
     initChat().then((value) {
@@ -66,6 +63,11 @@ class _RootPageState extends State<RootPage> with RouteAware {
           FlutterAppBadger.updateBadgeCount(chatPopSum);
         }
         if (mounted) setState(() {});
+      });
+      Notice.addListener(UcActions.routePop(), (data) {
+        if (data == "RootPage" && mounted) {
+          setState(() {});
+        }
       });
     });
     // checkupdate();
@@ -84,9 +86,9 @@ class _RootPageState extends State<RootPage> with RouteAware {
     if (!Global.get().hasLogin || !strNoEmpty(chatConf.wsPort)) {
       Future.delayed(Duration(seconds: 1), () {
         _log.info("error state,hasLogin == false ");
-        setState(() {
-          initChat();
-        });
+        // setState(() {
+        //   initChat();
+        // });
       });
       return;
     }

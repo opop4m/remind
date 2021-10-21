@@ -59,8 +59,14 @@ Future<dynamic> routePushAndRemove(Widget widget) {
       name: widget.toStringShort(),
     ),
   );
-  return navGK.currentState!
-      .pushAndRemoveUntil(route, (route) => route == null);
+  return navGK.currentState!.pushAndRemoveUntil(route, (Route route) {
+    //一直关闭，直到首页时停止，停止时，整个应用只有首页和当前页面
+    // if (route.settings.name == "/") {
+    //   return true; //停止关闭
+    // }
+    return false;
+    //return route==null; //一直关闭页面，直到全部Route都关闭，效果就是整个应用，只剩下当前页面，按返回键会直接回系统桌面
+  });
 }
 
 pushAndRemoveUntilPage(Widget page) {
