@@ -33,15 +33,14 @@ class _HomePageState extends State<HomePage>
   // Map<String, ChatUser> _chatUsers = {};
 
   var tapPos;
-  TextSpanBuilder _builder = TextSpanBuilder();
-  StreamSubscription<dynamic>? _messageStreamSubscription;
+  // TextSpanBuilder _builder = TextSpanBuilder();
+  // StreamSubscription<dynamic>? _messageStreamSubscription;
   StreamSubscription? _subRecent;
 
   @override
   void initState() {
     super.initState();
     _log.info("initState");
-    initPlatformState();
     getChatData();
     Notice.addListener(UcActions.logout(), (data) => logout());
   }
@@ -104,16 +103,6 @@ class _HomePageState extends State<HomePage>
   void canCelListener() {
     _popSub?.cancel();
     _subRecent?.cancel();
-    _messageStreamSubscription?.cancel();
-  }
-
-  Future<void> initPlatformState() async {
-    if (!mounted) return;
-
-    if (_messageStreamSubscription == null) {
-      // _messageStreamSubscription =
-      //     im.onMessage.listen((dynamic onData) => getChatData());
-    }
   }
 
   @override

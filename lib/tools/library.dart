@@ -43,7 +43,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 // Dim im = new Dim();
 
-var subscription = Connectivity();
+var networkSubscription = Connectivity();
 
 typedef Callback(data);
 

@@ -29,6 +29,7 @@ class Global {
 
   bool get hasLogin => _hasLogin;
 
+  String pushToken = "";
   // String accessToken = "";
   User curUser = User();
   ChatConf chatConf = ChatConf();

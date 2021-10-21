@@ -1,10 +1,7 @@
 // import 'package:dim/commom/route.dart';
-import 'package:client/pages/chat/chat_page.dart';
 import 'package:client/pages/root/root_page.dart';
 import 'package:client/provider/global_cache.dart';
-import 'package:client/provider/service/im.dart';
 import 'package:client/provider/service/imApi.dart';
-import 'package:client/provider/service/imData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -85,10 +82,8 @@ class _MyApp extends State<MyApp> {
     super.dispose();
   }
 
-  late BuildContext _context;
   @override
   Widget build(BuildContext context) {
-    _context = context;
     final model = Provider.of<GlobalModel>(context)..setContext(context);
 
     return new MaterialApp(
@@ -130,10 +125,6 @@ class _MyApp extends State<MyApp> {
     if (PlatformUtils.isIOS || PlatformUtils.isMacOS) {
       var token = await messaging.getAPNSToken();
       _log.info("push APN token: $token");
-      // if (strNoEmpty(token)) {
-      //   ImApi.appStart(token!);
-      // }
-      // return;
     }
 
     String? token;
@@ -147,12 +138,14 @@ class _MyApp extends State<MyApp> {
     }
     _log.info("push token: $token");
     if (strNoEmpty(token)) {
-      ImApi.appStart(token!);
+      Global.get().pushToken = token!;
+      ImApi.appStart();
     }
     messaging.onTokenRefresh.listen((token) {
       _log.info("onTokenRefresh : $token");
       if (strNoEmpty(token)) {
-        ImApi.appStart(token);
+        Global.get().pushToken = token;
+        ImApi.appStart();
       }
     });
   }

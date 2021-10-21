@@ -317,7 +317,7 @@ class _SoundMsgState extends State<SoundMsg> with TickerProviderStateMixin {
     if (_playerSubscription != null) {
       _playerSubscription?.cancel();
     }
-    _log.info("dispose");
+    // _log.info("dispose");
     // playProcessC.dispose();
     controller.dispose();
     _subProximity?.cancel();

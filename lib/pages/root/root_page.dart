@@ -83,7 +83,10 @@ class _RootPageState extends State<RootPage> with RouteAware {
     String uuid = Global.get().uuid;
     if (!Global.get().hasLogin || !strNoEmpty(chatConf.wsPort)) {
       Future.delayed(Duration(seconds: 1), () {
-        setState(() {});
+        _log.info("error state,hasLogin == false ");
+        setState(() {
+          initChat();
+        });
       });
       return;
     }
@@ -109,6 +112,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     Im.get().connect();
   }
 
+  StreamSubscription<RemoteMessage>? _subPush;
   Future<void> setupInteractedMessage() async {
     // if (PlatformUtils.isWeb) {
     //   _log.info("init onFCMbackground");
@@ -130,7 +134,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     });
     // Also handle any interaction when the app is in the background via a
     // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+    _subPush = FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
   }
 
   void onFCMbackground(message) {
@@ -138,9 +142,14 @@ class _RootPageState extends State<RootPage> with RouteAware {
     _log.info(message);
   }
 
+  Set<String> _cachePush = {};
   void _handleMessage(RemoteMessage message) async {
-    String push = "_handle push Message ${message.data}";
-
+    // if (_cachePush.contains(message.messageId)) {
+    //   return;
+    // }
+    // _cachePush.add(message.messageId);
+    String push =
+        "_handle push Message ${message.data}， id:${message.messageId}";
     _log.info(push);
 
     if (message.data['act'] == actChat) {
@@ -160,7 +169,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
       String key = Im.routeKey(peerId, type);
       var chatPage = ChatPage(id: id, title: title, type: type);
       if (UcNavigation.curPage.startsWith(UcNavigation.chatPage)) {
-        routePushReplace(chatPage, arguments: key);
+        // routePushReplace(chatPage, arguments: key);
       } else {
         routePush(chatPage, arguments: key);
       }
@@ -215,6 +224,7 @@ class _RootPageState extends State<RootPage> with RouteAware {
     _popSub.cancel();
     _popNewFriendSub.cancel();
     _connectSub.cancel();
+    _subPush?.cancel();
     WebRtcCtr.get().onReceiveOffer = null;
     WidgetsBinding.instance?.removeObserver(bind); //添加观察者
   }

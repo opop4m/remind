@@ -54,7 +54,7 @@ class GlobalModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveInfo() {
-    logic.saveInfo();
+  Future saveInfo() {
+    return logic.saveInfo();
   }
 }

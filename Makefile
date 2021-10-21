@@ -20,3 +20,7 @@ buildapk:
 .PHONY: emulator
 emulator:
 	/Users/john/Library/Android/sdk/emulator/emulator -avd Nexus_4_API_30 -netdelay none -netspeed full
+
+.PHONY: testdart
+testdart:
+	dart --packages=.packages --enable-asserts package:client/test/test.dart

@@ -80,12 +80,13 @@ class _VideoCall extends State<VideoCallView> {
       bool useVideo = true;
       if (widget.callType == msgTypeVoiceCall) {
         useVideo = false;
-        _subProximity = ProximitySensor.events.listen((event) {
-          bool isNear = (event > 0) ? true : false;
-          if (isNear == _isNear) return;
-          _isNear = isNear;
-          if (!mounted) return;
-        });
+        if (PlatformUtils.isMobile)
+          _subProximity = ProximitySensor.events.listen((event) {
+            bool isNear = (event > 0) ? true : false;
+            if (isNear == _isNear) return;
+            _isNear = isNear;
+            if (!mounted) return;
+          });
       }
       if (widget.session != null &&
           widget.session!.type == WebRtcCtr.typeVoice) {
@@ -136,16 +137,13 @@ class _VideoCall extends State<VideoCallView> {
       _hangUp();
     } else if (state == RTCIceConnectionState.RTCIceConnectionStateConnected &&
         mounted) {
+      if (PlatformUtils.isMobile) {
+        _switchSpeaker(!_isNear);
+      }
       if (widget.callType == msgTypeVideoCall) {
         curCallStatus = callStatusInVideoCalling;
-        if (PlatformUtils.isMobile) {
-          FlutterAudioManager.changeToSpeaker();
-        }
       } else {
         curCallStatus = callStatusInVoiceCalling;
-        if (PlatformUtils.isMobile) {
-          FlutterAudioManager.changeToReceiver();
-        }
       }
       startTimer();
     }
@@ -264,49 +262,52 @@ class _VideoCall extends State<VideoCallView> {
         ),
       );
     } else if (curCallStatus == callStatusInVoiceCalling) {
+      List<Widget> list = [
+        FloatingActionButton(
+          heroTag: UniqueKey(),
+          onPressed: _muteMic,
+          tooltip: 'MuteMic',
+          child: Icon(
+            Icons.mic_off,
+            color: isMuteMic ? Colors.black : Colors.white,
+          ),
+          backgroundColor: isMuteMic ? Colors.white : Colors.black,
+        ),
+        FloatingActionButton(
+          heroTag: UniqueKey(),
+          onPressed: _hangUp,
+          tooltip: 'Hangup',
+          child: Icon(Icons.call_end),
+          backgroundColor: Colors.pink,
+        ),
+      ];
+      if (PlatformUtils.isMobile) {
+        list.add(FloatingActionButton(
+          heroTag: UniqueKey(),
+          onPressed: () => _switchSpeaker(!isSpeaker),
+          tooltip: 'MuteMic',
+          child: Icon(
+            Icons.volume_up,
+            color: isSpeaker ? Colors.black : Colors.white,
+          ),
+          backgroundColor: isSpeaker ? Colors.white : Colors.black,
+        ));
+      }
       buttons = SizedBox(
         width: 250,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FloatingActionButton(
-              heroTag: UniqueKey(),
-              onPressed: _muteMic,
-              tooltip: 'MuteMic',
-              child: Icon(
-                Icons.mic_off,
-                color: isMuteMic ? Colors.black : Colors.white,
-              ),
-              backgroundColor: isMuteMic ? Colors.white : Colors.black,
-            ),
-            FloatingActionButton(
-              heroTag: UniqueKey(),
-              onPressed: _hangUp,
-              tooltip: 'Hangup',
-              child: Icon(Icons.call_end),
-              backgroundColor: Colors.pink,
-            ),
-            PlatformUtils.isMobile
-                ? FloatingActionButton(
-                    heroTag: UniqueKey(),
-                    onPressed: _switchSpeaker,
-                    tooltip: 'MuteMic',
-                    child: Icon(
-                      Icons.volume_up,
-                      color: isSpeaker ? Colors.black : Colors.white,
-                    ),
-                    backgroundColor: isSpeaker ? Colors.white : Colors.black,
-                  )
-                : Space(),
-          ],
+          children: list,
         ),
       );
     } else if (curCallStatus == callStatusConnecting) {
       buttons = SizedBox(
         width: 250,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [],
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("connecting..."),
+          ],
         ),
       );
     } else {
@@ -469,13 +470,14 @@ class _VideoCall extends State<VideoCallView> {
     );
   }
 
-  _switchSpeaker() {
-    isSpeaker = !isSpeaker;
+  _switchSpeaker(bool speaker) {
+    isSpeaker = speaker;
     if (isSpeaker) {
       FlutterAudioManager.changeToSpeaker();
     } else {
       FlutterAudioManager.changeToReceiver();
     }
+    _log.info("_switchSpeaker: $isSpeaker");
     setState(() {});
   }
 

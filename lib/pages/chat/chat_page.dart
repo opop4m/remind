@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:client/pages/WidgetsBinding.dart';
 import 'package:client/pages/chat/chat_more_page.dart';
 import 'package:client/pages/group/group_details_page.dart';
 import 'package:client/provider/model/msgEnum.dart';
@@ -52,20 +53,18 @@ class _ChatPageState extends State<ChatPage> {
   late StreamSubscription<int?> _popSub;
   int chatPopSum = 0;
   late ChatUser peer;
-
+  StreamSubscription<bool>? _subAppBackground;
   @override
   void initState() {
     super.initState();
     getChatMsgData();
     readedMsg();
-    // _route = UcNotice.addListener(UcActions.routePop());
-    // _route!.listen((page) {
-    //   String _page = page;
-    //   if (_page.startsWith(UcNavigation.chatPage) &&
-    //       _page.endsWith(widget.id)) {
-    //     readedMsg();
-    //   }
-    // });
+    _subAppBackground =
+        WidgetsBind.watchAppEnterBackground().listen((isBackgroup) {
+      if (!isBackgroup) {
+        readedMsg();
+      }
+    });
     _sC.addListener(() => FocusScope.of(context).requestFocus(new FocusNode()));
     // Notice.addListener(UcActions.msg(), (v) => getChatMsgData());
     if (widget.type == typeGroup) {
@@ -73,22 +72,12 @@ class _ChatPageState extends State<ChatPage> {
         setState(() => newGroupName = v);
       });
     }
-    // Notice.addListener(UcActions.chatRead(), (data) {
-    //   String id = data["friendUid"];
-    //   if (id == widget.id) {
-    //     getChatMsgData();
-    //   }
-    // });
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) _emojiState = false;
     });
   }
 
   Future getChatMsgData() async {
-    // final str = await ChatDataRep().repData(widget.id, widget.type);
-    // List<ChatData> listChat = str;
-    // chatData.clear();
-    // chatData..addAll(listChat.reversed);
     _msgStreamSubs =
         ImData.get().getChatList(widget.id, widget.type, 0).listen((event) {
       chatData = event;
@@ -151,6 +140,7 @@ class _ChatPageState extends State<ChatPage> {
   void canCelListener() {
     _msgStreamSubs.cancel();
     _popSub.cancel();
+    _subAppBackground?.cancel();
   }
 
   _handleSubmittedData(String text) async {

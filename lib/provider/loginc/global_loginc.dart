@@ -5,6 +5,7 @@ import 'package:client/provider/global_cache.dart';
 import 'package:client/provider/global_model.dart';
 import 'package:client/provider/model/user.dart';
 import 'package:client/provider/service/im.dart';
+import 'package:client/provider/service/imApi.dart';
 import 'package:client/provider/service/imDb.dart';
 import 'package:client/tools/shared_util.dart';
 import 'package:client/tools/library.dart';
@@ -22,22 +23,26 @@ class GlobalLogic {
   Future<Rsp<LoginRsp>> register(dynamic params) async {
     showLoading();
     var rsp = await Req.g().post(API.userRegister, params);
-    dismissLoading();
+
     Rsp<LoginRsp> res = new Rsp<LoginRsp>();
     if (rsp.data != null) {
       res.fromJson(rsp.data, new LoginRsp());
       if (res.data != null) {
-        ImDb.g().init(res.data!.user.id);
-        onLogin(res.data!);
+        await ImDb.g().init(res.data!.user.id);
+        await onLogin(res.data!);
       }
     }
+    dismissLoading();
     return res;
   }
 
-  void onLogin(LoginRsp rsp) {
+  Future onLogin(LoginRsp rsp) async {
     Global.get().curUser = rsp.user;
     Global.get().chatConf = rsp.chatConf;
-    _model.saveInfo();
+    await Future.wait([
+      ImApi.appStart(),
+      _model.saveInfo(),
+    ]);
     _model.refresh();
   }
 
@@ -115,7 +120,7 @@ class GlobalLogic {
     return hasLogin;
   }
 
-  void saveInfo() async {
+  Future saveInfo() async {
     if (Global.get().curUser.id != "") {
       await SharedUtil.instance
           .saveString(Keys.account, Global.get().curUser.id);
@@ -123,10 +128,11 @@ class GlobalLogic {
       String userStr = jsonEncode(Global.get().curUser);
       String chatConfStr = jsonEncode(Global.get().chatConf);
       _log.info("save user str: $userStr");
-      SharedUtil.instance.saveString(Keys.chatConf, chatConfStr);
-      SharedUtil.instance.saveString(Keys.user, userStr);
-      // SharedUtil.instance.saveBoolean(Keys.hasLogged, true);
-      SharedUtil.instance.saveInt(Keys.loggedTime, Utils.getTimestampSecond());
+      await Future.wait([
+        SharedUtil.instance.saveString(Keys.chatConf, chatConfStr),
+        SharedUtil.instance.saveString(Keys.user, userStr),
+        SharedUtil.instance.saveInt(Keys.loggedTime, Utils.getTimestampSecond())
+      ]);
       API.fileHost = Global.get().chatConf.fileHost;
       API.uploadHost = Global.get().chatConf.uploadHost;
     }

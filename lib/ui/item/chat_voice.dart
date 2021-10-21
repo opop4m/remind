@@ -41,29 +41,15 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
   // VoiceDialog? voiceDialog;
   UcVoice _myRecorder = UcVoice();
   late String _path;
+
+  // late String tempDirPath;
   int decibel = 0;
   GlobalKey<VoiceDialogState> _voiceKey = GlobalKey<VoiceDialogState>();
 
   @override
   void initState() {
     super.initState();
-    _myRecorder.openAudioSession().then((value) {
-      _log.info("openAudioSession finish2.");
-      _myRecorder.setSubscriptionDuration(Duration(milliseconds: 100));
-      _myRecorder.onProgress?.listen((event) {
-        _log.info("onProgress event: $event");
-        var d = event.duration.inSeconds;
-        decibel = event.decibels?.toInt() ?? 0;
-        if (d > 59) {
-          showToast("语音最长 60s");
-          hideVoiceView();
-        } else {
-          _voiceKey.currentState?.update(decibel);
-        }
-
-        // if (mounted) setState(() {});
-      });
-    });
+    // openRecorderSession();
     getTemporaryDirectory().then((value) {
       var tempDir = value;
       _path = '${tempDir.path}/flutter_sound.aac';
@@ -75,16 +61,35 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     initializeDateFormatting();
   }
 
+  StreamSubscription<RecordingDisposition>? _subRecorder;
+  openRecorderSession() async {
+    await _myRecorder.openAudioSession();
+    _log.info("openAudioSession finish2.");
+    _myRecorder.setSubscriptionDuration(Duration(milliseconds: 50));
+    _subRecorder = _myRecorder.onProgress?.listen((event) {
+      _log.info("onProgress event: $event");
+      var d = event.duration.inSeconds;
+      decibel = event.decibels?.toInt() ?? 0;
+      if (d > 59) {
+        showToast("语音最长 60s");
+        hideVoiceView();
+      } else {
+        _voiceKey.currentState?.update(decibel);
+      }
+    });
+  }
+
   int startTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
   void start() async {
     if (!_myRecorder.isStopped) {
       return;
     }
-    print('开始拉。当前路径');
+    _log.info("start path: $_path");
     startTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
     try {
+      await openRecorderSession();
       await _myRecorder.startRecorder(codec: Codec.aacADTS, toFile: _path);
       // String path = await flutterSound
       //     .startRecorder(Platform.isIOS ? 'ios.m4a' : 'android.mp4');
@@ -104,6 +109,8 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
     }
     try {
       await _myRecorder.stopRecorder();
+      _myRecorder.closeAudioSession();
+      _subRecorder?.cancel();
     } catch (err, s) {
       print(err);
       print(s);
@@ -122,7 +129,6 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       _dbPeakSubscription?.cancel();
       _dbPeakSubscription = null;
     }
-    _myRecorder.closeAudioSession();
   }
 
   showVoiceView() {
@@ -172,6 +178,7 @@ class _ChatVoiceWidgetState extends State<ChatVoice> {
       int timeLen = DateTime.now().millisecondsSinceEpoch - startTimeMillis;
       if (timeLen < 1000) {
         showToast('时间太短了');
+        f.delete();
         return;
       }
 

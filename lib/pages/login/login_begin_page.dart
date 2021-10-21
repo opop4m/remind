@@ -1,3 +1,4 @@
+import 'package:client/provider/service/imApi.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:client/config/provider_config.dart';
@@ -9,6 +10,8 @@ import 'package:client/provider/global_model.dart';
 import 'package:client/tools/library.dart';
 
 import 'login_page.dart';
+
+final _log = Logger("LoginBeginPage");
 
 class LoginBeginPage extends StatefulWidget {
   @override
@@ -61,7 +64,32 @@ class _LoginBeginPageState extends State<LoginBeginPage> {
   @override
   void initState() {
     super.initState();
-    // init(context);  TODO init handler
+    initListenNetwork();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _subNetwork?.cancel();
+  }
+
+  StreamSubscription<ConnectivityResult>? _subNetwork;
+  void initListenNetwork() {
+    networkSubscription.checkConnectivity().then((result) {
+      onCheckConnect(result);
+    });
+    _subNetwork = networkSubscription.onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      onCheckConnect(result);
+    });
+  }
+
+  void onCheckConnect(ConnectivityResult state) async {
+    _log.info("network: $state");
+    if (state == ConnectivityResult.mobile ||
+        state == ConnectivityResult.wifi) {
+      ImApi.appStart();
+    }
   }
 
   @override

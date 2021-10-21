@@ -29,7 +29,7 @@ class API {
   static String appKey = "unicornKey";
   static String appClientSecret = "unicornSecret";
 
-  static String httpHost = "http://192.168.72.246:8082/";
+  static String httpHost = "http://192.168.66.51:8082/";
   static String userRegister = httpHost + "user/register";
   static String userLogin = httpHost + "user/login";
   static String userInfo = httpHost + "user/info";

@@ -68,22 +68,6 @@ class Req {
     );
   }
 
-  // Future<Response<T>> post<T>(
-  //   String path, {
-  //   data,
-  //   Map<String, dynamic>? queryParameters,
-  //   Options? options,
-  //   CancelToken? cancelToken,
-  //   ProgressCallback? onSendProgress,
-  //   ProgressCallback? onReceiveProgress,
-  // }) {
-  //   try {
-  //     return this._client.post(path);
-  //   } catch (e) {}
-  //   var op = new RequestOptions(path: path);
-  //   return Future(() => new Response(requestOptions: op));
-  // }
-
   //post请求
   Future<Response<T>> postUpload<T>(
     String url,
@@ -103,64 +87,6 @@ class Req {
     );
   }
 
-  // void _request(
-  //   String url,
-  //   OnData callBack, {
-  //   required RequestType method,
-  //   Map<String, String>? params,
-  //   FormData? formData,
-  //   OnError? errorCallBack,
-  //   ProgressCallback? progressCallBack,
-  //   CancelToken? token,
-  // }) async {
-  //   final id = _id++;
-  //   int statusCode = 0;
-  //   Response response;
-  //   try {
-  //     if (method == RequestType.GET) {
-  //       ///组合GET请求的参数
-  //       if (mapNoEmpty(params)) {
-  //         response = await _client.get(url,
-  //             queryParameters: params, cancelToken: token);
-  //       } else {
-  //         response = await _client.get(url, cancelToken: token);
-  //       }
-  //     } else {
-  //       if (mapNoEmpty(params) || formData != null) {
-  //         response = await _client.post(
-  //           url,
-  //           data: formData ?? params,
-  //           onSendProgress: progressCallBack,
-  //           cancelToken: token,
-  //         );
-  //       } else {
-  //         response = await _client.post(url, cancelToken: token);
-  //       }
-  //     }
-
-  //     statusCode = response.statusCode ?? 0;
-
-  //     if (response.data is List) {
-  //       Map data = response.data[0];
-  //       callBack(data);
-  //     } else {
-  //       Map data = response.data;
-  //       callBack(data);
-  //     }
-  //     print('HTTP_REQUEST_URL::[$id]::$url');
-  //     print('HTTP_REQUEST_BODY::[$id]::${params ?? ' no'}');
-  //     print('HTTP_RESPONSE_BODY::[$id]::${response.data}');
-
-  //     ///处理错误部分
-  //     if (statusCode < 0) {
-  //       _handError(errorCallBack, statusCode);
-  //       // return;
-  //     }
-  //   } catch (e) {
-  //     _handError(errorCallBack, statusCode);
-  //   }
-  // }
-
   Future<Response<T>> _request<T>(
     String url, {
     required RequestType method,
@@ -178,7 +104,7 @@ class Req {
     Response<T> res;
     try {
       if (method == RequestType.GET) {
-        ///组合GET请求的参数
+        //组合GET请求的参数
         if (mapNoEmpty(queryParameters)) {
           res = await _client.get(url,
               queryParameters: queryParameters, cancelToken: token);
@@ -205,18 +131,19 @@ class Req {
       print(e);
       print(s);
 
-      _handError(errorCallBack, statusCode);
+      _handError(errorCallBack, statusCode, url);
     }
     var op = new RequestOptions(path: url);
-    return Future(() => new Response(requestOptions: op));
+    return Future(
+        () => new Response(requestOptions: op, statusCode: statusCode));
   }
 
   ///处理异常
-  static void _handError(OnError? errorCallback, int statusCode) {
+  static void _handError(OnError? errorCallback, int statusCode, String url) {
     String errorMsg = 'Network request error';
     if (errorCallback != null) {
       errorCallback(errorMsg, statusCode);
     }
-    print("HTTP_RESPONSE_ERROR::$errorMsg code:$statusCode");
+    print("HTTP_RESPONSE_ERROR::$errorMsg code:$statusCode, url: $url");
   }
 }

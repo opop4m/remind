@@ -9,6 +9,8 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 class Utils {
+  Utils._();
+
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   static Random _rnd = Random();
@@ -77,7 +79,7 @@ class Utils {
     var m = startSecond ~/ 60;
     var h = startSecond ~/ 3600;
     var ss = s < 10 ? "0$s" : s.toString();
-    var mm = s < 10 ? "0$m" : m.toString();
+    var mm = m < 10 ? "0$m" : m.toString();
     if (h == 0) {
       return "$mm:$ss";
     } else {
