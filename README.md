@@ -12,7 +12,7 @@
 
 体验地址:
 
-Android: http://18.162.124.212:8049/a/remind-release101517.apk
+Android: http://18.162.124.212:8049/a/d.html
 
 H5: http://18.162.124.212:8049
 
