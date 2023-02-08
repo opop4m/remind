@@ -10,9 +10,7 @@
 
 支持谷歌推送和苹果推送
 
-联系:
 
-vr2m@protonmail.com
 
 
 ## Getting Started
